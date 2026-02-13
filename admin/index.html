@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal de Comunicados</title>
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/img/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/img/icon-512.png" sizes="512x512">
+
+    <style>
+        :root {
+            --bdf-blue: #0d1c84;
+            --bdf-blue-2: #0b1570;
+            --bdf-white: #ffffff;
+            --bdf-gray: #f4f6fb;
+            --text: #0b1220;
+
+            --radius: 16px;
+            --shadow: 0 18px 60px rgba(0, 0, 0, .18);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, .10);
+            --border: 1px solid rgba(0, 0, 0, .08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+            color: var(--text);
+            background: var(--bdf-gray);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== HEADER / FOOTER ===== */
+        .topbar {
+            background: var(--bdf-blue);
+            color: var(--bdf-white);
+            box-shadow: 0 5px 14px rgba(0, 0, 0, .18);
+        }
+
+        .topbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--bdf-white);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .brand img {
+            height: 28px;
+            width: auto;
+            display: block;
+        }
+
+        .topbar-line {
+            height: 5px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .05));
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chip {
+            font-size: 12px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .18);
+            color: rgba(255, 255, 255, .92);
+            letter-spacing: .2px;
+            white-space: nowrap;
+        }
+
+        .btn-logout {
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .35);
+            background: rgb(255, 25, 0);
+            color: #fff;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background: rgba(231, 76, 60, .28);
+        }
+
+        .footer {
+            background: var(--bdf-blue);
+            color: rgba(255, 255, 255, .92);
+            text-align: center;
+            padding: 10px 10px;
+            font-size: 12px;
+            letter-spacing: .2px;
+        }
+
+        /* ===== LAYOUT ===== */
+        .wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .grid {
+            width: min(1200px, 100%);
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 14px;
+            align-items: start;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-soft);
+            border: var(--border);
+            overflow: hidden;
+        }
+
+        .card-head {
+            padding: 16px 18px 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, .06);
+            background: #fff;
+        }
+
+        .card-head h1,
+        .card-head h2 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: .4px;
+            color: var(--bdf-blue);
+        }
+
+        .card-head p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: rgba(11, 18, 32, .70);
+        }
+
+        .card-body {
+            padding: 16px 18px 18px;
+        }
+
+        .field {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: rgba(11, 18, 32, .75);
+            font-weight: 900;
+            letter-spacing: .2px;
+        }
+
+        select,
+        input[type="file"] {
+            width: 100%;
+            height: 46px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, .14);
+            padding: 0 12px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+        }
+
+        input[type="file"] {
+            padding: 10px 12px;
+            height: auto;
+        }
+
+        .help {
+            margin-top: 6px;
+            font-size: 12px;
+            color: rgba(11, 18, 32, .62);
+        }
+
+        .preview {
+            margin-top: 14px;
+            border-radius: 14px;
+            border: 1px dashed rgba(0, 0, 0, .14);
+            background: rgba(244, 246, 251, .7);
+            padding: 10px;
+            display: grid;
+            place-items: center;
+            min-height: 180px;
+            overflow: hidden;
+        }
+
+        .preview img {
+            max-width: 100%;
+            max-height: 280px;
+            width: auto;
+            height: auto;
+            display: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .10);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            height: 46px;
+            padding: 0 16px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--bdf-blue), var(--bdf-blue-2));
+            color: white;
+            font-weight: 900;
+            font-size: 13px;
+            letter-spacing: .9px;
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(13, 28, 132, .25);
+            min-width: 160px;
+        }
+
+        .btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-light {
+            background: #fff;
+            color: var(--bdf-blue);
+            border: 1px solid rgba(13, 28, 132, .25);
+            box-shadow: none;
+        }
+
+        .status {
+            margin-top: 14px;
+            padding: 12px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status.ok {
+            display: block;
+            background: rgba(46, 204, 113, .12);
+            border: 1px solid rgba(46, 204, 113, .25);
+            color: #1f6b3f;
+        }
+
+        .status.err {
+            display: block;
+            background: rgba(231, 76, 60, .10);
+            border: 1px solid rgba(231, 76, 60, .22);
+            color: #8b2b22;
+        }
+
+        .status.info {
+            display: block;
+            background: rgba(13, 28, 132, .10);
+            border: 1px solid rgba(13, 28, 132, .22);
+            color: #0b1b55;
+        }
+
+        /* ===== LIST ===== */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(0, 0, 0, .06);
+            background: rgba(244, 246, 251, .55);
+            flex-wrap: wrap;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search {
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, .14);
+            padding: 0 12px;
+            font-size: 14px;
+            outline: none;
+            width: min(320px, 68vw);
+            background: #fff;
+        }
+
+        .list {
+            padding: 12px 12px 18px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .item {
+            border: 1px solid rgba(0, 0, 0, .08);
+            border-radius: 14px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 10px 26px rgba(0, 0, 0, .06);
+            display: flex;
+            flex-direction: column;
+            min-height: 240px;
+        }
+
+        .thumb {
+            height: 160px;
+            background: rgba(244, 246, 251, .8);
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+        }
+
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .meta {
+            padding: 10px 12px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .meta .title {
+            font-size: 13px;
+            font-weight: 900;
+            color: #0b1b55;
+            line-height: 1.25;
+        }
+
+        .meta .sub {
+            font-size: 12px;
+            color: rgba(11, 18, 32, .65);
+        }
+
+        .meta .row2 {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+            flex-wrap: wrap;
+        }
+
+        .btn-mini {
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, .12);
+            background: #fff;
+            cursor: pointer;
+            font-weight: 900;
+            color: #0b1b55;
+        }
+
+        .btn-danger {
+            border-color: rgba(231, 76, 60, .30);
+            color: #8b2b22;
+            background: rgba(231, 76, 60, .06);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1100px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .list {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .search {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <div class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="" title="Volver">
+                <img src="/img/bf.png" alt="Beiersdorf" />
+            </a>
+
+            <div class="header-actions">
+                <div class="chip" id="chipUser">Admin</div>
+                <button class="btn-logout" id="btnLogout" type="button">SALIR</button>
+            </div>
+        </div>
+        <div class="topbar-line"></div>
+    </div>
+
+    <!-- BODY -->
+    <div class="wrap">
+        <div class="grid">
+
+            <!-- Left: Upload -->
+            <section class="card" aria-label="Publicar comunicado">
+                <div class="card-head">
+                    <h1>ADMIN · COMUNICADOS</h1>
+                    <p>Selecciona un área y sube una imagen. El título se toma del nombre del archivo.</p>
+                </div>
+
+                <div class="card-body">
+                    <div class="field">
+                        <label for="area">Área</label>
+                        <select id="area" name="area">
+                            <option value="Agave">Agave</option>
+                            <option value="Almacén">Almacén</option>
+                            <option value="Calidad">Calidad</option>
+                            <option value="CI">CI</option>
+                            <option value="Comedor">Comedor</option>
+                            <option value="Compounding">Compounding</option>
+                            <option value="F&P">F&P</option>
+                            <option value="HR">HR</option>
+                            <option value="IT">IT</option>
+                            <option value="SHE&S">SHE&S</option>
+                            <option value="Tiendita">Tiendita</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Uniformes">Uniformes</option>
+                            <option value="Wellbeing">Wellbeing</option>
+                        </select>
+                        <div class="help">
+                            Tip: usa nombres claros, ej. <b>Aviso_Calidad_2026-02-12.png</b>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="file">Imagen del comunicado</label>
+                        <input id="file" name="file" type="file" accept="image/png,image/jpeg,image/webp" />
+                        <div class="help">Permitido: PNG, JPG, WEBP.</div>
+                    </div>
+
+                    <div class="preview">
+                        <img id="previewImg" alt="Vista previa" />
+                        <div id="previewHint" class="help">Vista previa aparecerá aquí.</div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn" id="btnPublish" type="button">PUBLICAR</button>
+                        <button class="btn btn-light" id="btnClear" type="button">LIMPIAR</button>
+                    </div>
+
+                    <div id="status" class="status"></div>
+                </div>
+            </section>
+
+            <!-- Right: List -->
+            <section class="card" aria-label="Comunicados por área">
+                <div class="card-head">
+                    <h2>COMUNICADOS PUBLICADOS</h2>
+                    <p>Filtra por área y revisa la lista.</p>
+                </div>
+
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <label for="areaList"
+                            style="margin:0; font-size:12px; font-weight:900; color:rgba(11,18,32,.72)">
+                            Área:
+                        </label>
+                        <select id="areaList" name="areaList" aria-label="Seleccionar área">
+                            <option value="Agave">Agave</option>
+                            <option value="Almacén">Almacén</option>
+                            <option value="Calidad">Calidad</option>
+                            <option value="CI">CI</option>
+                            <option value="Comedor">Comedor</option>
+                            <option value="Compounding">Compounding</option>
+                            <option value="F&P">F&amp;P</option>
+                            <option value="HR">HR</option>
+                            <option value="IT">IT</option>
+                            <option value="SHE&S">SHE&amp;S</option>
+                            <option value="Tiendita">Tiendita</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Uniformes">Uniformes</option>
+                            <option value="Wellbeing">Wellbeing</option>
+                        </select>
+                    </div>
+
+                    <input id="search" class="search" placeholder="Buscar por nombre..." />
+                </div>
+
+                <div id="list" class="list"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">© 2026. Todos los derechos reservados.</div>
+
+    <!-- Firebase + Admin logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            query,
+            where,
+            orderBy,
+            onSnapshot,
+            doc,
+            deleteDoc,
+            serverTimestamp,
+            getDocs,
+            limit
+        } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+        import {
+            getStorage,
+            ref as sRef,
+            uploadBytes,
+            getDownloadURL,
+            deleteObject,
+            listAll
+        } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+
+        // ==============================
+        // 0) Session guard (NO Firebase Auth)
+        // ==============================
+        const session = JSON.parse(localStorage.getItem("session") || "null");
+        if (!session || session.role !== "admin") {
+            window.location.href = "/login/";
+        }
+
+        const adminName = session?.nombre || session?.name || "Admin";
+        const adminNomina = session?.nomina ? String(session.nomina) : "";
+        document.getElementById("chipUser").textContent = `${adminName}${adminNomina ? " · " + adminNomina : ""}`;
+
+        document.getElementById("btnLogout").addEventListener("click", () => {
+            localStorage.removeItem("session");
+            window.location.href = "/login/";
+        });
+
+        // ==============================
+        // 1) Firebase Config (tu config real)
+        // ==============================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfYM_3V9lrxBOpfCwQ8ufjJ18IIpCf27w",
+            authDomain: "comunicadosbf.firebaseapp.com",
+            projectId: "comunicadosbf",
+            storageBucket: "comunicadosbf.firebasestorage.app",
+            messagingSenderId: "421516228476",
+            appId: "1:421516228476:web:ae11a0dcf588a9932c16f9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // ==============================
+        // 2) UI helpers
+        // ==============================
+        const $ = (id) => document.getElementById(id);
+
+        function setStatus(type, msg) {
+            const el = $("status");
+            if (!msg) {
+                el.className = "status";
+                el.textContent = "";
+                el.style.display = "none";
+                return;
+            }
+            el.className = "status " + type;
+            el.textContent = msg;
+            el.style.display = "block";
+        }
+
+        function setLoading(isLoading) {
+            $("btnPublish").disabled = isLoading;
+            $("btnPublish").textContent = isLoading ? "SUBIENDO..." : "PUBLICAR";
+        }
+
+        function fileBaseName(filename) {
+            return filename.replace(/\.[^/.]+$/, "");
+        }
+
+        function isAllowedType(file) {
+            const ok = ["image/png", "image/jpeg", "image/webp"];
+            return ok.includes(file.type);
+        }
+
+        function slugArea(areaLabel) {
+            const map = {
+                "Agave": "agave",
+                "Almacén": "almacen",
+                "Calidad": "calidad",
+                "CI": "ci",
+                "Comedor": "comedor",
+                "Compounding": "compounding",
+                "F&P": "fp",
+                "HR": "hr",
+                "IT": "it",
+                "SHE&S": "shes",
+                "Tiendita": "tiendita",
+                "Transporte": "transporte",
+                "Uniformes": "uniformes",
+                "Wellbeing": "wellbeing"
+            };
+            return map[areaLabel] || String(areaLabel || "").toLowerCase().trim();
+        }
+
+        function safeFilename(name) {
+            return String(name || "archivo")
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^\w.\-]+/g, "_");
+        }
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, (m) => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[m]));
+        }
+
+        // ==============================
+        // 3) Preview + selected file
+        // ==============================
+        let selectedFile = null;
+
+        $("file").addEventListener("change", (e) => {
+            const f = e.target.files?.[0] || null;
+            selectedFile = null;
+
+            if (!f) {
+                $("previewImg").style.display = "none";
+                $("previewImg").removeAttribute("src");
+                $("previewHint").style.display = "block";
+                setStatus("", "");
+                return;
+            }
+
+            if (!isAllowedType(f)) {
+                $("file").value = "";
+                $("previewImg").style.display = "none";
+                $("previewImg").removeAttribute("src");
+                $("previewHint").style.display = "block";
+                setStatus("err", "Formato no permitido. Usa PNG, JPG o WEBP.");
+                return;
+            }
+
+            selectedFile = f;
+            const url = URL.createObjectURL(f);
+            $("previewImg").src = url;
+            $("previewImg").style.display = "block";
+            $("previewHint").style.display = "none";
+            setStatus("info", `Imagen lista: ${f.name}`);
+        });
+
+        $("btnClear").addEventListener("click", () => {
+            $("file").value = "";
+            selectedFile = null;
+            $("previewImg").style.display = "none";
+            $("previewImg").removeAttribute("src");
+            $("previewHint").style.display = "block";
+            setStatus("", "");
+        });
+
+        // ==============================
+        // 4) Publish: Storage + Firestore
+        // ==============================
+        $("btnPublish").addEventListener("click", publish);
+
+        async function publish() {
+            const areaLabel = $("area").value;
+
+            if (!selectedFile) {
+                setStatus("err", "Selecciona una imagen.");
+                return;
+            }
+            if (!isAllowedType(selectedFile)) {
+                setStatus("err", "Formato no permitido. Usa PNG, JPG o WEBP.");
+                return;
+            }
+
+            setLoading(true);
+            setStatus("info", "Subiendo imagen...");
+
+            try {
+                const title = fileBaseName(selectedFile.name);
+
+                const areaSlug = slugArea(areaLabel);
+                const ts = Date.now();
+                const safeName = safeFilename(selectedFile.name);
+                const path = `comunicados/${areaSlug}/${ts}_${safeName}`;
+
+                const fileRef = sRef(storage, path);
+                await uploadBytes(fileRef, selectedFile, { contentType: selectedFile.type });
+                const url = await getDownloadURL(fileRef);
+
+                await addDoc(collection(db, "Comunicados"), {
+                    area: areaSlug,
+                    areaLabel: areaLabel,
+                    title,
+                    url,
+                    storagePath: path,
+                    createdAt: serverTimestamp(),
+                    createdBy: String(session?.nomina || ""),
+                    createdByName: String(adminName || "")
+                });
+
+                setStatus("ok", "Publicado ✅");
+                $("btnClear").click();
+
+                // refresca lista al área actual
+                mountListListener();
+
+            } catch (err) {
+                console.error(err);
+                setStatus("err", "No se pudo publicar. Revisa reglas de Storage/Firestore.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // ==============================
+        // 5) List (Firestore first, fallback Storage) + delete
+        // ==============================
+        let currentUnsub = null;
+        let lastItems = []; // cache para búsqueda sin re-suscribirse
+
+        function mountListListener() {
+            if (currentUnsub) currentUnsub();
+
+            const areaLabel = $("areaList").value;       // "Agave"
+            const areaSlug = slugArea(areaLabel);        // "agave"
+
+            $("list").innerHTML = `
+        <div style="grid-column:1/-1; padding:16px; color:rgba(11,18,32,.65);">
+          Cargando...
+        </div>`;
+
+            const qy = query(
+                collection(db, "Comunicados"),
+                where("area", "==", areaSlug),
+                orderBy("createdAt", "desc")
+            );
+
+            currentUnsub = onSnapshot(qy, async (snap) => {
+                const items = snap.docs.map(d => ({ id: d.id, ...d.data(), _source: "firestore" }));
+                lastItems = items;
+                renderList(lastItems);
+
+                // Si Firestore no trae nada, intentamos listar desde Storage (para archivos viejos sin doc)
+                if (!items.length) {
+                    const storageItems = await listFromStorage(areaSlug);
+                    lastItems = storageItems;
+                    renderList(lastItems);
+                }
+
+            }, async (err) => {
+                console.error(err);
+
+                // si Firestore falla por reglas/índice, igual intentamos Storage
+                const storageItems = await listFromStorage(areaSlug);
+                lastItems = storageItems;
+                renderList(lastItems);
+
+                if (!storageItems.length) {
+                    $("list").innerHTML = `
+            <div style="grid-column:1/-1; padding:14px; color:#8b2b22; font-weight:800;">
+              Error cargando comunicados. Revisa reglas o índice en Firestore.
+            </div>`;
+                }
+            });
+        }
+
+        async function listFromStorage(areaSlug) {
+            try {
+                const folderRef = sRef(storage, `comunicados/${areaSlug}`);
+                const res = await listAll(folderRef);
+
+                // armamos items “tipo firestore” pero marcados como storage
+                const rows = await Promise.all(res.items.map(async (itemRef) => {
+                    const url = await getDownloadURL(itemRef);
+                    const fullPath = itemRef.fullPath; // comunicados/agave/xxx.png
+                    const name = itemRef.name;         // xxx.png
+
+                    // intenta sacar título desde el nombre (quita timestamp_ si existe)
+                    const cleaned = name.replace(/^\d+_/, "");
+                    const title = fileBaseName(cleaned);
+
+                    return {
+                        id: null,                 // no hay doc
+                        area: areaSlug,
+                        areaLabel: areaSlug,
+                        title,
+                        url,
+                        storagePath: fullPath,
+                        createdAt: null,
+                        createdBy: "—",
+                        _source: "storage"
+                    };
+                }));
+
+                // orden visual: más “nuevo” primero si trae timestamp al inicio
+                rows.sort((a, b) => {
+                    const ta = parseInt((a.storagePath.split("/").pop() || "").split("_")[0] || "0", 10);
+                    const tb = parseInt((b.storagePath.split("/").pop() || "").split("_")[0] || "0", 10);
+                    return tb - ta;
+                });
+
+                return rows;
+            } catch (e) {
+                console.error("Storage listAll error:", e);
+                return [];
+            }
+        }
+
+        function renderList(items) {
+            const term = ($("search").value || "").toLowerCase().trim();
+            const filtered = !term ? items : items.filter(x =>
+                String(x.title || "").toLowerCase().includes(term) ||
+                String(x.createdBy || "").toLowerCase().includes(term) ||
+                String(x.createdByName || "").toLowerCase().includes(term)
+            );
+
+            if (!filtered.length) {
+                $("list").innerHTML = `
+          <div style="grid-column:1/-1; padding:16px; color:rgba(11,18,32,.65);">
+            No hay comunicados en esta área (o no coincide tu búsqueda).
+          </div>`;
+                return;
+            }
+
+            $("list").innerHTML = filtered.map(x => {
+                const dateStr = x.createdAt?.toDate ? x.createdAt.toDate().toLocaleString() : "";
+                const sourceBadge = x._source === "storage"
+                    ? `<div class="sub">Fuente: Storage (sin doc)</div>`
+                    : ``;
+
+                const author = x.createdByName
+                    ? `${escapeHtml(String(x.createdByName))}${x.createdBy ? " · " + escapeHtml(String(x.createdBy)) : ""}`
+                    : escapeHtml(String(x.createdBy || "—"));
+
+                return `
+          <div class="item">
+            <div class="thumb">
+              <img src="${x.url}" alt="${escapeHtml(x.title || "")}">
+            </div>
+            <div class="meta">
+              <div class="title">${escapeHtml(x.title || "Sin título")}</div>
+              <div class="sub">Por: ${author}</div>
+              ${dateStr ? `<div class="sub">${escapeHtml(dateStr)}</div>` : ``}
+              ${sourceBadge}
+              <div class="row2">
+                <button class="btn-mini" data-open="${x.url}">Abrir</button>
+                <button class="btn-mini btn-danger" data-del="1"
+                  data-docid="${x.id || ""}"
+                  data-path="${escapeHtml(x.storagePath || "")}">
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+            }).join("");
+
+            document.querySelectorAll("[data-open]").forEach(btn => {
+                btn.addEventListener("click", () => window.open(btn.getAttribute("data-open"), "_blank"));
+            });
+
+            document.querySelectorAll("[data-del]").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    const docId = btn.getAttribute("data-docid") || null;
+                    const path = btn.getAttribute("data-path") || "";
+                    await removeItem(docId, path);
+                });
+            });
+        }
+
+        async function removeItem(docId, storagePath) {
+            if (!confirm("¿Eliminar este comunicado? Esto no se puede deshacer.")) return;
+
+            try {
+                setStatus("info", "Eliminando...");
+
+                // 1) Si hay docId, borramos el doc
+                if (docId) {
+                    await deleteDoc(doc(db, "Comunicados", docId));
+                } else {
+                    // Si no hay doc, intentamos encontrar uno por storagePath (por si el UI vino de Storage)
+                    if (storagePath) {
+                        const qy = query(
+                            collection(db, "Comunicados"),
+                            where("storagePath", "==", storagePath),
+                            limit(1)
+                        );
+                        const snap = await getDocs(qy);
+                        if (!snap.empty) {
+                            await deleteDoc(doc(db, "Comunicados", snap.docs[0].id));
+                        }
+                    }
+                }
+
+                // 2) Borramos Storage siempre (es lo que sí o sí quieres quitar)
+                if (storagePath) {
+                    await deleteObject(sRef(storage, storagePath));
+                }
+
+                setStatus("ok", "Eliminado ✅");
+                mountListListener();
+
+            } catch (err) {
+                console.error(err);
+                setStatus("err", "No se pudo eliminar. Revisa reglas de Storage/Firestore.");
+            }
+        }
+
+        // ==============================
+        // 6) Events
+        // ==============================
+        $("areaList").addEventListener("change", mountListListener);
+
+        $("search").addEventListener("input", () => {
+            // filtra sobre cache sin resetear listener
+            renderList(lastItems);
+        });
+
+        // init: misma área a ambos selects (label), pero query usa slug internamente
+        $("areaList").value = $("area").value;
+        mountListListener();
+    </script>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("sw.js")
+                .then(() => console.log("✅ Service Worker registrado"))
+                .catch(err => console.error("❌ Error al registrar SW", err));
+        }
+    </script>
+
+</body>
+
+</html>
