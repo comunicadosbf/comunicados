@@ -1,0 +1,1051 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comunicados</title>
+
+    <!-- ✅ GitHub Pages repo: /comunicados -->
+    <link rel="manifest" href="/comunicados/manifest.json">
+    <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
+
+    <style>
+        :root {
+            --bdf-blue: #0d1c84;
+            --bdf-blue-2: #0b1570;
+            --bdf-gray: #f4f6fb;
+            --text: #0b1220;
+            --white: #fff;
+            --radius: 16px;
+            --shadow: 0 18px 60px rgba(0, 0, 0, .18);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, .10);
+            --border: 1px solid rgba(0, 0, 0, .08);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+            color: var(--text);
+            background: var(--bdf-gray);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== Topbar ===== */
+        .topbar {
+            background: var(--bdf-blue);
+            color: var(--white);
+            box-shadow: 0 5px 14px rgba(0, 0, 0, .18);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--white);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            font-weight: 900;
+            letter-spacing: .2px;
+            white-space: nowrap;
+        }
+
+        .brand img {
+            height: 28px;
+            width: auto;
+            display: block
+        }
+
+        .topbar-line {
+            height: 5px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .05));
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .chip {
+            font-size: 12px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .18);
+            color: rgba(255, 255, 255, .92);
+            letter-spacing: .2px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chip b {
+            font-weight: 900
+        }
+
+        .btn-logout {
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .35);
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, .14)
+        }
+
+        /* ===== Layout ===== */
+        .wrap {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .container {
+            width: min(1200px, 100%);
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 14px;
+            align-items: start;
+        }
+
+        @media(max-width: 980px) {
+            .container {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-soft);
+            border: var(--border);
+            overflow: hidden;
+        }
+
+        .card-head {
+            padding: 16px 18px 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, .06);
+            background: #fff;
+        }
+
+        .card-head h1,
+        .card-head h2 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: .4px;
+            color: var(--bdf-blue);
+        }
+
+        .card-head p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: rgba(11, 18, 32, .70);
+        }
+
+        .card-body {
+            padding: 16px 18px 18px
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: rgba(11, 18, 32, .75);
+            font-weight: 900;
+            letter-spacing: .2px;
+        }
+
+        select {
+            width: 100%;
+            height: 46px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, .14);
+            padding: 0 12px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+        }
+
+        select:focus {
+            border-color: rgba(13, 28, 132, .55);
+            box-shadow: 0 0 0 4px rgba(13, 28, 132, .12);
+        }
+
+        .status {
+            margin-top: 12px;
+            padding: 12px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status.ok {
+            display: block;
+            background: rgba(46, 204, 113, .12);
+            border: 1px solid rgba(46, 204, 113, .25);
+            color: #1f6b3f;
+        }
+
+        .status.err {
+            display: block;
+            background: rgba(231, 76, 60, .10);
+            border: 1px solid rgba(231, 76, 60, .22);
+            color: #8b2b22;
+        }
+
+        .status.info {
+            display: block;
+            background: rgba(13, 28, 132, .10);
+            border: 1px solid rgba(13, 28, 132, .22);
+            color: #0b1b55;
+        }
+
+        /* ===== Viewer ===== */
+        .viewer-head {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(0, 0, 0, .06);
+            background: rgba(244, 246, 251, .55);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .viewer-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 200px;
+        }
+
+        .viewer-meta .title {
+            font-weight: 900;
+            color: #0b1b55;
+            letter-spacing: .2px;
+        }
+
+        .viewer-meta .sub {
+            font-size: 12px;
+            color: rgba(11, 18, 32, .65);
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            height: 40px;
+            padding: 0 14px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--bdf-blue), var(--bdf-blue-2));
+            color: #fff;
+            font-weight: 900;
+            font-size: 13px;
+            letter-spacing: .6px;
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(13, 28, 132, .22);
+        }
+
+        .btn:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-light {
+            background: #fff;
+            color: var(--bdf-blue);
+            border: 1px solid rgba(13, 28, 132, .25);
+            box-shadow: none;
+        }
+
+        /* carousel area */
+        .stage {
+            padding: 14px;
+        }
+
+        .swipe-area {
+            border-radius: 14px;
+            border: 1px solid rgba(0, 0, 0, .10);
+            background: rgba(244, 246, 251, .55);
+            overflow: hidden;
+            position: relative;
+            min-height: 420px;
+            display: grid;
+            place-items: center;
+            touch-action: pan-y;
+            /* allow vertical scroll, we handle horizontal */
+        }
+
+        @media(max-width: 980px) {
+            .swipe-area {
+                min-height: 360px
+            }
+        }
+
+        @media(max-width: 560px) {
+            .swipe-area {
+                min-height: 300px
+            }
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 10px;
+        }
+
+        .slide img {
+            max-width: 100%;
+            max-height: 70vh;
+            width: auto;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .10);
+            cursor: zoom-in;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .hint {
+            padding: 18px;
+            color: rgba(11, 18, 32, .65);
+            text-align: center;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 18px 16px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(13, 28, 132, .25);
+        }
+
+        .dot.active {
+            background: rgba(13, 28, 132, .95);
+            transform: scale(1.12);
+        }
+
+        /* ===== Modal Zoom ===== */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .72);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+
+        .modal.open {
+            display: flex
+        }
+
+        .modal-card {
+            width: min(1200px, 100%);
+            height: min(86vh, 860px);
+            background: #0b1220;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, .12);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, .06);
+            border-bottom: 1px solid rgba(255, 255, 255, .10);
+            color: #fff;
+        }
+
+        .modal-top .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .modal-top .badge {
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .10);
+            border: 1px solid rgba(255, 255, 255, .16);
+            color: rgba(255, 255, 255, .92);
+            font-weight: 900;
+            letter-spacing: .2px;
+        }
+
+        .modal-top .mini {
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .20);
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+            font-weight: 900;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .modal-top .mini:hover {
+            background: rgba(255, 255, 255, .14)
+        }
+
+        .modal-body {
+            flex: 1;
+            background: #0b1220;
+            overflow: auto;
+            position: relative;
+            touch-action: pan-x pan-y;
+        }
+
+        .zoom-wrap {
+            min-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        .zoom-img {
+            max-width: 100%;
+            max-height: 100%;
+            transform-origin: center center;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .zoom-hint {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: rgba(255, 255, 255, .78);
+            background: rgba(0, 0, 0, .35);
+            border: 1px solid rgba(255, 255, 255, .12);
+            padding: 6px 10px;
+            border-radius: 999px;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bdf-blue);
+            color: rgba(255, 255, 255, .92);
+            text-align: center;
+            padding: 10px 10px;
+            font-size: 12px;
+            letter-spacing: .2px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar -->
+    <div class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="/comunicados/" title="Inicio">
+                <img src="/comunicados/img/bf.png" alt="Beiersdorf">
+                <span>COMUNICADOS</span>
+            </a>
+
+            <div class="actions">
+                <div class="chip" id="chipUser"><b>Usuario</b> · —</div>
+                <button class="btn-logout" id="btnSalir" type="button">SALIR</button>
+            </div>
+        </div>
+        <div class="topbar-line"></div>
+    </div>
+
+    <div class="wrap">
+        <div class="container">
+
+            <!-- Left: Selector -->
+            <section class="card" aria-label="Seleccionar área">
+                <div class="card-head">
+                    <h1>SELECCIONA TU ÁREA</h1>
+                    <p>Elige el área para ver los comunicados disponibles.</p>
+                </div>
+                <div class="card-body">
+                    <label for="area">Área</label>
+                    <select id="area">
+                        <option value="Agave">Agave</option>
+                        <option value="Almacén">Almacén</option>
+                        <option value="Calidad">Calidad</option>
+                        <option value="CI">CI</option>
+                        <option value="Comedor">Comedor</option>
+                        <option value="Compounding">Compounding</option>
+                        <option value="F&P">F&P</option>
+                        <option value="HR">HR</option>
+                        <option value="IT">IT</option>
+                        <option value="SHE&S">SHE&S</option>
+                        <option value="Tiendita">Tiendita</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Uniformes">Uniformes</option>
+                        <option value="Wellbeing">Wellbeing</option>
+                    </select>
+
+                    <div id="status" class="status"></div>
+
+                    <div style="margin-top:12px; font-size:12px; color:rgba(11,18,32,.65); line-height:1.35;">
+                        Tip: en celular puedes <b>deslizar</b> izquierda/derecha. Y si le das tap a la imagen, puedes
+                        <b>zoom</b>.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right: Viewer -->
+            <section class="card" aria-label="Visor de comunicados">
+                <div class="viewer-head">
+                    <div class="viewer-meta">
+                        <div class="title" id="viewerTitle">Comunicados</div>
+                        <div class="sub" id="viewerSub">Selecciona un área para cargar.</div>
+                    </div>
+
+                    <div class="nav">
+                        <button class="btn btn-light" id="btnPrev" type="button">◀ ATRÁS</button>
+                        <button class="btn" id="btnNext" type="button">ADELANTE ▶</button>
+                    </div>
+                </div>
+
+                <div class="stage">
+                    <div class="swipe-area" id="swipeArea" aria-label="Carrusel de comunicados">
+                        <div class="hint" id="hint">
+                            Selecciona un área para ver los comunicados.<br />
+                            (Sí, aquí sí hay orden… como en auditoría 😌)
+                        </div>
+                        <div class="slide" id="slide" hidden>
+                            <img id="slideImg" alt="Comunicado" />
+                        </div>
+                    </div>
+
+                    <div class="dots" id="dots" hidden></div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <div class="footer">© 2026. Todos los derechos reservados.</div>
+
+    <!-- ===== Modal Zoom ===== -->
+    <div class="modal" id="modal">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-label="Vista ampliada">
+            <div class="modal-top">
+                <div class="left">
+                    <span class="badge" id="modalBadge">Comunicado</span>
+                    <span class="badge" id="modalCounter">1/1</span>
+                </div>
+                <div class="right">
+                    <button class="mini" id="zoomOut" type="button">-</button>
+                    <button class="mini" id="zoomReset" type="button">Reset</button>
+                    <button class="mini" id="zoomIn" type="button">+</button>
+                    <button class="mini" id="modalClose" type="button">Cerrar ✖</button>
+                </div>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="zoom-wrap">
+                    <img class="zoom-img" id="zoomImg" alt="Comunicado ampliado" />
+                </div>
+                <div class="zoom-hint">Zoom: + / - · Doble tap = reset · Pinch en móvil</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Firebase + Viewer logic ===== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            query,
+            where,
+            orderBy,
+            onSnapshot
+        } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+        // ==============================
+        // 0) Session guard
+        // ==============================
+        const session = JSON.parse(localStorage.getItem("session") || "null");
+        if (!session || !session.role) {
+            window.location.href = "/comunicados/login/";
+        }
+
+        const nomina = String(session?.nomina || "");
+        const role = String(session?.role || "viewer");
+        const name = String(session?.nombre || session?.name || "Usuario");
+
+        const chipUser = document.getElementById("chipUser");
+        chipUser.innerHTML = `<b>${role === "admin" ? "Admin" : "Viewer"}</b> · ${name}${nomina ? " · " + nomina : ""}`;
+
+        document.getElementById("btnSalir").addEventListener("click", () => {
+            localStorage.removeItem("session");
+            window.location.href = "/comunicados/login/";
+        });
+
+        // ==============================
+        // 1) Firebase Config
+        // ==============================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfYM_3V9lrxBOpfCwQ8ufjJ18IIpCf27w",
+            authDomain: "comunicadosbf.firebaseapp.com",
+            projectId: "comunicadosbf",
+            storageBucket: "comunicadosbf.firebasestorage.app",
+            messagingSenderId: "421516228476",
+            appId: "1:421516228476:web:ae11a0dcf588a9932c16f9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ==============================
+        // 2) Helpers
+        // ==============================
+        const $ = (id) => document.getElementById(id);
+
+        function setStatus(type, msg) {
+            const el = $("status");
+            if (!msg) {
+                el.className = "status";
+                el.textContent = "";
+                el.style.display = "none";
+                return;
+            }
+            el.className = "status " + type;
+            el.textContent = msg;
+            el.style.display = "block";
+        }
+
+        function slugArea(areaLabel) {
+            const map = {
+                "Agave": "agave",
+                "Almacén": "almacen",
+                "Calidad": "calidad",
+                "CI": "ci",
+                "Comedor": "comedor",
+                "Compounding": "compounding",
+                "F&P": "fp",
+                "HR": "hr",
+                "IT": "it",
+                "SHE&S": "shes",
+                "Tiendita": "tiendita",
+                "Transporte": "transporte",
+                "Uniformes": "uniformes",
+                "Wellbeing": "wellbeing"
+            };
+            return map[areaLabel] || String(areaLabel || "").toLowerCase().trim();
+        }
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, (m) => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[m]));
+        }
+
+        // ==============================
+        // 3) Viewer state
+        // ==============================
+        let currentUnsub = null;
+        let items = [];        // {id, title, url, createdAt, ...}
+        let idx = 0;
+
+        const areaSel = $("area");
+        const viewerTitle = $("viewerTitle");
+        const viewerSub = $("viewerSub");
+        const hint = $("hint");
+        const slide = $("slide");
+        const slideImg = $("slideImg");
+        const swipeArea = $("swipeArea");
+        const btnPrev = $("btnPrev");
+        const btnNext = $("btnNext");
+        const dots = $("dots");
+
+        function updateNav() {
+            btnPrev.disabled = items.length <= 1;
+            btnNext.disabled = items.length <= 1;
+        }
+
+        function renderDots() {
+            if (items.length <= 1) {
+                dots.hidden = true;
+                dots.innerHTML = "";
+                return;
+            }
+            dots.hidden = false;
+            dots.innerHTML = items.map((_, i) =>
+                `<span class="dot ${i === idx ? "active" : ""}"></span>`
+            ).join("");
+        }
+
+        function showEmpty(message, sub = "") {
+            items = [];
+            idx = 0;
+            hint.style.display = "block";
+            hint.innerHTML = message;
+            slide.hidden = true;
+            dots.hidden = true;
+            viewerSub.textContent = sub || "Sin comunicados disponibles.";
+            updateNav();
+            setStatus("", "");
+        }
+
+        function showSlide() {
+            if (!items.length) return;
+
+            const it = items[idx];
+            const title = it?.title || "Comunicado";
+            const when = it?.createdAt?.toDate ? it.createdAt.toDate().toLocaleString() : "";
+
+            viewerTitle.textContent = title;
+            viewerSub.textContent = when ? `Publicado: ${when}` : " ";
+
+            hint.style.display = "none";
+            slide.hidden = false;
+
+            // Preload next/prev to feel instant
+            const prev = items[(idx - 1 + items.length) % items.length]?.url;
+            const next = items[(idx + 1) % items.length]?.url;
+            [prev, next].forEach(u => { if (u) { const im = new Image(); im.src = u; } });
+
+            slideImg.src = it.url;
+            slideImg.alt = title;
+
+            updateNav();
+            renderDots();
+            updateModalCounter();
+        }
+
+        function next() {
+            if (items.length <= 1) return;
+            idx = (idx + 1) % items.length;
+            showSlide();
+        }
+
+        function prev() {
+            if (items.length <= 1) return;
+            idx = (idx - 1 + items.length) % items.length;
+            showSlide();
+        }
+
+        btnNext.addEventListener("click", next);
+        btnPrev.addEventListener("click", prev);
+
+        // Keyboard support
+        window.addEventListener("keydown", (e) => {
+            if (modalOpen()) return;
+            if (e.key === "ArrowRight") next();
+            if (e.key === "ArrowLeft") prev();
+        });
+
+        // ==============================
+        // 4) Swipe gestures (touch + pointer)
+        // ==============================
+        let startX = 0;
+        let startY = 0;
+        let tracking = false;
+
+        function onStart(x, y) {
+            startX = x;
+            startY = y;
+            tracking = true;
+        }
+        function onEnd(x, y) {
+            if (!tracking) return;
+            tracking = false;
+
+            const dx = x - startX;
+            const dy = y - startY;
+
+            // ignore mostly vertical swipes (scroll)
+            if (Math.abs(dy) > Math.abs(dx)) return;
+
+            const threshold = 40; // px
+            if (dx <= -threshold) next();
+            if (dx >= threshold) prev();
+        }
+
+        // Touch
+        swipeArea.addEventListener("touchstart", (e) => {
+            if (modalOpen()) return;
+            const t = e.touches[0];
+            onStart(t.clientX, t.clientY);
+        }, { passive: true });
+
+        swipeArea.addEventListener("touchend", (e) => {
+            if (modalOpen()) return;
+            const t = e.changedTouches[0];
+            onEnd(t.clientX, t.clientY);
+        }, { passive: true });
+
+        // Pointer (tablet / desktop trackpad)
+        swipeArea.addEventListener("pointerdown", (e) => {
+            if (modalOpen()) return;
+            swipeArea.setPointerCapture?.(e.pointerId);
+            onStart(e.clientX, e.clientY);
+        });
+
+        swipeArea.addEventListener("pointerup", (e) => {
+            if (modalOpen()) return;
+            onEnd(e.clientX, e.clientY);
+        });
+
+        // ==============================
+        // 5) Firestore listener by area
+        // ==============================
+        function mountArea(areaLabel) {
+            if (currentUnsub) currentUnsub();
+
+            const areaSlug = slugArea(areaLabel);
+            viewerTitle.textContent = `Comunicados · ${areaLabel}`;
+            viewerSub.textContent = "Cargando...";
+            setStatus("info", `Cargando comunicados de ${areaLabel}...`);
+
+            // show hint while loading
+            hint.style.display = "block";
+            hint.textContent = "Cargando...";
+            slide.hidden = true;
+            dots.hidden = true;
+
+            const qy = query(
+                collection(db, "Comunicados"),
+                where("area", "==", areaSlug),
+                orderBy("createdAt", "desc")
+            );
+
+            currentUnsub = onSnapshot(qy, (snap) => {
+                items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                if (!items.length) {
+                    showEmpty(
+                        `No hay comunicados en <b>${escapeHtml(areaLabel)}</b> por ahora.<br/>Vuelve luego (sí, esto también es parte del proceso 😌).`,
+                        "Sin comunicados publicados."
+                    );
+                    return;
+                }
+
+                idx = 0;
+                setStatus("ok", `Listo: ${items.length} comunicado(s) en ${areaLabel}.`);
+                showSlide();
+            }, (err) => {
+                console.error(err);
+                setStatus("err", "No se pudieron cargar los comunicados. Revisa permisos/índice en Firestore.");
+                showEmpty("Error al cargar comunicados. Intenta de nuevo.", "Error de carga.");
+            });
+        }
+
+        areaSel.addEventListener("change", () => mountArea(areaSel.value));
+
+        // ==============================
+        // 6) Modal zoom (tap/click)
+        // ==============================
+        const modal = $("modal");
+        const modalClose = $("modalClose");
+        const zoomImg = $("zoomImg");
+        const modalBadge = $("modalBadge");
+        const modalCounter = $("modalCounter");
+        const zoomInBtn = $("zoomIn");
+        const zoomOutBtn = $("zoomOut");
+        const zoomResetBtn = $("zoomReset");
+        const modalBody = $("modalBody");
+
+        let scale = 1;
+        const minScale = 1;
+        const maxScale = 4;
+
+        function modalOpen() { return modal.classList.contains("open"); }
+
+        function openModal() {
+            if (!items.length) return;
+            const it = items[idx];
+            modalBadge.textContent = it?.title || "Comunicado";
+            updateModalCounter();
+
+            zoomImg.src = it.url;
+            zoomImg.alt = it?.title || "Comunicado";
+            scale = 1;
+            applyZoom();
+            modal.classList.add("open");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeModal() {
+            modal.classList.remove("open");
+            document.body.style.overflow = "";
+            // cleanup
+            setTimeout(() => { zoomImg.removeAttribute("src"); }, 120);
+        }
+
+        function updateModalCounter() {
+            if (!items.length) { modalCounter.textContent = "0/0"; return; }
+            modalCounter.textContent = `${idx + 1}/${items.length}`;
+        }
+
+        function applyZoom() {
+            zoomImg.style.transform = `scale(${scale})`;
+        }
+
+        function zoomIn() {
+            scale = Math.min(maxScale, +(scale + 0.25).toFixed(2));
+            applyZoom();
+        }
+        function zoomOut() {
+            scale = Math.max(minScale, +(scale - 0.25).toFixed(2));
+            applyZoom();
+        }
+        function zoomReset() {
+            scale = 1;
+            applyZoom();
+            // reset scroll to center-ish
+            modalBody.scrollTop = 0;
+            modalBody.scrollLeft = 0;
+        }
+
+        slideImg.addEventListener("click", openModal);
+        modalClose.addEventListener("click", closeModal);
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        zoomInBtn.addEventListener("click", zoomIn);
+        zoomOutBtn.addEventListener("click", zoomOut);
+        zoomResetBtn.addEventListener("click", zoomReset);
+
+        // Keyboard in modal
+        window.addEventListener("keydown", (e) => {
+            if (!modalOpen()) return;
+
+            if (e.key === "Escape") closeModal();
+            if (e.key === "+" || e.key === "=") zoomIn();
+            if (e.key === "-" || e.key === "_") zoomOut();
+
+            // allow browsing while modal open
+            if (e.key === "ArrowRight") { next(); setTimeout(() => { if (modalOpen()) openModal(); }, 0); }
+            if (e.key === "ArrowLeft") { prev(); setTimeout(() => { if (modalOpen()) openModal(); }, 0); }
+        });
+
+        // Double tap/click to reset
+        let lastTap = 0;
+        zoomImg.addEventListener("click", () => {
+            const now = Date.now();
+            if (now - lastTap < 280) zoomReset();
+            lastTap = now;
+        });
+
+        // When slide changes, keep modal counter consistent
+        function refreshModalIfOpen() {
+            if (!modalOpen()) return;
+            const it = items[idx];
+            modalBadge.textContent = it?.title || "Comunicado";
+            updateModalCounter();
+            zoomImg.src = it.url;
+            scale = 1;
+            applyZoom();
+        }
+
+        // Hook into slide change
+        const _showSlide = showSlide;
+        showSlide = function () {
+            _showSlide();
+            refreshModalIfOpen();
+        }
+
+        // ==============================
+        // 7) Init
+        // ==============================
+        // Default area: try session, else first option
+        const defaultArea = session?.areaLabel || areaSel.value;
+        areaSel.value = defaultArea;
+        mountArea(defaultArea);
+    </script>
+
+    <!-- SW -->
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/comunicados/sw.js")
+                .then(() => console.log("✅ Service Worker registrado"))
+                .catch(err => console.error("❌ Error al registrar SW", err));
+        }
+    </script>
+</body>
+
+</html>
