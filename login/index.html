@@ -334,7 +334,7 @@
                     </div>
 
                     <div class="panel-foot">
-                        <img src="/img/logo-digital.png" alt="Digital Manufacturing" />
+                        <img src="/comunicados/img/logo-digital.png" alt="Digital Manufacturing" />
                     </div>
                 </div>
             </section>
@@ -454,7 +454,7 @@
                 }
 
                 if (isAdmin) {
-                    localStorage.setItem("session", JSON.stringify({ nomina, role: "admin", nombre: admin.nombre }));
+                    localStorage.setItem("session", JSON.stringify({ nomina, role: "admin" }));
                     setStatus("ok", "Acceso administrador. Entrando...");
                     setTimeout(() => (window.location.href = ADMIN_PAGE), 350);
                     return;
@@ -487,3 +487,4 @@
 
 
 </html>
+
