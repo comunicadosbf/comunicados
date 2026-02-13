@@ -117,7 +117,7 @@
             padding: 0 12px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, .35);
-            background: rgba(255, 255, 255, .08);
+            background: rgb(253, 3, 3);
             color: #fff;
             font-weight: 900;
             cursor: pointer;
@@ -512,8 +512,8 @@
 <body>
     <div class="topbar">
         <div class="topbar-inner">
-            <a class="brand" href="/comunicados/" title="Inicio">
-                <img src="/comunicados/img/bf.png" alt="Beiersdorf">
+            <a class="brand" href="" title="Inicio">
+                <img src="/comunicados/img/bf.png" alt="BF">
                 <span>COMUNICADOS</span>
             </a>
 
@@ -571,8 +571,8 @@
                     </div>
 
                     <div class="nav">
-                        <button class="btn btn-light" id="btnPrev" type="button">◀ ATRÁS</button>
-                        <button class="btn" id="btnNext" type="button">ADELANTE ▶</button>
+                        <button class="btn btn-light" id="btnPrev" type="button">◀️ ATRÁS</button>
+                        <button class="btn" id="btnNext" type="button">SIGUIENTE ▶️</button>
                     </div>
                 </div>
 
@@ -892,7 +892,7 @@
 
                 if (!items.length) {
                     showEmpty(
-                        `No hay comunicados en <b>${escapeHtml(areaLabel)}</b> por ahora.<br/>Vuelve luego (sí, esto también es parte del proceso 😅).`,
+                        `No hay comunicados en <b>${escapeHtml(areaLabel)}</b> por ahora.<br/>Vuelve luego 😅.`,
                         "Sin comunicados publicados."
                     );
                     return;
@@ -1018,3 +1018,4 @@
 </body>
 
 </html>
+
