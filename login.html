@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal de Comunicados | Login</title>
+
+    <style>
+        :root {
+            --bdf-blue: #0d1c84;
+            --bdf-blue-2: #0b1570;
+            --bdf-white: #ffffff;
+            --bdf-gray: #f4f6fb;
+            --text: #0b1220;
+
+            --radius: 16px;
+            --shadow: 0 18px 60px rgba(0, 0, 0, .18);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, .10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+            color: var(--text);
+            background: var(--bdf-gray);
+
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: var(--bdf-blue);
+            color: var(--bdf-white);
+            box-shadow: 0 5px 14px rgba(0, 0, 0, .18);
+        }
+
+        .topbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--bdf-white);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .brand img {
+            height: 28px;
+            width: auto;
+            display: block;
+        }
+
+        .topbar-line {
+            height: 5px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .05));
+        }
+
+        .footer {
+            background: var(--bdf-blue);
+            color: rgba(255, 255, 255, .92);
+            text-align: center;
+            padding: 10px 10px;
+            font-size: 12px;
+            letter-spacing: .2px;
+        }
+
+        .wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: min(1200px, 100%);
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: 14px;
+            padding: 16px;
+        }
+
+        .left {
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            background: #000;
+            position: relative;
+            height: calc(100vh - 60px - 46px - 32px);
+            min-height: 260px;
+            max-height: 620px;
+        }
+
+        .left img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .left::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(900px 500px at 30% 20%, rgba(255, 255, 255, .10), transparent 55%),
+                linear-gradient(135deg, rgba(13, 28, 132, .10), rgba(0, 0, 0, .08));
+            pointer-events: none;
+        }
+
+        .right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .panel {
+            width: 100%;
+            max-width: 520px;
+            background: var(--bdf-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, .06);
+            overflow: hidden;
+        }
+
+        .panel-head {
+            padding: 20px 22px 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, .06);
+            background: #fff;
+        }
+
+        .panel-head h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: .6px;
+            color: var(--bdf-blue);
+        }
+
+        .panel-head p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: rgba(11, 18, 32, .70);
+        }
+
+        .panel-body {
+            padding: 18px 22px 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: rgba(11, 18, 32, .75);
+            font-weight: 800;
+            letter-spacing: .2px;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: stretch;
+        }
+
+        input {
+            flex: 1 1 220px;
+            height: 46px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, .14);
+            padding: 0 14px;
+            font-size: 15px;
+            outline: none;
+            background: #fff;
+        }
+
+        input:focus {
+            border-color: rgba(13, 28, 132, .55);
+            box-shadow: 0 0 0 4px rgba(13, 28, 132, .12);
+        }
+
+        button {
+            height: 46px;
+            min-width: 140px;
+            padding: 0 18px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--bdf-blue), var(--bdf-blue-2));
+            color: white;
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(13, 28, 132, .25);
+        }
+
+        button:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .status {
+            margin-top: 14px;
+            padding: 12px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status.ok {
+            display: block;
+            background: rgba(46, 204, 113, .12);
+            border: 1px solid rgba(46, 204, 113, .25);
+            color: #1f6b3f;
+        }
+
+        .status.err {
+            display: block;
+            background: rgba(231, 76, 60, .10);
+            border: 1px solid rgba(231, 76, 60, .22);
+            color: #8b2b22;
+        }
+
+        .status.info {
+            display: block;
+            background: rgba(13, 28, 132, .10);
+            border: 1px solid rgba(13, 28, 132, .22);
+            color: #0b1b55;
+        }
+
+        .panel-foot {
+            padding: 14px 22px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid rgba(0, 0, 0, .06);
+            background: #fff;
+        }
+
+        .panel-foot img {
+            height: 94px;
+            width: auto;
+            display: block;
+            opacity: .95;
+        }
+
+        @media (max-width: 980px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .left {
+                min-height: 260px;
+            }
+
+            .panel {
+                max-width: 720px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .panel-head h1 {
+                font-size: 20px;
+            }
+
+            .brand img {
+                height: 26px;
+            }
+
+            button {
+                width: 100%;
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="#" onclick="return false;">
+                <img src="img/bf.png" alt="Beiersdorf" />
+            </a>
+        </div>
+        <div class="topbar-line"></div>
+    </div>
+
+    <div class="wrap">
+        <div class="container">
+
+            <section class="left" aria-label="Imagen portal">
+                <img src="img/comunicados.png" alt="Imagen de portal" />
+            </section>
+
+            <section class="right" aria-label="Acceso">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h1>PORTAL DE COMUNICADOS</h1>
+                        <p>Ingresa tu nómina para ver los comunicados.</p>
+                    </div>
+
+                    <div class="panel-body">
+                        <label for="nomina">Nómina</label>
+                        <div class="row">
+                            <input id="nomina" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 7067"
+                                maxlength="20" />
+                            <button id="btnLogin" type="button" onclick="login()">INGRESAR</button>
+                        </div>
+
+                        <div id="status" class="status"></div>
+                    </div>
+
+                    <div class="panel-foot">
+                        <img src="img/logo-digital.png" alt="Digital Manufacturing" />
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <div class="footer">© 2026. Todos los derechos reservados.</div>
+
+    <!-- ✅ Firebase + Login Logic (Web SDK) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+        // ==============================
+        // 1) CONFIG
+        // ==============================
+        const API_URL = "https://script.google.com/macros/s/AKfycbzAcZGJVBBLDSi0AfI5MMCDgpC1YmFRgjJItQWAmw2izTFLpk9o9eWQX5WrerowNOrG2A/exec";
+        const VIEWER_PAGE = "comunicados.html";
+        const ADMIN_PAGE = "admin.html";
+
+        // ⚠️ PEGA AQUÍ tu firebaseConfig REAL (Firebase Console > Project settings > SDK setup)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfYM_3V9lrxBOpfCwQ8ufjJ18IIpCf27w",
+            authDomain: "comunicadosbf.firebaseapp.com",
+            projectId: "comunicadosbf",
+            storageBucket: "comunicadosbf.firebasestorage.app",
+            messagingSenderId: "421516228476",
+            appId: "1:421516228476:web:ae11a0dcf588a9932c16f9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const $ = (id) => document.getElementById(id);
+
+        function setStatus(type, msg) {
+            const el = $("status");
+            if (!msg) {
+                el.className = "status";
+                el.textContent = "";
+                el.style.display = "none";
+                return;
+            }
+            el.className = "status " + type;
+            el.textContent = msg;
+            el.style.display = "block";
+        }
+
+        function setLoading(isLoading) {
+            const btn = $("btnLogin");
+            btn.disabled = isLoading;
+            btn.textContent = isLoading ? "VALIDANDO..." : "INGRESAR";
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") login();
+        });
+
+        // ==============================
+        // 2) Admin check (Firestore)
+        //    Admin/{nomina} -> { activo:true, rol:"admin" }
+        // ==============================
+        async function isAdmin(nomina) {
+            const ref = doc(db, "Admin", String(nomina));
+            const snap = await getDoc(ref);
+
+            if (!snap.exists()) return false;
+
+            const d = snap.data() || {};
+            if (d.activo === false) return false;
+
+            // tolerante: "admin" o "Admin"
+            const rol = String(d.rol || "").toLowerCase().trim();
+            return rol === "admin";
+        }
+
+        // ==============================
+        // 3) Login
+        // ==============================
+        async function login() {
+            const nomina = $("nomina").value.trim();
+
+            if (!nomina) {
+                setStatus("err", "Ingresa tu nómina.");
+                $("nomina").focus();
+                return;
+            }
+
+            setLoading(true);
+            setStatus("info", "Consultando acceso...");
+
+            try {
+                // A) Validar que exista en Sheets
+                const url = `${API_URL}?nomina=${encodeURIComponent(nomina)}&t=${Date.now()}`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (!data.ok) {
+                    setStatus("err", data.error || "No autorizado.");
+                    return;
+                }
+
+                // B) Si existe, revisar si es admin en Firestore
+                let admin = false;
+                try {
+                    admin = await isAdmin(nomina);
+                } catch (e) {
+                    // Si Firestore falla, por seguridad NO damos admin
+                    admin = false;
+                }
+
+                localStorage.setItem("session", JSON.stringify({
+                    nomina: data.nomina,
+                    role: admin ? "admin" : "viewer"
+                }));
+
+                setStatus("ok", admin ? "Acceso administrador. Entrando..." : "Acceso correcto. Entrando...");
+                setTimeout(() => window.location.href = admin ? ADMIN_PAGE : VIEWER_PAGE, 450);
+
+            } catch (err) {
+                setStatus("err", "Error de conexión. Revisa tu internet o la publicación del Web App.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Necesario porque tu botón usa onclick="login()"
+        window.login = login;
+    </script>
+</body>
+
+</html>
