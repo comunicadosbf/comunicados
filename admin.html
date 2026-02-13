@@ -96,15 +96,19 @@
             white-space: nowrap;
         }
 
-        .btn-ghost {
+        .btn-logout {
             height: 34px;
             padding: 0 12px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, .35);
-            background: transparent;
+            background: rgba(231, 76, 60, .18);
             color: #fff;
-            font-weight: 800;
+            font-weight: 900;
             cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background: rgba(231, 76, 60, .28);
         }
 
         .footer {
@@ -435,7 +439,7 @@
 
             <div class="header-actions">
                 <div class="chip" id="chipUser">Admin</div>
-                <button class="btn-ghost" id="btnLogout" type="button">Salir</button>
+                <button class="btn-logout" id="btnLogout" type="button">Salir</button>
             </div>
         </div>
         <div class="topbar-line"></div>
@@ -506,7 +510,9 @@
                 <div class="toolbar">
                     <div class="toolbar-left">
                         <label for="areaList"
-                            style="margin:0; font-size:12px; font-weight:900; color:rgba(11,18,32,.72)">Área:</label>
+                            style="margin:0; font-size:12px; font-weight:900; color:rgba(11,18,32,.72)">
+                            Área:
+                        </label>
                         <select id="areaList" name="areaList" aria-label="Seleccionar área">
                             <option value="Agave">Agave</option>
                             <option value="Almacén">Almacén</option>
@@ -541,10 +547,26 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
         import {
-            getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, doc, deleteDoc, serverTimestamp
+            getFirestore,
+            collection,
+            addDoc,
+            query,
+            where,
+            orderBy,
+            onSnapshot,
+            doc,
+            deleteDoc,
+            serverTimestamp,
+            getDocs,
+            limit
         } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
         import {
-            getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject
+            getStorage,
+            ref as sRef,
+            uploadBytes,
+            getDownloadURL,
+            deleteObject,
+            listAll
         } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
         // ==============================
@@ -555,7 +577,9 @@
             window.location.href = "login.html";
         }
 
-        document.getElementById("chipUser").textContent = `Admin · ${session?.nomina || ""}`;
+        const adminName = session?.nombre || session?.name || "Admin";
+        const adminNomina = session?.nomina ? String(session.nomina) : "";
+        document.getElementById("chipUser").textContent = `${adminName}${adminNomina ? " · " + adminNomina : ""}`;
 
         document.getElementById("btnLogout").addEventListener("click", () => {
             localStorage.removeItem("session");
@@ -611,7 +635,6 @@
         }
 
         function slugArea(areaLabel) {
-            // Debe coincidir con tus carpetas en storage: agave, almacen, shes, etc.
             const map = {
                 "Agave": "agave",
                 "Almacén": "almacen",
@@ -632,9 +655,8 @@
         }
 
         function safeFilename(name) {
-            // Mantenerlo simple para storage
             return String(name || "archivo")
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita acentos
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                 .replace(/[^\w.\-]+/g, "_");
         }
 
@@ -712,75 +734,142 @@
             setStatus("info", "Subiendo imagen...");
 
             try {
-                // A) title = filename sin extension
                 const title = fileBaseName(selectedFile.name);
 
-                // B) storage path: comunicados/{areaSlug}/{timestamp}_{filename}
                 const areaSlug = slugArea(areaLabel);
                 const ts = Date.now();
                 const safeName = safeFilename(selectedFile.name);
                 const path = `comunicados/${areaSlug}/${ts}_${safeName}`;
 
-                // C) upload + url
                 const fileRef = sRef(storage, path);
                 await uploadBytes(fileRef, selectedFile, { contentType: selectedFile.type });
                 const url = await getDownloadURL(fileRef);
 
-                // D) Firestore doc (colección Comunicados)
                 await addDoc(collection(db, "Comunicados"), {
-                    area: areaSlug,        // guardamos el slug para filtrar directo
-                    areaLabel: areaLabel,  // y también el nombre bonito
+                    area: areaSlug,
+                    areaLabel: areaLabel,
                     title,
                     url,
                     storagePath: path,
                     createdAt: serverTimestamp(),
-                    createdBy: String(session?.nomina || "")
+                    createdBy: String(session?.nomina || ""),
+                    createdByName: String(adminName || "")
                 });
 
                 setStatus("ok", "Publicado ✅");
                 $("btnClear").click();
 
+                // refresca lista al área actual
+                mountListListener();
+
             } catch (err) {
                 console.error(err);
-                setStatus("err", "No se pudo publicar. Revisa reglas de Storage/Firestore o CORS.");
+                setStatus("err", "No se pudo publicar. Revisa reglas de Storage/Firestore.");
             } finally {
                 setLoading(false);
             }
         }
 
         // ==============================
-        // 5) List (Realtime) + delete
+        // 5) List (Firestore first, fallback Storage) + delete
         // ==============================
         let currentUnsub = null;
+        let lastItems = []; // cache para búsqueda sin re-suscribirse
 
         function mountListListener() {
             if (currentUnsub) currentUnsub();
 
-            const area = $("areaList").value;
+            const areaLabel = $("areaList").value;       // "Agave"
+            const areaSlug = slugArea(areaLabel);        // "agave"
+
+            $("list").innerHTML = `
+        <div style="grid-column:1/-1; padding:16px; color:rgba(11,18,32,.65);">
+          Cargando...
+        </div>`;
 
             const qy = query(
                 collection(db, "Comunicados"),
-                where("area", "==", area),
+                where("area", "==", areaSlug),
                 orderBy("createdAt", "desc")
             );
 
-            currentUnsub = onSnapshot(qy, (snap) => {
-                const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderList(items);
-            }, (err) => {
+            currentUnsub = onSnapshot(qy, async (snap) => {
+                const items = snap.docs.map(d => ({ id: d.id, ...d.data(), _source: "firestore" }));
+                lastItems = items;
+                renderList(lastItems);
+
+                // Si Firestore no trae nada, intentamos listar desde Storage (para archivos viejos sin doc)
+                if (!items.length) {
+                    const storageItems = await listFromStorage(areaSlug);
+                    lastItems = storageItems;
+                    renderList(lastItems);
+                }
+
+            }, async (err) => {
                 console.error(err);
-                $("list").innerHTML = `
-          <div style="grid-column:1/-1; padding:14px; color:#8b2b22; font-weight:800;">
-            Error cargando comunicados. Revisa reglas o índice en Firestore.
-          </div>`;
+
+                // si Firestore falla por reglas/índice, igual intentamos Storage
+                const storageItems = await listFromStorage(areaSlug);
+                lastItems = storageItems;
+                renderList(lastItems);
+
+                if (!storageItems.length) {
+                    $("list").innerHTML = `
+            <div style="grid-column:1/-1; padding:14px; color:#8b2b22; font-weight:800;">
+              Error cargando comunicados. Revisa reglas o índice en Firestore.
+            </div>`;
+                }
             });
+        }
+
+        async function listFromStorage(areaSlug) {
+            try {
+                const folderRef = sRef(storage, `comunicados/${areaSlug}`);
+                const res = await listAll(folderRef);
+
+                // armamos items “tipo firestore” pero marcados como storage
+                const rows = await Promise.all(res.items.map(async (itemRef) => {
+                    const url = await getDownloadURL(itemRef);
+                    const fullPath = itemRef.fullPath; // comunicados/agave/xxx.png
+                    const name = itemRef.name;         // xxx.png
+
+                    // intenta sacar título desde el nombre (quita timestamp_ si existe)
+                    const cleaned = name.replace(/^\d+_/, "");
+                    const title = fileBaseName(cleaned);
+
+                    return {
+                        id: null,                 // no hay doc
+                        area: areaSlug,
+                        areaLabel: areaSlug,
+                        title,
+                        url,
+                        storagePath: fullPath,
+                        createdAt: null,
+                        createdBy: "—",
+                        _source: "storage"
+                    };
+                }));
+
+                // orden visual: más “nuevo” primero si trae timestamp al inicio
+                rows.sort((a, b) => {
+                    const ta = parseInt((a.storagePath.split("/").pop() || "").split("_")[0] || "0", 10);
+                    const tb = parseInt((b.storagePath.split("/").pop() || "").split("_")[0] || "0", 10);
+                    return tb - ta;
+                });
+
+                return rows;
+            } catch (e) {
+                console.error("Storage listAll error:", e);
+                return [];
+            }
         }
 
         function renderList(items) {
             const term = ($("search").value || "").toLowerCase().trim();
             const filtered = !term ? items : items.filter(x =>
                 String(x.title || "").toLowerCase().includes(term) ||
-                String(x.createdBy || "").toLowerCase().includes(term)
+                String(x.createdBy || "").toLowerCase().includes(term) ||
+                String(x.createdByName || "").toLowerCase().includes(term)
             );
 
             if (!filtered.length) {
@@ -793,6 +882,14 @@
 
             $("list").innerHTML = filtered.map(x => {
                 const dateStr = x.createdAt?.toDate ? x.createdAt.toDate().toLocaleString() : "";
+                const sourceBadge = x._source === "storage"
+                    ? `<div class="sub">Fuente: Storage (sin doc)</div>`
+                    : ``;
+
+                const author = x.createdByName
+                    ? `${escapeHtml(String(x.createdByName))}${x.createdBy ? " · " + escapeHtml(String(x.createdBy)) : ""}`
+                    : escapeHtml(String(x.createdBy || "—"));
+
                 return `
           <div class="item">
             <div class="thumb">
@@ -800,11 +897,16 @@
             </div>
             <div class="meta">
               <div class="title">${escapeHtml(x.title || "Sin título")}</div>
-              <div class="sub">Por: ${escapeHtml(String(x.createdBy || "—"))}</div>
-              <div class="sub">${escapeHtml(dateStr)}</div>
+              <div class="sub">Por: ${author}</div>
+              ${dateStr ? `<div class="sub">${escapeHtml(dateStr)}</div>` : ``}
+              ${sourceBadge}
               <div class="row2">
                 <button class="btn-mini" data-open="${x.url}">Abrir</button>
-                <button class="btn-mini btn-danger" data-del="${x.id}" data-path="${x.storagePath || ""}">Eliminar</button>
+                <button class="btn-mini btn-danger" data-del="1"
+                  data-docid="${x.id || ""}"
+                  data-path="${escapeHtml(x.storagePath || "")}">
+                  Eliminar
+                </button>
               </div>
             </div>
           </div>
@@ -817,9 +919,9 @@
 
             document.querySelectorAll("[data-del]").forEach(btn => {
                 btn.addEventListener("click", async () => {
-                    const id = btn.getAttribute("data-del");
-                    const path = btn.getAttribute("data-path");
-                    await removeItem(id, path);
+                    const docId = btn.getAttribute("data-docid") || null;
+                    const path = btn.getAttribute("data-path") || "";
+                    await removeItem(docId, path);
                 });
             });
         }
@@ -830,15 +932,32 @@
             try {
                 setStatus("info", "Eliminando...");
 
-                // 1) Firestore
-                await deleteDoc(doc(db, "Comunicados", docId));
+                // 1) Si hay docId, borramos el doc
+                if (docId) {
+                    await deleteDoc(doc(db, "Comunicados", docId));
+                } else {
+                    // Si no hay doc, intentamos encontrar uno por storagePath (por si el UI vino de Storage)
+                    if (storagePath) {
+                        const qy = query(
+                            collection(db, "Comunicados"),
+                            where("storagePath", "==", storagePath),
+                            limit(1)
+                        );
+                        const snap = await getDocs(qy);
+                        if (!snap.empty) {
+                            await deleteDoc(doc(db, "Comunicados", snap.docs[0].id));
+                        }
+                    }
+                }
 
-                // 2) Storage
+                // 2) Borramos Storage siempre (es lo que sí o sí quieres quitar)
                 if (storagePath) {
                     await deleteObject(sRef(storage, storagePath));
                 }
 
                 setStatus("ok", "Eliminado ✅");
+                mountListListener();
+
             } catch (err) {
                 console.error(err);
                 setStatus("err", "No se pudo eliminar. Revisa reglas de Storage/Firestore.");
@@ -849,14 +968,14 @@
         // 6) Events
         // ==============================
         $("areaList").addEventListener("change", mountListListener);
+
         $("search").addEventListener("input", () => {
-            // no remonta listener (evita flicker), solo vuelve a pintar con los actuales
-            // pero como onSnapshot ya hizo renderList, guardamos items no; simple: re-mount
-            mountListListener();
+            // filtra sobre cache sin resetear listener
+            renderList(lastItems);
         });
 
-        // init
-        $("areaList").value = slugArea($("area").value);
+        // init: misma área a ambos selects (label), pero query usa slug internamente
+        $("areaList").value = $("area").value;
         mountListListener();
     </script>
 </body>
