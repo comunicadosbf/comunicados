@@ -23,8 +23,14 @@
             --shadow-soft: 0 10px 30px rgba(0, 0, 0, .10);
         }
 
-        * { box-sizing: border-box }
-        html, body { height: 100% }
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
 
         body {
             margin: 0;
@@ -64,7 +70,11 @@
             user-select: none
         }
 
-        .brand img { height: 28px; width: auto; display: block }
+        .brand img {
+            height: 28px;
+            width: auto;
+            display: block
+        }
 
         .topbar-line {
             height: 5px;
@@ -80,7 +90,12 @@
             letter-spacing: .2px
         }
 
-        .wrap { flex: 1; display: flex; align-items: center; justify-content: center }
+        .wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
 
         .container {
             width: min(1200px, 100%);
@@ -90,18 +105,33 @@
             padding: 16px
         }
 
+        /* ✅ FIX: contenedor responsivo y estética */
         .left {
             border-radius: var(--radius);
             overflow: hidden;
             box-shadow: var(--shadow-soft);
-            background: #000;
             position: relative;
-            height: calc(100vh - 60px - 46px - 32px);
-            min-height: 260px;
-            max-height: 620px
+
+            /* Antes: height calc(...) rígido que en móvil te mata */
+            height: clamp(260px, 45vh, 620px);
+
+            /* Fondo pro para el espacio cuando use contain */
+            background:
+                radial-gradient(900px 500px at 30% 20%, rgba(255, 255, 255, .22), transparent 55%),
+                linear-gradient(135deg, rgba(13, 28, 132, .18), rgba(0, 0, 0, .06)),
+                #0b1570;
         }
 
-        .left img { width: 100%; height: 100%; object-fit: cover; display: block }
+        /* ✅ FIX: que se vea completa, sin recorte */
+        .left img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* <-- clave */
+            object-position: center;
+            display: block;
+            background: transparent;
+        }
 
         .left::after {
             content: "";
@@ -109,11 +139,16 @@
             inset: 0;
             background:
                 radial-gradient(900px 500px at 30% 20%, rgba(255, 255, 255, .10), transparent 55%),
-                linear-gradient(135deg, rgba(13, 28, 132, .10), rgba(0, 0, 0, .08));
+                linear-gradient(135deg, rgba(13, 28, 132, .12), rgba(0, 0, 0, .08));
             pointer-events: none
         }
 
-        .right { display: flex; align-items: center; justify-content: center; padding: 0 }
+        .right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0
+        }
 
         .panel {
             width: 100%;
@@ -138,9 +173,15 @@
             color: var(--bdf-blue)
         }
 
-        .panel-head p { margin: 6px 0 0; font-size: 13px; color: rgba(11, 18, 32, .70) }
+        .panel-head p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: rgba(11, 18, 32, .70)
+        }
 
-        .panel-body { padding: 18px 22px 18px }
+        .panel-body {
+            padding: 18px 22px 18px
+        }
 
         label {
             display: block;
@@ -151,7 +192,12 @@
             letter-spacing: .2px
         }
 
-        .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch }
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: stretch
+        }
 
         input {
             flex: 1 1 220px;
@@ -184,7 +230,11 @@
             box-shadow: 0 10px 24px rgba(13, 28, 132, .25)
         }
 
-        button:disabled { opacity: .65; cursor: not-allowed; box-shadow: none }
+        button:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+            box-shadow: none
+        }
 
         .status {
             margin-top: 14px;
@@ -224,18 +274,43 @@
             background: #fff
         }
 
-        .panel-foot img { height: 94px; width: auto; display: block; opacity: .95 }
+        .panel-foot img {
+            height: 94px;
+            width: auto;
+            display: block;
+            opacity: .95
+        }
 
         @media (max-width:980px) {
-            .container { grid-template-columns: 1fr }
-            .left { min-height: 260px }
-            .panel { max-width: 720px }
+            .container {
+                grid-template-columns: 1fr
+            }
+
+            /* ✅ En móvil: que la imagen NO sea un monstruo, pero sí completa */
+            .left {
+                height: clamp(220px, 38vh, 420px);
+                aspect-ratio: 4 / 3;
+                /* ayuda a mantener proporción */
+            }
+
+            .panel {
+                max-width: 720px
+            }
         }
 
         @media (max-width:420px) {
-            .panel-head h1 { font-size: 20px }
-            .brand img { height: 26px }
-            button { width: 100%; min-width: unset }
+            .panel-head h1 {
+                font-size: 20px
+            }
+
+            .brand img {
+                height: 26px
+            }
+
+            button {
+                width: 100%;
+                min-width: unset
+            }
         }
     </style>
 </head>
@@ -266,8 +341,8 @@
                     <div class="panel-body">
                         <label for="nomina">Nómina</label>
                         <div class="row">
-                            <input id="nomina" type="text" inputmode="numeric" autocomplete="off"
-                                placeholder="Ej. 7067" maxlength="20" />
+                            <input id="nomina" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej. 7067"
+                                maxlength="20" />
                             <button id="btnLogin" type="button" onclick="login()">INGRESAR</button>
                         </div>
                         <div id="status" class="status"></div>
@@ -287,10 +362,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-        // ========= CONFIG =========
         const API_URL = "https://script.google.com/macros/s/AKfycbzAcZGJVBBLDSi0AfI5MMCDgpC1YmFRgjJItQWAmw2izTFLpk9o9eWQX5WrerowNOrG2A/exec";
         const VIEWER_PAGE = "/comunicados/comunicados/";
-        const ADMIN_PAGE  = "/comunicados/admin/";   // ✅ FIX
+        const ADMIN_PAGE = "/comunicados/admin/";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDfYM_3V9lrxBOpfCwQ8ufjJ18IIpCf27w",
@@ -396,7 +470,6 @@
     </script>
 
     <script>
-        // ✅ FIX: registra el SW desde la raíz del repo en GitHub Pages
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("/comunicados/sw.js")
                 .then(() => console.log("✅ Service Worker registrado"))
@@ -405,7 +478,5 @@
     </script>
 
 </body>
+
 </html>
-
-
-
