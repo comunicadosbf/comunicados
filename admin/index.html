@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portal de Comunicados</title>
 
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/img/icon-192.png" type="image/png">
-    <link rel="apple-touch-icon" href="/img/icon-512.png" sizes="512x512">
+    <!-- ✅ GitHub Pages repo: /comunicados -->
+    <link rel="manifest" href="/comunicados/manifest.json">
+    <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
 
     <style>
         :root {
@@ -24,14 +25,8 @@
             --border: 1px solid rgba(0, 0, 0, .08);
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            height: 100%;
-        }
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
 
         body {
             margin: 0;
@@ -43,7 +38,6 @@
             flex-direction: column;
         }
 
-        /* ===== HEADER / FOOTER ===== */
         .topbar {
             background: var(--bdf-blue);
             color: var(--bdf-white);
@@ -66,9 +60,6 @@
             gap: 12px;
             text-decoration: none;
             color: var(--bdf-white);
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
         }
 
@@ -111,9 +102,7 @@
             cursor: pointer;
         }
 
-        .btn-logout:hover {
-            background: rgba(231, 76, 60, .28);
-        }
+        .btn-logout:hover { background: rgba(231, 76, 60, .28); }
 
         .footer {
             background: var(--bdf-blue);
@@ -124,7 +113,6 @@
             letter-spacing: .2px;
         }
 
-        /* ===== LAYOUT ===== */
         .wrap {
             flex: 1;
             display: flex;
@@ -155,8 +143,7 @@
             background: #fff;
         }
 
-        .card-head h1,
-        .card-head h2 {
+        .card-head h1, .card-head h2 {
             margin: 0;
             font-size: 18px;
             letter-spacing: .4px;
@@ -169,13 +156,9 @@
             color: rgba(11, 18, 32, .70);
         }
 
-        .card-body {
-            padding: 16px 18px 18px;
-        }
+        .card-body { padding: 16px 18px 18px; }
 
-        .field {
-            margin-bottom: 12px;
-        }
+        .field { margin-bottom: 12px; }
 
         label {
             display: block;
@@ -186,8 +169,7 @@
             letter-spacing: .2px;
         }
 
-        select,
-        input[type="file"] {
+        select, input[type="file"] {
             width: 100%;
             height: 46px;
             border-radius: 12px;
@@ -198,16 +180,9 @@
             background: #fff;
         }
 
-        input[type="file"] {
-            padding: 10px 12px;
-            height: auto;
-        }
+        input[type="file"] { padding: 10px 12px; height: auto; }
 
-        .help {
-            margin-top: 6px;
-            font-size: 12px;
-            color: rgba(11, 18, 32, .62);
-        }
+        .help { margin-top: 6px; font-size: 12px; color: rgba(11, 18, 32, .62); }
 
         .preview {
             margin-top: 14px;
@@ -231,12 +206,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, .10);
         }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 14px;
-            flex-wrap: wrap;
-        }
+        .actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 
         .btn {
             height: 46px;
@@ -253,11 +223,7 @@
             min-width: 160px;
         }
 
-        .btn:disabled {
-            opacity: .6;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+        .btn:disabled { opacity: .6; cursor: not-allowed; box-shadow: none; }
 
         .btn-light {
             background: #fff;
@@ -295,7 +261,6 @@
             color: #0b1b55;
         }
 
-        /* ===== LIST ===== */
         .toolbar {
             display: flex;
             align-items: center;
@@ -307,12 +272,7 @@
             flex-wrap: wrap;
         }
 
-        .toolbar-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+        .toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
         .search {
             height: 40px;
@@ -351,12 +311,7 @@
             overflow: hidden;
         }
 
-        .thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+        .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         .meta {
             padding: 10px 12px 12px;
@@ -373,17 +328,9 @@
             line-height: 1.25;
         }
 
-        .meta .sub {
-            font-size: 12px;
-            color: rgba(11, 18, 32, .65);
-        }
+        .meta .sub { font-size: 12px; color: rgba(11, 18, 32, .65); }
 
-        .meta .row2 {
-            display: flex;
-            gap: 8px;
-            margin-top: auto;
-            flex-wrap: wrap;
-        }
+        .meta .row2 { display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap; }
 
         .btn-mini {
             height: 34px;
@@ -402,43 +349,26 @@
             background: rgba(231, 76, 60, .06);
         }
 
-        /* ===== Responsive ===== */
         @media (max-width: 1100px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .list {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .grid { grid-template-columns: 1fr; }
+            .list { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 560px) {
-            .list {
-                grid-template-columns: 1fr;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .actions {
-                flex-direction: column;
-            }
-
-            .search {
-                width: 100%;
-            }
+            .list { grid-template-columns: 1fr; }
+            .btn { width: 100%; }
+            .actions { flex-direction: column; }
+            .search { width: 100%; }
         }
     </style>
 </head>
 
 <body>
-    <!-- HEADER -->
     <div class="topbar">
         <div class="topbar-inner">
-            <a class="brand" href="" title="Volver">
-                <img src="/img/bf.png" alt="Beiersdorf" />
+            <!-- ✅ Logo correcto -->
+            <a class="brand" href="/comunicados/" title="Volver">
+                <img src="/comunicados/img/bf.png" alt="Beiersdorf" />
             </a>
 
             <div class="header-actions">
@@ -449,11 +379,9 @@
         <div class="topbar-line"></div>
     </div>
 
-    <!-- BODY -->
     <div class="wrap">
         <div class="grid">
 
-            <!-- Left: Upload -->
             <section class="card" aria-label="Publicar comunicado">
                 <div class="card-head">
                     <h1>ADMIN · COMUNICADOS</h1>
@@ -504,7 +432,6 @@
                 </div>
             </section>
 
-            <!-- Right: List -->
             <section class="card" aria-label="Comunicados por área">
                 <div class="card-head">
                     <h2>COMUNICADOS PUBLICADOS</h2>
@@ -544,10 +471,8 @@
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <div class="footer">© 2026. Todos los derechos reservados.</div>
+    <div class="footer">©️ 2026. Todos los derechos reservados.</div>
 
-    <!-- Firebase + Admin logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
         import {
@@ -574,11 +499,11 @@
         } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
         // ==============================
-        // 0) Session guard (NO Firebase Auth)
+        // 0) Session guard
         // ==============================
         const session = JSON.parse(localStorage.getItem("session") || "null");
         if (!session || session.role !== "admin") {
-            window.location.href = "/login/";
+            window.location.href = "/comunicados/login/"; // ✅ FIX
         }
 
         const adminName = session?.nombre || session?.name || "Admin";
@@ -587,11 +512,11 @@
 
         document.getElementById("btnLogout").addEventListener("click", () => {
             localStorage.removeItem("session");
-            window.location.href = "/login/";
+            window.location.href = "/comunicados/login/"; // ✅ FIX
         });
 
         // ==============================
-        // 1) Firebase Config (tu config real)
+        // 1) Firebase Config
         // ==============================
         const firebaseConfig = {
             apiKey: "AIzaSyDfYM_3V9lrxBOpfCwQ8ufjJ18IIpCf27w",
@@ -606,9 +531,6 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // ==============================
-        // 2) UI helpers
-        // ==============================
         const $ = (id) => document.getElementById(id);
 
         function setStatus(type, msg) {
@@ -629,14 +551,8 @@
             $("btnPublish").textContent = isLoading ? "SUBIENDO..." : "PUBLICAR";
         }
 
-        function fileBaseName(filename) {
-            return filename.replace(/\.[^/.]+$/, "");
-        }
-
-        function isAllowedType(file) {
-            const ok = ["image/png", "image/jpeg", "image/webp"];
-            return ok.includes(file.type);
-        }
+        function fileBaseName(filename) { return filename.replace(/\.[^/.]+$/, ""); }
+        function isAllowedType(file) { return ["image/png", "image/jpeg", "image/webp"].includes(file.type); }
 
         function slugArea(areaLabel) {
             const map = {
@@ -674,9 +590,6 @@
             }[m]));
         }
 
-        // ==============================
-        // 3) Preview + selected file
-        // ==============================
         let selectedFile = null;
 
         $("file").addEventListener("change", (e) => {
@@ -717,29 +630,19 @@
             setStatus("", "");
         });
 
-        // ==============================
-        // 4) Publish: Storage + Firestore
-        // ==============================
         $("btnPublish").addEventListener("click", publish);
 
         async function publish() {
             const areaLabel = $("area").value;
 
-            if (!selectedFile) {
-                setStatus("err", "Selecciona una imagen.");
-                return;
-            }
-            if (!isAllowedType(selectedFile)) {
-                setStatus("err", "Formato no permitido. Usa PNG, JPG o WEBP.");
-                return;
-            }
+            if (!selectedFile) { setStatus("err", "Selecciona una imagen."); return; }
+            if (!isAllowedType(selectedFile)) { setStatus("err", "Formato no permitido. Usa PNG, JPG o WEBP."); return; }
 
             setLoading(true);
             setStatus("info", "Subiendo imagen...");
 
             try {
                 const title = fileBaseName(selectedFile.name);
-
                 const areaSlug = slugArea(areaLabel);
                 const ts = Date.now();
                 const safeName = safeFilename(selectedFile.name);
@@ -762,10 +665,7 @@
 
                 setStatus("ok", "Publicado ✅");
                 $("btnClear").click();
-
-                // refresca lista al área actual
                 mountListListener();
-
             } catch (err) {
                 console.error(err);
                 setStatus("err", "No se pudo publicar. Revisa reglas de Storage/Firestore.");
@@ -774,22 +674,19 @@
             }
         }
 
-        // ==============================
-        // 5) List (Firestore first, fallback Storage) + delete
-        // ==============================
         let currentUnsub = null;
-        let lastItems = []; // cache para búsqueda sin re-suscribirse
+        let lastItems = [];
 
         function mountListListener() {
             if (currentUnsub) currentUnsub();
 
-            const areaLabel = $("areaList").value;       // "Agave"
-            const areaSlug = slugArea(areaLabel);        // "agave"
+            const areaLabel = $("areaList").value;
+            const areaSlug = slugArea(areaLabel);
 
             $("list").innerHTML = `
-        <div style="grid-column:1/-1; padding:16px; color:rgba(11,18,32,.65);">
-          Cargando...
-        </div>`;
+                <div style="grid-column:1/-1; padding:16px; color:rgba(11,18,32,.65);">
+                    Cargando...
+                </div>`;
 
             const qy = query(
                 collection(db, "Comunicados"),
@@ -802,26 +699,23 @@
                 lastItems = items;
                 renderList(lastItems);
 
-                // Si Firestore no trae nada, intentamos listar desde Storage (para archivos viejos sin doc)
                 if (!items.length) {
                     const storageItems = await listFromStorage(areaSlug);
                     lastItems = storageItems;
                     renderList(lastItems);
                 }
-
             }, async (err) => {
                 console.error(err);
 
-                // si Firestore falla por reglas/índice, igual intentamos Storage
                 const storageItems = await listFromStorage(areaSlug);
                 lastItems = storageItems;
                 renderList(lastItems);
 
                 if (!storageItems.length) {
                     $("list").innerHTML = `
-            <div style="grid-column:1/-1; padding:14px; color:#8b2b22; font-weight:800;">
-              Error cargando comunicados. Revisa reglas o índice en Firestore.
-            </div>`;
+                        <div style="grid-column:1/-1; padding:14px; color:#8b2b22; font-weight:800;">
+                            Error cargando comunicados. Revisa reglas o índice en Firestore.
+                        </div>`;
                 }
             });
         }
@@ -831,18 +725,16 @@
                 const folderRef = sRef(storage, `comunicados/${areaSlug}`);
                 const res = await listAll(folderRef);
 
-                // armamos items “tipo firestore” pero marcados como storage
                 const rows = await Promise.all(res.items.map(async (itemRef) => {
                     const url = await getDownloadURL(itemRef);
-                    const fullPath = itemRef.fullPath; // comunicados/agave/xxx.png
-                    const name = itemRef.name;         // xxx.png
+                    const fullPath = itemRef.fullPath;
+                    const name = itemRef.name;
 
-                    // intenta sacar título desde el nombre (quita timestamp_ si existe)
                     const cleaned = name.replace(/^\d+_/, "");
                     const title = fileBaseName(cleaned);
 
                     return {
-                        id: null,                 // no hay doc
+                        id: null,
                         area: areaSlug,
                         areaLabel: areaSlug,
                         title,
@@ -854,7 +746,6 @@
                     };
                 }));
 
-                // orden visual: más “nuevo” primero si trae timestamp al inicio
                 rows.sort((a, b) => {
                     const ta = parseInt((a.storagePath.split("/").pop() || "").split("_")[0] || "0", 10);
                     const tb = parseInt((b.storagePath.split("/").pop() || "").split("_")[0] || "0", 10);
@@ -878,43 +769,41 @@
 
             if (!filtered.length) {
                 $("list").innerHTML = `
-          <div style="grid-column:1/-1; padding:16px; color:rgba(11,18,32,.65);">
-            No hay comunicados en esta área (o no coincide tu búsqueda).
-          </div>`;
+                    <div style="grid-column:1/-1; padding:16px; color:rgba(11,18,32,.65);">
+                        No hay comunicados en esta área (o no coincide tu búsqueda).
+                    </div>`;
                 return;
             }
 
             $("list").innerHTML = filtered.map(x => {
                 const dateStr = x.createdAt?.toDate ? x.createdAt.toDate().toLocaleString() : "";
-                const sourceBadge = x._source === "storage"
-                    ? `<div class="sub">Fuente: Storage (sin doc)</div>`
-                    : ``;
+                const sourceBadge = x._source === "storage" ? `<div class="sub">Fuente: Storage (sin doc)</div>` : ``;
 
                 const author = x.createdByName
                     ? `${escapeHtml(String(x.createdByName))}${x.createdBy ? " · " + escapeHtml(String(x.createdBy)) : ""}`
                     : escapeHtml(String(x.createdBy || "—"));
 
                 return `
-          <div class="item">
-            <div class="thumb">
-              <img src="${x.url}" alt="${escapeHtml(x.title || "")}">
-            </div>
-            <div class="meta">
-              <div class="title">${escapeHtml(x.title || "Sin título")}</div>
-              <div class="sub">Por: ${author}</div>
-              ${dateStr ? `<div class="sub">${escapeHtml(dateStr)}</div>` : ``}
-              ${sourceBadge}
-              <div class="row2">
-                <button class="btn-mini" data-open="${x.url}">Abrir</button>
-                <button class="btn-mini btn-danger" data-del="1"
-                  data-docid="${x.id || ""}"
-                  data-path="${escapeHtml(x.storagePath || "")}">
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
+                    <div class="item">
+                        <div class="thumb">
+                            <img src="${x.url}" alt="${escapeHtml(x.title || "")}">
+                        </div>
+                        <div class="meta">
+                            <div class="title">${escapeHtml(x.title || "Sin título")}</div>
+                            <div class="sub">Por: ${author}</div>
+                            ${dateStr ? `<div class="sub">${escapeHtml(dateStr)}</div>` : ``}
+                            ${sourceBadge}
+                            <div class="row2">
+                                <button class="btn-mini" data-open="${x.url}">Abrir</button>
+                                <button class="btn-mini btn-danger" data-del="1"
+                                    data-docid="${x.id || ""}"
+                                    data-path="${escapeHtml(x.storagePath || "")}">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }).join("");
 
             document.querySelectorAll("[data-open]").forEach(btn => {
@@ -936,11 +825,9 @@
             try {
                 setStatus("info", "Eliminando...");
 
-                // 1) Si hay docId, borramos el doc
                 if (docId) {
                     await deleteDoc(doc(db, "Comunicados", docId));
                 } else {
-                    // Si no hay doc, intentamos encontrar uno por storagePath (por si el UI vino de Storage)
                     if (storagePath) {
                         const qy = query(
                             collection(db, "Comunicados"),
@@ -954,43 +841,33 @@
                     }
                 }
 
-                // 2) Borramos Storage siempre (es lo que sí o sí quieres quitar)
                 if (storagePath) {
                     await deleteObject(sRef(storage, storagePath));
                 }
 
                 setStatus("ok", "Eliminado ✅");
                 mountListListener();
-
             } catch (err) {
                 console.error(err);
                 setStatus("err", "No se pudo eliminar. Revisa reglas de Storage/Firestore.");
             }
         }
 
-        // ==============================
-        // 6) Events
-        // ==============================
         $("areaList").addEventListener("change", mountListListener);
+        $("search").addEventListener("input", () => renderList(lastItems));
 
-        $("search").addEventListener("input", () => {
-            // filtra sobre cache sin resetear listener
-            renderList(lastItems);
-        });
-
-        // init: misma área a ambos selects (label), pero query usa slug internamente
         $("areaList").value = $("area").value;
         mountListListener();
     </script>
 
     <script>
+        // ✅ FIX: SW desde raíz del repo
         if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("sw.js")
+            navigator.serviceWorker.register("/comunicados/sw.js")
                 .then(() => console.log("✅ Service Worker registrado"))
                 .catch(err => console.error("❌ Error al registrar SW", err));
         }
     </script>
 
 </body>
-
 </html>
