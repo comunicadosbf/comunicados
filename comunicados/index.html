@@ -2,1121 +2,1248 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Comunicados</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comunicados</title>
 
-    <!-- ✅ App vive en /comunicados/ -->
-    <link rel="manifest" href="/comunicados/manifest.json">
-    <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
-    <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
+  <!-- ✅ App vive en /comunicados/ -->
+  <link rel="manifest" href="/comunicados/manifest.json">
+  <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
 
-    <style>
-        :root {
-            --bdf-blue: #0d1c84;
-            --bdf-blue-2: #0b1570;
-            --bdf-gray: #f4f6fb;
-            --text: #0b1220;
-            --white: #fff;
-            --radius: 16px;
-            --shadow: 0 18px 60px rgba(0, 0, 0, .18);
-            --shadow-soft: 0 10px 30px rgba(0, 0, 0, .10);
-            --border: 1px solid rgba(0, 0, 0, .08);
-        }
+  <style>
+    :root {
+      --bdf-blue: #0d1c84;
+      --bdf-blue-2: #0b1570;
+      --bdf-gray: #f4f6fb;
+      --text: #0b1220;
+      --white: #fff;
+      --radius: 16px;
+      --shadow: 0 18px 60px rgba(0, 0, 0, .18);
+      --shadow-soft: 0 10px 30px rgba(0, 0, 0, .10);
+      --border: 1px solid rgba(0, 0, 0, .08);
+    }
 
-        * {
-            box-sizing: border-box
-        }
+    * { box-sizing: border-box }
 
-        html,
-        body {
-            height: 100%
-        }
+    html, body { height: 100% }
 
-        body {
-            margin: 0;
-            font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
-            color: var(--text);
-            background: var(--bdf-gray);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bdf-gray);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        /* ===== Topbar ===== */
-        .topbar {
-            background: var(--bdf-blue);
-            color: var(--white);
-            box-shadow: 0 5px 14px rgba(0, 0, 0, .18);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
+    /* ===== Topbar ===== */
+    .topbar {
+      background: var(--bdf-blue);
+      color: var(--white);
+      box-shadow: 0 5px 14px rgba(0, 0, 0, .18);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
 
-        .topbar-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
+    .topbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--white);
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            font-weight: 900;
-            letter-spacing: .2px;
-            white-space: nowrap;
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--white);
+      user-select: none;
+      font-weight: 900;
+      letter-spacing: .2px;
+      white-space: nowrap;
+    }
 
-        .brand img {
-            height: 28px;
-            width: auto;
-            display: block
-        }
+    .brand img {
+      height: 28px;
+      width: auto;
+      display: block
+    }
 
-        .topbar-line {
-            height: 5px;
-            background: linear-gradient(90deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .05));
-        }
+    .topbar-line {
+      height: 5px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .05));
+    }
 
-        .actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
 
-        .chip {
-            font-size: 12px;
-            padding: 7px 10px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, .12);
-            border: 1px solid rgba(255, 255, 255, .18);
-            color: rgba(255, 255, 255, .92);
-            letter-spacing: .2px;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .chip {
+      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .18);
+      color: rgba(255, 255, 255, .92);
+      letter-spacing: .2px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        .btn-logout {
-            height: 34px;
-            padding: 0 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, .35);
-            background: rgb(253, 3, 3);
-            color: #fff;
-            font-weight: 900;
-            cursor: pointer;
-        }
+    .btn-logout {
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, .35);
+      background: rgb(253, 3, 3);
+      color: #fff;
+      font-weight: 900;
+      cursor: pointer;
+    }
 
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, .14)
-        }
+    .btn-logout:hover { background: rgba(255, 255, 255, .14) }
 
-        /* ===== Layout ===== */
-        .wrap {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            padding: 16px;
-        }
+    /* ===== Layout ===== */
+    .wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
 
-        .container {
-            width: min(1200px, 100%);
-            display: grid;
-            grid-template-columns: 360px 1fr;
-            gap: 14px;
-            align-items: start;
-        }
+    .container {
+      width: min(1200px, 100%);
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
 
-        @media(max-width: 980px) {
-            .container {
-                grid-template-columns: 1fr
-            }
-        }
+    @media(max-width: 980px) {
+      .container { grid-template-columns: 1fr }
+    }
 
-        .card {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-soft);
-            border: var(--border);
-            overflow: hidden;
-        }
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      border: var(--border);
+      overflow: hidden;
+    }
 
-        .card-head {
-            padding: 16px 18px 12px;
-            border-bottom: 1px solid rgba(0, 0, 0, .06);
-            background: #fff;
-        }
+    .card-head {
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+      background: #fff;
+    }
 
-        .card-head h1,
-        .card-head h2 {
-            margin: 0;
-            font-size: 18px;
-            letter-spacing: .4px;
-            color: var(--bdf-blue);
-        }
+    .card-head h1, .card-head h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: .4px;
+      color: var(--bdf-blue);
+    }
 
-        .card-head p {
-            margin: 6px 0 0;
-            font-size: 13px;
-            color: rgba(11, 18, 32, .70);
-        }
+    .card-head p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: rgba(11, 18, 32, .70);
+    }
 
-        .card-body {
-            padding: 16px 18px 18px
-        }
+    .card-body { padding: 16px 18px 18px }
 
-        label {
-            display: block;
-            font-size: 12px;
-            margin-bottom: 8px;
-            color: rgba(11, 18, 32, .75);
-            font-weight: 900;
-            letter-spacing: .2px;
-        }
+    label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 8px;
+      color: rgba(11, 18, 32, .75);
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
 
-        select {
-            width: 100%;
-            height: 46px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 0, 0, .14);
-            padding: 0 12px;
-            font-size: 14px;
-            outline: none;
-            background: #fff;
-        }
+    select {
+      width: 100%;
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, .14);
+      padding: 0 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
 
-        select:focus {
-            border-color: rgba(13, 28, 132, .55);
-            box-shadow: 0 0 0 4px rgba(13, 28, 132, .12);
-        }
+    select:focus {
+      border-color: rgba(13, 28, 132, .55);
+      box-shadow: 0 0 0 4px rgba(13, 28, 132, .12);
+    }
 
-        .status {
-            margin-top: 12px;
-            padding: 12px 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            display: none;
-        }
+    .status {
+      margin-top: 12px;
+      padding: 12px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      display: none;
+    }
 
-        .status.ok {
-            display: block;
-            background: rgba(46, 204, 113, .12);
-            border: 1px solid rgba(46, 204, 113, .25);
-            color: #1f6b3f;
-        }
+    .status.ok {
+      display: block;
+      background: rgba(46, 204, 113, .12);
+      border: 1px solid rgba(46, 204, 113, .25);
+      color: #1f6b3f;
+    }
 
-        .status.err {
-            display: block;
-            background: rgba(231, 76, 60, .10);
-            border: 1px solid rgba(231, 76, 60, .22);
-            color: #8b2b22;
-        }
+    .status.err {
+      display: block;
+      background: rgba(231, 76, 60, .10);
+      border: 1px solid rgba(231, 76, 60, .22);
+      color: #8b2b22;
+    }
 
-        .status.info {
-            display: block;
-            background: rgba(13, 28, 132, .10);
-            border: 1px solid rgba(13, 28, 132, .22);
-            color: #0b1b55;
-        }
+    .status.info {
+      display: block;
+      background: rgba(13, 28, 132, .10);
+      border: 1px solid rgba(13, 28, 132, .22);
+      color: #0b1b55;
+    }
 
-        /* ===== Viewer ===== */
-        .viewer-head {
-            padding: 14px 18px;
-            border-bottom: 1px solid rgba(0, 0, 0, .06);
-            background: rgba(244, 246, 251, .55);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+    /* ===== Viewer ===== */
+    .viewer-head {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+      background: rgba(244, 246, 251, .55);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-        .viewer-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 200px;
-        }
+    .viewer-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 200px;
+    }
 
-        .viewer-meta .title {
-            font-weight: 900;
-            color: #0b1b55;
-            letter-spacing: .2px;
-        }
+    .viewer-meta .title {
+      font-weight: 900;
+      color: #0b1b55;
+      letter-spacing: .2px;
+    }
 
-        .viewer-meta .sub {
-            font-size: 12px;
-            color: rgba(11, 18, 32, .65);
-        }
+    .viewer-meta .sub {
+      font-size: 12px;
+      color: rgba(11, 18, 32, .65);
+    }
 
-        .nav {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+    .nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
 
-        .btn {
-            height: 40px;
-            padding: 0 14px;
-            border: 0;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--bdf-blue), var(--bdf-blue-2));
-            color: #fff;
-            font-weight: 900;
-            font-size: 13px;
-            letter-spacing: .6px;
-            cursor: pointer;
-            box-shadow: 0 10px 24px rgba(13, 28, 132, .22);
-        }
+    .btn {
+      height: 40px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--bdf-blue), var(--bdf-blue-2));
+      color: #fff;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: .6px;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(13, 28, 132, .22);
+    }
 
-        .btn:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
 
-        .btn-light {
-            background: #fff;
-            color: var(--bdf-blue);
-            border: 1px solid rgba(13, 28, 132, .25);
-            box-shadow: none;
-        }
+    .btn-light {
+      background: #fff;
+      color: var(--bdf-blue);
+      border: 1px solid rgba(13, 28, 132, .25);
+      box-shadow: none;
+    }
 
-        /* carousel area */
-        .stage {
-            padding: 14px
-        }
+    /* carousel area */
+    .stage { padding: 14px }
 
-        .swipe-area {
-            border-radius: 14px;
-            border: 1px solid rgba(0, 0, 0, .10);
-            background: rgba(244, 246, 251, .55);
-            overflow: hidden;
-            position: relative;
-            min-height: 420px;
-            display: grid;
-            place-items: center;
-            touch-action: pan-y;
-        }
+    .swipe-area {
+      border-radius: 14px;
+      border: 1px solid rgba(0, 0, 0, .10);
+      background: rgba(244, 246, 251, .55);
+      overflow: hidden;
+      position: relative;
+      min-height: 420px;
+      display: grid;
+      place-items: center;
+      touch-action: pan-y;
+    }
 
-        @media(max-width: 980px) {
-            .swipe-area {
-                min-height: 360px
-            }
-        }
+    @media(max-width: 980px) { .swipe-area { min-height: 360px } }
+    @media(max-width: 560px) { .swipe-area { min-height: 300px } }
 
-        @media(max-width: 560px) {
-            .swipe-area {
-                min-height: 300px
-            }
-        }
+    .slide {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 10px;
+    }
 
-        .slide {
-            width: 100%;
-            height: 100%;
-            display: grid;
-            place-items: center;
-            padding: 10px;
-        }
+    .slide img {
+      max-width: 100%;
+      max-height: 70vh;
+      width: auto;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .10);
+      cursor: zoom-in;
+      user-select: none;
+      -webkit-user-drag: none;
+      -webkit-touch-callout: none;
+    }
 
-        .slide img {
-            max-width: 100%;
-            max-height: 70vh;
-            width: auto;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .10);
-            cursor: zoom-in;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-user-drag: none;
-        }
+    .hint {
+      padding: 18px;
+      color: rgba(11, 18, 32, .65);
+      text-align: center;
+      font-weight: 700;
+      line-height: 1.35;
+    }
 
-        .hint {
-            padding: 18px;
-            color: rgba(11, 18, 32, .65);
-            text-align: center;
-            font-weight: 700;
-            line-height: 1.35;
-        }
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 18px 16px;
+    }
 
-        .dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 0 18px 16px;
-        }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(13, 28, 132, .25);
+    }
 
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-            background: rgba(13, 28, 132, .25);
-        }
+    .dot.active {
+      background: rgba(13, 28, 132, .95);
+      transform: scale(1.12);
+    }
 
-        .dot.active {
-            background: rgba(13, 28, 132, .95);
-            transform: scale(1.12);
-        }
+    /* ===== Modal Zoom ===== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 16px;
+    }
 
-        /* ===== Modal Zoom ===== */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .72);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 16px;
-        }
+    .modal.open { display: flex }
 
-        .modal.open {
-            display: flex
-        }
+    .modal-card {
+      width: min(1200px, 100%);
+      height: min(86vh, 860px);
+      background: #0b1220;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, .12);
+      display: flex;
+      flex-direction: column;
+    }
 
-        .modal-card {
-            width: min(1200px, 100%);
-            height: min(86vh, 860px);
-            background: #0b1220;
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255, 255, 255, .12);
-            display: flex;
-            flex-direction: column;
-        }
+    .modal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, .06);
+      border-bottom: 1px solid rgba(255, 255, 255, .10);
+      color: #fff;
+    }
 
-        .modal-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 10px 12px;
-            background: rgba(255, 255, 255, .06);
-            border-bottom: 1px solid rgba(255, 255, 255, .10);
-            color: #fff;
-        }
+    .modal-top .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-        .modal-top .left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+    .modal-top .badge {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .10);
+      border: 1px solid rgba(255, 255, 255, .16);
+      color: rgba(255, 255, 255, .92);
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
 
-        .modal-top .badge {
-            font-size: 12px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, .10);
-            border: 1px solid rgba(255, 255, 255, .16);
-            color: rgba(255, 255, 255, .92);
-            font-weight: 900;
-            letter-spacing: .2px;
-        }
+    .modal-top .mini {
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, .20);
+      background: rgba(255, 255, 255, .08);
+      color: #fff;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+    }
 
-        .modal-top .mini {
-            height: 34px;
-            padding: 0 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, .20);
-            background: rgba(255, 255, 255, .08);
-            color: #fff;
-            font-weight: 900;
-            cursor: pointer;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
+    .modal-top .mini:hover { background: rgba(255, 255, 255, .14) }
 
-        .modal-top .mini:hover {
-            background: rgba(255, 255, 255, .14)
-        }
+    .modal-body {
+      flex: 1;
+      background: #0b1220;
+      overflow: hidden;              /* ✅ ahora movemos con translate, no con scroll */
+      position: relative;
+      touch-action: none;            /* ✅ pinch/pan controlado por JS */
+    }
 
-        .modal-body {
-            flex: 1;
-            background: #0b1220;
-            overflow: hidden;
-            position: relative;
-            touch-action: none;
-        }
+    .zoom-wrap {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
 
-        .zoom-wrap {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            position: relative;
-        }
+    .zoom-img {
+      max-width: 100%;
+      max-height: 100%;
+      transform-origin: 0 0;         /* ✅ origen para translate+scale */
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+      user-select: none;
+      -webkit-user-drag: none;
+      -webkit-touch-callout: none;
+      will-change: transform;
+    }
 
-        .zoom-img {
-            max-width: none;
-            max-height: none;
-            width: auto;
-            height: auto;
-            transform-origin: 0 0;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-user-drag: none;
-            touch-action: none;
-            will-change: transform;
-        }
+    .zoom-hint {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(255, 255, 255, .78);
+      background: rgba(0, 0, 0, .35);
+      border: 1px solid rgba(255, 255, 255, .12);
+      padding: 6px 10px;
+      border-radius: 999px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
 
-        .zoom-hint {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 12px;
-            color: rgba(255, 255, 255, .78);
-            background: rgba(0, 0, 0, .35);
-            border: 1px solid rgba(255, 255, 255, .12);
-            padding: 6px 10px;
-            border-radius: 999px;
-            pointer-events: none;
-            white-space: nowrap;
-        }
+    .footer {
+      background: var(--bdf-blue);
+      color: rgba(255, 255, 255, .92);
+      text-align: center;
+      padding: 10px 10px;
+      font-size: 12px;
+      letter-spacing: .2px;
+    }
 
-        .footer {
-            background: var(--bdf-blue);
-            color: rgba(255, 255, 255, .92);
-            text-align: center;
-            padding: 10px 10px;
-            font-size: 12px;
-            letter-spacing: .2px;
-        }
-    </style>
+    /* ===== “Best effort” seguridad ===== */
+    .secure-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .secure-overlay.show { display: flex }
+
+    .secure-card {
+      max-width: 520px;
+      width: 100%;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 16px;
+      padding: 16px 14px;
+      color: rgba(255, 255, 255, .92);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, .45);
+    }
+
+    .secure-title {
+      font-weight: 900;
+      letter-spacing: .2px;
+      margin-bottom: 6px;
+    }
+
+    .secure-msg {
+      font-size: 13px;
+      line-height: 1.35;
+      color: rgba(255, 255, 255, .82);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      z-index: 10000;
+      background: rgba(0, 0, 0, .75);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, .14);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      display: none;
+      max-width: calc(100vw - 24px);
+      text-align: center;
+    }
+
+    .toast.show { display: block }
+  </style>
 </head>
 
 <body>
-    <div class="topbar">
-        <div class="topbar-inner">
-            <a class="brand" href="/comunicados/" title="Inicio">
-                <img src="/comunicados/img/bf.png" alt="Beiersdorf">
-                <span>COMUNICADOS</span>
-            </a>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/comunicados/" title="Inicio">
+        <img src="/comunicados/img/bf.png" alt="Beiersdorf">
+        <span>COMUNICADOS</span>
+      </a>
 
-            <div class="actions">
-                <!-- ✅ chip sin "Admin" -->
-                <div class="chip" id="chipUser">Usuario · —</div>
-                <button class="btn-logout" id="btnSalir" type="button">SALIR</button>
-            </div>
-        </div>
-        <div class="topbar-line"></div>
+      <div class="actions">
+        <div class="chip" id="chipUser">Usuario · —</div>
+        <button class="btn-logout" id="btnSalir" type="button">SALIR</button>
+      </div>
     </div>
+    <div class="topbar-line"></div>
+  </div>
 
-    <div class="wrap">
-        <div class="container">
+  <div class="wrap">
+    <div class="container">
 
-            <!-- Left -->
-            <section class="card" aria-label="Seleccionar área">
-                <div class="card-head">
-                    <h1>SELECCIONA TU ÁREA</h1>
-                    <p>Elige el área para ver los comunicados disponibles.</p>
-                </div>
-                <div class="card-body">
-                    <label for="area">Área</label>
-                    <select id="area">
-                        <option value="Agave">Agave</option>
-                        <option value="Almacén">Almacén</option>
-                        <option value="Calidad">Calidad</option>
-                        <option value="CI">CI</option>
-                        <option value="Comedor">Comedor</option>
-                        <option value="Compounding">Compounding</option>
-                        <option value="F&P">F&P</option>
-                        <option value="HR">HR</option>
-                        <option value="IT">IT</option>
-                        <option value="SHE&S">SHE&S</option>
-                        <option value="Tiendita">Tiendita</option>
-                        <option value="Transporte">Transporte</option>
-                        <option value="Uniformes">Uniformes</option>
-                        <option value="Wellbeing">Wellbeing</option>
-                    </select>
-
-                    <div id="status" class="status"></div>
-
-                    <div style="margin-top:12px; font-size:12px; color:rgba(11,18,32,.65); line-height:1.35;">
-                        Tip: en celular puedes <b>deslizar</b> izquierda/derecha. Tap a la imagen = <b>zoom</b>.
-                    </div>
-                </div>
-            </section>
-
-            <!-- Right -->
-            <section class="card" aria-label="Visor de comunicados">
-                <div class="viewer-head">
-                    <div class="viewer-meta">
-                        <div class="title" id="viewerTitle">Comunicados</div>
-                        <div class="sub" id="viewerSub">Selecciona un área para cargar.</div>
-                    </div>
-
-                    <div class="nav">
-                        <button class="btn btn-light" id="btnPrev" type="button">◀ ATRÁS</button>
-                        <button class="btn" id="btnNext" type="button">ADELANTE ▶</button>
-                    </div>
-                </div>
-
-                <div class="stage">
-                    <div class="swipe-area" id="swipeArea" aria-label="Carrusel de comunicados">
-                        <div class="hint" id="hint">
-                            Selecciona un área para ver los comunicados.<br />
-                            (Tranquila, aquí sí se respeta el proceso 😌)
-                        </div>
-
-                        <div class="slide" id="slide" hidden>
-                            <img id="slideImg" alt="Comunicado" />
-                        </div>
-                    </div>
-
-                    <div class="dots" id="dots" hidden></div>
-                </div>
-            </section>
-
+      <!-- Left -->
+      <section class="card" aria-label="Seleccionar área">
+        <div class="card-head">
+          <h1>SELECCIONA TU ÁREA</h1>
+          <p>Elige el área para ver los comunicados disponibles.</p>
         </div>
-    </div>
+        <div class="card-body">
+          <label for="area">Área</label>
+          <select id="area">
+            <option value="Agave">Agave</option>
+            <option value="Almacén">Almacén</option>
+            <option value="Calidad">Calidad</option>
+            <option value="CI">CI</option>
+            <option value="Comedor">Comedor</option>
+            <option value="Compounding">Compounding</option>
+            <option value="F&P">F&P</option>
+            <option value="HR">HR</option>
+            <option value="IT">IT</option>
+            <option value="SHE&S">SHE&S</option>
+            <option value="Tiendita">Tiendita</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Uniformes">Uniformes</option>
+            <option value="Wellbeing">Wellbeing</option>
+          </select>
 
-    <div class="footer">©️ 2026. Todos los derechos reservados.</div>
+          <div id="status" class="status"></div>
 
-    <!-- Modal -->
-    <div class="modal" id="modal">
-        <div class="modal-card" role="dialog" aria-modal="true" aria-label="Vista ampliada">
-            <div class="modal-top">
-                <div class="right" style="margin-left:auto;">
-                    <button class="mini" id="zoomOut" type="button">-</button>
-                    <button class="mini" id="zoomIn" type="button">+</button>
-                    <button class="mini" id="modalClose" type="button">Cerrar ✖</button>
-                </div>
+          <div style="margin-top:12px; font-size:12px; color:rgba(11,18,32,.65); line-height:1.35;">
+            Tip: en celular puedes <b>deslizar</b> izquierda/derecha. Tap a la imagen = <b>zoom</b>.
+          </div>
+        </div>
+      </section>
+
+      <!-- Right -->
+      <section class="card" aria-label="Visor de comunicados">
+        <div class="viewer-head">
+          <div class="viewer-meta">
+            <div class="title" id="viewerTitle">Comunicados</div>
+            <div class="sub" id="viewerSub">Selecciona un área para cargar.</div>
+          </div>
+
+          <div class="nav">
+            <button class="btn btn-light" id="btnPrev" type="button">◀ ATRÁS</button>
+            <button class="btn" id="btnNext" type="button">ADELANTE ▶</button>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="swipe-area" id="swipeArea" aria-label="Carrusel de comunicados">
+            <div class="hint" id="hint">
+              Selecciona un área para ver los comunicados.<br />
+              (Tranquila, aquí sí se respeta el proceso 😌)
             </div>
 
-            <div class="modal-body" id="modalBody">
-                <div class="zoom-wrap">
-                    <img class="zoom-img" id="zoomImg" alt="Comunicado ampliado" />
-                </div>
-                <div class="zoom-hint">Zoom: + / - · Doble tap = reset · Pinch en móvil</div>
+            <div class="slide" id="slide" hidden>
+              <img id="slideImg" alt="Comunicado" />
             </div>
+          </div>
+
+          <div class="dots" id="dots" hidden></div>
         </div>
+      </section>
+
     </div>
+  </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-        import {
-            getFirestore,
-            collection,
-            query,
-            where,
-            orderBy,
-            onSnapshot
-        } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  <div class="footer">©️ 2026. Todos los derechos reservados.</div>
 
-        const BASE = "/comunicados";
-        const ROUTES = {
-            HOME: `${BASE}/`,
-            LOGIN: `${BASE}/login/`,
-            ADMIN: `${BASE}/admin/`
-        };
+  <!-- ✅ Best-effort seguridad -->
+  <div class="secure-overlay" id="secureOverlay" aria-hidden="true">
+    <div class="secure-card">
+      <div class="secure-title">Acción no permitida</div>
+      <div class="secure-msg" id="secureMsg">
+        Su organización no permite la captura de pantalla ni la grabación.
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
 
-        // ===== Session guard =====
-        const session = JSON.parse(localStorage.getItem("session") || "null");
-        if (!session || !session.role) {
-            window.location.href = ROUTES.LOGIN;
-        }
-        if (session.role === "admin") {
-            window.location.href = ROUTES.ADMIN;
-        }
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Vista ampliada">
+      <div class="modal-top">
+        <div class="left">
+          <!-- ✅ quitamos el nombre del comunicado -->
+          <span class="badge" id="modalCounter">1/1</span>
+        </div>
+        <div class="right">
+          <!-- ✅ solo - + y Cerrar -->
+          <button class="mini" id="zoomOut" type="button">-</button>
+          <button class="mini" id="zoomIn" type="button">+</button>
+          <button class="mini" id="modalClose" type="button">Cerrar ✖</button>
+        </div>
+      </div>
 
-        const nomina = String(session?.nomina || "");
-        const name = String(session?.nombre || session?.name || "Usuario");
+      <div class="modal-body" id="modalBody">
+        <div class="zoom-wrap">
+          <img class="zoom-img" id="zoomImg" alt="Comunicado ampliado" />
+        </div>
+        <div class="zoom-hint">Pinch = zoom · Arrastra para mover · Doble tap = reset</div>
+      </div>
+    </div>
+  </div>
 
-        // ✅ chip sin “Admin” ni “Viewer”
-        const chipUser = document.getElementById("chipUser");
-        chipUser.textContent = `${name}${nomina ? " · " + nomina : ""}`;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      orderBy,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-        document.getElementById("btnSalir").addEventListener("click", () => {
-            localStorage.removeItem("session");
-            window.location.href = ROUTES.LOGIN;
-        });
+    const BASE = "/comunicados";
+    const ROUTES = {
+      HOME: `${BASE}/`,
+      LOGIN: `${BASE}/login/`,
+      ADMIN: `${BASE}/admin/`
+    };
 
-        // ===== Firebase =====
-        const firebaseConfig = {
-            apiKey: "AIzaSyDfYM_3V9lrxBOpfCwQ8ufjJ18IIpCf27w",
-            authDomain: "comunicadosbf.firebaseapp.com",
-            projectId: "comunicadosbf",
-            storageBucket: "comunicadosbf.firebasestorage.app",
-            messagingSenderId: "421516228476",
-            appId: "1:421516228476:web:ae11a0dcf588a9932c16f9"
-        };
+    // ===== Session guard =====
+    const session = JSON.parse(localStorage.getItem("session") || "null");
+    if (!session || !session.role) window.location.href = ROUTES.LOGIN;
+    if (session.role === "admin") window.location.href = ROUTES.ADMIN;
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const nomina = String(session?.nomina || "");
+    const name = String(session?.nombre || session?.name || "Usuario");
 
-        const $ = (id) => document.getElementById(id);
+    const chipUser = document.getElementById("chipUser");
+    chipUser.textContent = `${name}${nomina ? " · " + nomina : ""}`;
 
-        function setStatus(type, msg) {
-            const el = $("status");
-            if (!msg) {
-                el.className = "status";
-                el.textContent = "";
-                el.style.display = "none";
-                return;
-            }
-            el.className = "status " + type;
-            el.textContent = msg;
-            el.style.display = "block";
-        }
+    document.getElementById("btnSalir").addEventListener("click", () => {
+      localStorage.removeItem("session");
+      window.location.href = ROUTES.LOGIN;
+    });
 
-        function slugArea(areaLabel) {
-            const map = {
-                "Agave": "agave",
-                "Almacén": "almacen",
-                "Calidad": "calidad",
-                "CI": "ci",
-                "Comedor": "comedor",
-                "Compounding": "compounding",
-                "F&P": "fp",
-                "HR": "hr",
-                "IT": "it",
-                "SHE&S": "shes",
-                "Tiendita": "tiendita",
-                "Transporte": "transporte",
-                "Uniformes": "uniformes",
-                "Wellbeing": "wellbeing"
-            };
-            return map[areaLabel] || String(areaLabel || "").toLowerCase().trim();
-        }
+    // ===== Firebase =====
+    const firebaseConfig = {
+      apiKey: "AIzaSyDfYM_3V9lrxBOpfCwQ8ufjJ18IIpCf27w",
+      authDomain: "comunicadosbf.firebaseapp.com",
+      projectId: "comunicadosbf",
+      storageBucket: "comunicadosbf.firebasestorage.app",
+      messagingSenderId: "421516228476",
+      appId: "1:421516228476:web:ae11a0dcf588a9932c16f9"
+    };
 
-        function escapeHtml(s) {
-            return String(s).replace(/[&<>"']/g, (m) => ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#039;"
-            }[m]));
-        }
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // ===== Viewer state =====
-        let currentUnsub = null;
-        let items = [];
-        let idx = 0;
+    const $ = (id) => document.getElementById(id);
 
-        const areaSel = $("area");
-        const viewerTitle = $("viewerTitle");
-        const viewerSub = $("viewerSub");
-        const hint = $("hint");
-        const slide = $("slide");
-        const slideImg = $("slideImg");
-        const swipeArea = $("swipeArea");
-        const btnPrev = $("btnPrev");
-        const btnNext = $("btnNext");
-        const dots = $("dots");
+    function setStatus(type, msg) {
+      const el = $("status");
+      if (!msg) {
+        el.className = "status";
+        el.textContent = "";
+        el.style.display = "none";
+        return;
+      }
+      el.className = "status " + type;
+      el.textContent = msg;
+      el.style.display = "block";
+    }
 
-        function clearSlide() {
-            // ✅ clave: evita que se “quede” el comunicado anterior
-            slideImg.removeAttribute("src");
-            slideImg.alt = "";
-            slide.hidden = true;
-        }
+    function slugArea(areaLabel) {
+      const map = {
+        "Agave": "agave",
+        "Almacén": "almacen",
+        "Calidad": "calidad",
+        "CI": "ci",
+        "Comedor": "comedor",
+        "Compounding": "compounding",
+        "F&P": "fp",
+        "HR": "hr",
+        "IT": "it",
+        "SHE&S": "shes",
+        "Tiendita": "tiendita",
+        "Transporte": "transporte",
+        "Uniformes": "uniformes",
+        "Wellbeing": "wellbeing"
+      };
+      return map[areaLabel] || String(areaLabel || "").toLowerCase().trim();
+    }
 
-        function updateNav() {
-            btnPrev.disabled = items.length <= 1;
-            btnNext.disabled = items.length <= 1;
-        }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (m) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[m]));
+    }
 
-        function renderDots() {
-            if (items.length <= 1) {
-                dots.hidden = true;
-                dots.innerHTML = "";
-                return;
-            }
-            dots.hidden = false;
-            dots.innerHTML = items.map((_, i) =>
-                `<span class="dot ${i === idx ? "active" : ""}"></span>`
-            ).join("");
-        }
+    // ===== Viewer state =====
+    let currentUnsub = null;
+    let items = [];
+    let idx = 0;
 
-        function showEmpty(message, sub = "") {
-            items = [];
-            idx = 0;
+    const areaSel = $("area");
+    const viewerTitle = $("viewerTitle");
+    const viewerSub = $("viewerSub");
+    const hint = $("hint");
+    const slide = $("slide");
+    const slideImg = $("slideImg");
+    const swipeArea = $("swipeArea");
+    const btnPrev = $("btnPrev");
+    const btnNext = $("btnNext");
+    const dots = $("dots");
 
-            // ✅ limpia TODO lo visual del slide anterior
-            clearSlide();
-            dots.hidden = true;
-            dots.innerHTML = "";
+    function clearSlide() {
+      slideImg.removeAttribute("src");
+      slideImg.alt = "";
+      slide.hidden = true;
+    }
 
-            hint.style.display = "block";
-            hint.innerHTML = message;
+    function updateNav() {
+      btnPrev.disabled = items.length <= 1;
+      btnNext.disabled = items.length <= 1;
+    }
 
-            viewerSub.textContent = sub || "Sin comunicados disponibles.";
-            updateNav();
-            setStatus("", "");
-            updateModalCounter();
-            refreshModalIfOpen();
-        }
+    function renderDots() {
+      if (items.length <= 1) {
+        dots.hidden = true;
+        dots.innerHTML = "";
+        return;
+      }
+      dots.hidden = false;
+      dots.innerHTML = items.map((_, i) =>
+        `<span class="dot ${i === idx ? "active" : ""}"></span>`
+      ).join("");
+    }
 
-        function showSlide() {
-            if (!items.length) return;
+    function showEmpty(message, sub = "") {
+      items = [];
+      idx = 0;
 
-            const it = items[idx];
-            const title = it?.title || "Comunicado";
-            const when = it?.createdAt?.toDate ? it.createdAt.toDate().toLocaleString() : "";
+      clearSlide();
+      dots.hidden = true;
+      dots.innerHTML = "";
 
-            viewerTitle.textContent = `Comunicados · ${areaSel.value}`;
-            viewerSub.textContent = when ? `Publicado: ${when}` : " ";
+      hint.style.display = "block";
+      hint.innerHTML = message;
 
-            hint.style.display = "none";
-            slide.hidden = false;
+      viewerSub.textContent = sub || "Sin comunicados disponibles.";
+      updateNav();
+      setStatus("", "");
+      updateModalCounter();
+      refreshModalIfOpen();
+    }
 
-            // Preload next/prev
-            const prevU = items[(idx - 1 + items.length) % items.length]?.url;
-            const nextU = items[(idx + 1) % items.length]?.url;
-            [prevU, nextU].forEach(u => { if (u) { const im = new Image(); im.src = u; } });
+    function showSlide() {
+      if (!items.length) return;
 
-            slideImg.src = it.url;
-            slideImg.alt = title;
+      const it = items[idx];
+      const title = it?.title || "Comunicado";
+      const when = it?.createdAt?.toDate ? it.createdAt.toDate().toLocaleString() : "";
 
-            updateNav();
-            renderDots();
-            updateModalCounter();
-            refreshModalIfOpen();
-        }
+      viewerTitle.textContent = `Comunicados · ${areaSel.value}`;
+      viewerSub.textContent = when ? `Publicado: ${when}` : " ";
 
-        function next() {
-            if (items.length <= 1) return;
-            idx = (idx + 1) % items.length;
-            showSlide();
-        }
+      hint.style.display = "none";
+      slide.hidden = false;
 
-        function prev() {
-            if (items.length <= 1) return;
-            idx = (idx - 1 + items.length) % items.length;
-            showSlide();
-        }
+      const prevU = items[(idx - 1 + items.length) % items.length]?.url;
+      const nextU = items[(idx + 1) % items.length]?.url;
+      [prevU, nextU].forEach(u => { if (u) { const im = new Image(); im.src = u; } });
 
-        btnNext.addEventListener("click", next);
-        btnPrev.addEventListener("click", prev);
+      slideImg.src = it.url;
+      slideImg.alt = title;
 
-        window.addEventListener("keydown", (e) => {
-            if (modalOpen()) return;
-            if (e.key === "ArrowRight") next();
-            if (e.key === "ArrowLeft") prev();
-        });
+      updateNav();
+      renderDots();
+      updateModalCounter();
+      refreshModalIfOpen();
+    }
 
-        // ===== Swipe =====
-        let startX = 0, startY = 0, tracking = false;
-        function onStart(x, y) { startX = x; startY = y; tracking = true; }
-        function onEnd(x, y) {
-            if (!tracking) return;
-            tracking = false;
-            const dx = x - startX;
-            const dy = y - startY;
-            if (Math.abs(dy) > Math.abs(dx)) return;
-            const threshold = 40;
-            if (dx <= -threshold) next();
-            if (dx >= threshold) prev();
-        }
+    function next() {
+      if (items.length <= 1) return;
+      idx = (idx + 1) % items.length;
+      showSlide();
+    }
 
-        swipeArea.addEventListener("touchstart", (e) => {
-            if (modalOpen()) return;
-            const t = e.touches[0];
-            onStart(t.clientX, t.clientY);
-        }, { passive: true });
+    function prev() {
+      if (items.length <= 1) return;
+      idx = (idx - 1 + items.length) % items.length;
+      showSlide();
+    }
 
-        swipeArea.addEventListener("touchend", (e) => {
-            if (modalOpen()) return;
-            const t = e.changedTouches[0];
-            onEnd(t.clientX, t.clientY);
-        }, { passive: true });
+    btnNext.addEventListener("click", next);
+    btnPrev.addEventListener("click", prev);
 
-        swipeArea.addEventListener("pointerdown", (e) => {
-            if (modalOpen()) return;
-            swipeArea.setPointerCapture?.(e.pointerId);
-            onStart(e.clientX, e.clientY);
-        });
+    window.addEventListener("keydown", (e) => {
+      if (modalOpen()) return;
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    });
 
-        swipeArea.addEventListener("pointerup", (e) => {
-            if (modalOpen()) return;
-            onEnd(e.clientX, e.clientY);
-        });
+    // ===== Swipe =====
+    let startX = 0, startY = 0, tracking = false;
+    function onStart(x, y) { startX = x; startY = y; tracking = true; }
+    function onEnd(x, y) {
+      if (!tracking) return;
+      tracking = false;
+      const dx = x - startX;
+      const dy = y - startY;
+      if (Math.abs(dy) > Math.abs(dx)) return;
+      const threshold = 40;
+      if (dx <= -threshold) next();
+      if (dx >= threshold) prev();
+    }
 
-        // ===== Firestore listener =====
-        function mountArea(areaLabel) {
-            if (currentUnsub) currentUnsub();
+    swipeArea.addEventListener("touchstart", (e) => {
+      if (modalOpen()) return;
+      const t = e.touches[0];
+      onStart(t.clientX, t.clientY);
+    }, { passive: true });
 
-            const areaSlug = slugArea(areaLabel);
+    swipeArea.addEventListener("touchend", (e) => {
+      if (modalOpen()) return;
+      const t = e.changedTouches[0];
+      onEnd(t.clientX, t.clientY);
+    }, { passive: true });
 
-            viewerTitle.textContent = `Comunicados · ${areaLabel}`;
-            viewerSub.textContent = "Cargando...";
-            setStatus("info", `Cargando comunicados de ${areaLabel}...`);
+    swipeArea.addEventListener("pointerdown", (e) => {
+      if (modalOpen()) return;
+      swipeArea.setPointerCapture?.(e.pointerId);
+      onStart(e.clientX, e.clientY);
+    });
 
-            // ✅ en cuanto cambias de área: limpia slide para que NO se quede el anterior
-            clearSlide();
-            dots.hidden = true;
-            dots.innerHTML = "";
+    swipeArea.addEventListener("pointerup", (e) => {
+      if (modalOpen()) return;
+      onEnd(e.clientX, e.clientY);
+    });
 
-            hint.style.display = "block";
-            hint.textContent = "Cargando...";
+    // ===== Firestore listener =====
+    function mountArea(areaLabel) {
+      if (currentUnsub) currentUnsub();
 
-            const qy = query(
-                collection(db, "Comunicados"),
-                where("area", "==", areaSlug),
-                orderBy("createdAt", "desc")
-            );
+      const areaSlug = slugArea(areaLabel);
 
-            currentUnsub = onSnapshot(qy, (snap) => {
-                items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      viewerTitle.textContent = `Comunicados · ${areaLabel}`;
+      viewerSub.textContent = "Cargando...";
+      setStatus("info", `Cargando comunicados de ${areaLabel}...`);
 
-                if (!items.length) {
-                    showEmpty(
-                        `No hay comunicados en <b>${escapeHtml(areaLabel)}</b> por ahora.<br/>Vuelve luego 😅.`,
-                        "Sin comunicados publicados."
-                    );
-                    return;
-                }
+      clearSlide();
+      dots.hidden = true;
+      dots.innerHTML = "";
 
-                idx = 0;
-                setStatus("ok", `Listo: ${items.length} comunicado(s) en ${areaLabel}.`);
-                showSlide();
+      hint.style.display = "block";
+      hint.textContent = "Cargando...";
 
-            }, (err) => {
-                console.error(err);
-                setStatus("err", "No se pudieron cargar los comunicados. Revisa permisos/índice en Firestore.");
-                showEmpty("Error al cargar comunicados. Intenta de nuevo.", "Error de carga.");
-            });
-        }
+      const qy = query(
+        collection(db, "Comunicados"),
+        where("area", "==", areaSlug),
+        orderBy("createdAt", "desc")
+      );
 
-        areaSel.addEventListener("change", () => {
-            const selectedLabel = areaSel.value;
-            const s = JSON.parse(localStorage.getItem("session") || "null") || {};
-            s.areaLabel = selectedLabel;
-            localStorage.setItem("session", JSON.stringify(s));
-            mountArea(selectedLabel);
-        });
+      currentUnsub = onSnapshot(qy, (snap) => {
+        items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-        // ===== Modal zoom =====
-        const modal = $("modal");
-        const modalClose = $("modalClose");
-        const zoomImg = $("zoomImg");
-        const zoomInBtn = $("zoomIn");
-        const zoomOutBtn = $("zoomOut");
-        const modalBody = $("modalBody");
-
-        // === Pinch + Pan state ===
-        let scale = 1;
-        let tx = 0, ty = 0;
-
-        const MIN_SCALE = 1;
-        const MAX_SCALE = 6;
-
-        const pointers = new Map(); // pointerId -> {x,y}
-        let startDist = 0;
-        let startScale = 1;
-        let startMid = null;
-        let startTx = 0, startTy = 0;
-
-        function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-
-        function applyTransform() {
-            // translate primero, luego scale
-            zoomImg.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+        if (!items.length) {
+          showEmpty(
+            `No hay comunicados en <b>${escapeHtml(areaLabel)}</b> por ahora.<br/>Vuelve luego 😅.`,
+            "Sin comunicados publicados."
+          );
+          return;
         }
 
-        function resetView() {
-            scale = 1;
-            tx = 0;
-            ty = 0;
-            applyTransform();
+        idx = 0;
+        setStatus("ok", `Listo: ${items.length} comunicado(s) en ${areaLabel}.`);
+        showSlide();
+
+      }, (err) => {
+        console.error(err);
+        setStatus("err", "No se pudieron cargar los comunicados. Revisa permisos/índice en Firestore.");
+        showEmpty("Error al cargar comunicados. Intenta de nuevo.", "Error de carga.");
+      });
+    }
+
+    areaSel.addEventListener("change", () => {
+      const selectedLabel = areaSel.value;
+      const s = JSON.parse(localStorage.getItem("session") || "null") || {};
+      s.areaLabel = selectedLabel;
+      localStorage.setItem("session", JSON.stringify(s));
+      mountArea(selectedLabel);
+    });
+
+    // ==========================
+    // ✅ Modal + Pinch Zoom (móvil)
+    // ==========================
+    const modal = $("modal");
+    const modalClose = $("modalClose");
+    const zoomImg = $("zoomImg");
+    const modalCounter = $("modalCounter");
+    const zoomInBtn = $("zoomIn");
+    const zoomOutBtn = $("zoomOut");
+    const modalBody = $("modalBody");
+
+    // estado transform
+    let scale = 1;
+    let tx = 0;
+    let ty = 0;
+
+    const minScale = 1;
+    const maxScale = 6;
+
+    // pointers para pinch/pan
+    const pointers = new Map();
+    let lastPinchDist = 0;
+    let lastCenter = null;
+    let isPanning = false;
+    let panStart = { x: 0, y: 0, tx: 0, ty: 0 };
+
+    function modalOpen() { return modal.classList.contains("open"); }
+
+    function updateModalCounter() {
+      if (!items.length) { modalCounter.textContent = "0/0"; return; }
+      modalCounter.textContent = `${idx + 1}/${items.length}`;
+    }
+
+    function applyTransform() {
+      zoomImg.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+    }
+
+    function resetTransform() {
+      scale = 1;
+      tx = 0;
+      ty = 0;
+      applyTransform();
+    }
+
+    function clampScale(s) {
+      return Math.max(minScale, Math.min(maxScale, s));
+    }
+
+    function zoomAt(clientX, clientY, newScale) {
+      // zoom relativo al punto donde está el dedo (o centro)
+      const rect = modalBody.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      const oldScale = scale;
+      const ns = clampScale(newScale);
+      if (ns === oldScale) return;
+
+      // Ajuste para que el punto (x,y) “permanezca” en el mismo lugar visual
+      tx = x - (x - tx) * (ns / oldScale);
+      ty = y - (y - ty) * (ns / oldScale);
+      scale = ns;
+      applyTransform();
+    }
+
+    function zoomIn() {
+      const rect = modalBody.getBoundingClientRect();
+      zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, +(scale + 0.35).toFixed(2));
+    }
+
+    function zoomOut() {
+      const rect = modalBody.getBoundingClientRect();
+      zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, +(scale - 0.35).toFixed(2));
+      if (scale === 1) { tx = 0; ty = 0; applyTransform(); }
+    }
+
+    function openModal() {
+      if (!items.length) return;
+      const it = items[idx];
+      updateModalCounter();
+      zoomImg.src = it.url;
+      zoomImg.alt = it?.title || "Comunicado";
+      resetTransform();
+      modal.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      modal.classList.remove("open");
+      document.body.style.overflow = "";
+      pointers.clear();
+      isPanning = false;
+      setTimeout(() => { zoomImg.removeAttribute("src"); }, 120);
+    }
+
+    slideImg.addEventListener("click", openModal);
+    modalClose.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+    zoomInBtn.addEventListener("click", zoomIn);
+    zoomOutBtn.addEventListener("click", zoomOut);
+
+    // bloquear menú de “guardar” en móvil
+    zoomImg.addEventListener("contextmenu", (e) => e.preventDefault());
+    slideImg.addEventListener("contextmenu", (e) => e.preventDefault());
+
+    // Pointer events para pinch/pan
+    modalBody.addEventListener("pointerdown", (e) => {
+      if (!modalOpen()) return;
+      modalBody.setPointerCapture?.(e.pointerId);
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (pointers.size === 1) {
+        // pan si ya hay zoom
+        isPanning = scale > 1;
+        panStart = { x: e.clientX, y: e.clientY, tx, ty };
+      } else if (pointers.size === 2) {
+        // pinch start
+        const pts = [...pointers.values()];
+        const dx = pts[0].x - pts[1].x;
+        const dy = pts[0].y - pts[1].y;
+        lastPinchDist = Math.hypot(dx, dy);
+        lastCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      }
+    });
+
+    modalBody.addEventListener("pointermove", (e) => {
+      if (!modalOpen()) return;
+      if (!pointers.has(e.pointerId)) return;
+
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (pointers.size === 2) {
+        const pts = [...pointers.values()];
+        const dx = pts[0].x - pts[1].x;
+        const dy = pts[0].y - pts[1].y;
+
+        const dist = Math.hypot(dx, dy);
+        const center = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+
+        if (lastPinchDist > 0) {
+          const factor = dist / lastPinchDist;
+          const newScale = clampScale(scale * factor);
+          // zoom “anclado” al centro del pinch
+          zoomAt(center.x, center.y, newScale);
         }
 
-        function dist(a, b) {
-            const dx = a.x - b.x;
-            const dy = a.y - b.y;
-            return Math.hypot(dx, dy);
-        }
+        lastPinchDist = dist;
+        lastCenter = center;
+        isPanning = false;
+        return;
+      }
 
-        function mid(a, b) {
-            return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-        }
+      if (pointers.size === 1 && isPanning) {
+        const dx = e.clientX - panStart.x;
+        const dy = e.clientY - panStart.y;
+        tx = panStart.tx + dx;
+        ty = panStart.ty + dy;
+        applyTransform();
+      }
+    });
 
-        // Evita bounce/scroll de iOS dentro del modal mientras gesticulas
-        modalBody.addEventListener("touchmove", (e) => { e.preventDefault(); }, { passive: false });
+    function endPointer(e) {
+      if (!modalOpen()) return;
+      pointers.delete(e.pointerId);
 
-        // Pointer events para pan/pinch
-        modalBody.addEventListener("pointerdown", (e) => {
-            if (!modalOpen()) return;
-            modalBody.setPointerCapture?.(e.pointerId);
-            pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size < 2) {
+        lastPinchDist = 0;
+        lastCenter = null;
+      }
 
-            // cuando entra segundo dedo: guarda referencia de pinch
-            if (pointers.size === 2) {
-                const [p1, p2] = Array.from(pointers.values());
-                startDist = dist(p1, p2);
-                startScale = scale;
-                startMid = mid(p1, p2);
-                startTx = tx;
-                startTy = ty;
-            }
-        });
+      if (pointers.size === 0) {
+        isPanning = false;
+      }
+    }
 
-        modalBody.addEventListener("pointermove", (e) => {
-            if (!modalOpen()) return;
-            if (!pointers.has(e.pointerId)) return;
+    modalBody.addEventListener("pointerup", endPointer);
+    modalBody.addEventListener("pointercancel", endPointer);
+    modalBody.addEventListener("pointerleave", endPointer);
 
-            const prev = pointers.get(e.pointerId);
-            const now = { x: e.clientX, y: e.clientY };
-            pointers.set(e.pointerId, now);
+    // Doble tap = reset
+    let lastTap = 0;
+    modalBody.addEventListener("pointerup", (e) => {
+      if (!modalOpen()) return;
+      if (pointers.size > 0) return; // si aún hay dedo, no
+      const now = Date.now();
+      if (now - lastTap < 280) resetTransform();
+      lastTap = now;
+    });
 
-            // 2 dedos: pinch
-            if (pointers.size === 2) {
-                const [p1, p2] = Array.from(pointers.values());
-                const d = dist(p1, p2);
-                const m = mid(p1, p2);
+    window.addEventListener("keydown", (e) => {
+      if (!modalOpen()) return;
+      if (e.key === "Escape") closeModal();
+      if (e.key === "+" || e.key === "=") zoomIn();
+      if (e.key === "-" || e.key === "_") zoomOut();
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    });
 
-                const nextScale = clamp(startScale * (d / (startDist || d)), MIN_SCALE, MAX_SCALE);
+    function refreshModalIfOpen() {
+      if (!modalOpen()) return;
+      if (!items.length) { closeModal(); return; }
+      const it = items[idx];
+      updateModalCounter();
+      zoomImg.src = it.url;
+      resetTransform();
+    }
 
-                // Mantener el punto medio “anclado”
-                // Ajuste de translate relativo al movimiento del midpoint
-                const dxMid = m.x - (startMid?.x || m.x);
-                const dyMid = m.y - (startMid?.y || m.y);
+    // ==========================
+    // ✅ “Seguridad” best-effort (web/PWA)
+    // ==========================
+    const secureOverlay = $("secureOverlay");
+    const secureMsg = $("secureMsg");
+    const toast = $("toast");
 
-                scale = nextScale;
-                tx = startTx + dxMid;
-                ty = startTy + dyMid;
+    const SECURITY_TEXT = "Accion no permitida, Su organizacion no permite la captura de pantalla ni la grabación";
 
-                applyTransform();
-                return;
-            }
+    // 1x1 PNG negro
+    const BLACK_PIXEL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMB/af8Z9kAAAAASUVORK5CYII=";
 
-            // 1 dedo: pan SOLO si ya hay zoom
-            if (pointers.size === 1 && scale > 1) {
-                const dx = now.x - prev.x;
-                const dy = now.y - prev.y;
-                tx += dx;
-                ty += dy;
-                applyTransform();
-            }
-        });
+    let locked = false;
+    let lastSlideSrc = "";
+    let lastZoomSrc = "";
 
-        modalBody.addEventListener("pointerup", (e) => {
-            pointers.delete(e.pointerId);
-            if (pointers.size < 2) {
-                startDist = 0;
-                startMid = null;
-            }
-        });
+    function showToast(msg, ms = 2600) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      window.clearTimeout(showToast._t);
+      showToast._t = window.setTimeout(() => toast.classList.remove("show"), ms);
+    }
 
-        modalBody.addEventListener("pointercancel", (e) => {
-            pointers.delete(e.pointerId);
-        });
+    function lockContent(reason = SECURITY_TEXT) {
+      if (locked) return;
+      locked = true;
 
-        function applyZoom() { zoomImg.style.transform = `scale(${scale})`; }
-        function zoomIn() {
-            scale = clamp(+(scale + 0.35).toFixed(2), MIN_SCALE, MAX_SCALE);
-            applyTransform();
-        }
-        function zoomOut() {
-            scale = clamp(+(scale - 0.35).toFixed(2), MIN_SCALE, MAX_SCALE);
-            if (scale === 1) { tx = 0; ty = 0; }
-            applyTransform();
-        }
-        function zoomReset() {
-            scale = 1; applyZoom();
-            modalBody.scrollTop = 0;
-            modalBody.scrollLeft = 0;
-        }
+      secureMsg.textContent = reason;
+      secureOverlay.classList.add("show");
 
-        function openModal() {
-            if (!items.length) return;
-            const it = items[idx];
-            modalBadge.textContent = it?.title || "Comunicado";
-            updateModalCounter();
-            zoomImg.src = it.url;
-            zoomImg.alt = it?.title || "Comunicado";
-            resetView();
-            modal.classList.add("open");
-            document.body.style.overflow = "hidden";
-        }
+      // guarda src actuales y pinta negro
+      lastSlideSrc = slideImg.getAttribute("src") || "";
+      lastZoomSrc = zoomImg.getAttribute("src") || "";
 
-        function closeModal() {
-            modal.classList.remove("open");
-            document.body.style.overflow = "";
-            setTimeout(() => { zoomImg.removeAttribute("src"); }, 120);
-        }
+      if (lastSlideSrc) slideImg.src = BLACK_PIXEL;
+      if (lastZoomSrc) zoomImg.src = BLACK_PIXEL;
 
-        slideImg.addEventListener("click", openModal);
-        modalClose.addEventListener("click", closeModal);
-        modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+      showToast(reason);
+    }
 
-        zoomInBtn.addEventListener("click", zoomIn);
-        zoomOutBtn.addEventListener("click", zoomOut);
-        zoomResetBtn.addEventListener("click", zoomReset);
+    function unlockContent() {
+      if (!locked) return;
+      locked = false;
 
-        window.addEventListener("keydown", (e) => {
-            if (!modalOpen()) return;
-            if (e.key === "Escape") closeModal();
-            if (e.key === "+" || e.key === "=") zoomIn();
-            if (e.key === "-" || e.key === "_") zoomOut();
-            if (e.key === "ArrowRight") { next(); }
-            if (e.key === "ArrowLeft") { prev(); }
-        });
+      secureOverlay.classList.remove("show");
 
-        let lastTap = 0;
-        modalBody.addEventListener("click", () => {
-            const now = Date.now();
-            if (now - lastTap < 280) resetView();
-            lastTap = now;
-        });
+      // restaura imagen si existía
+      if (lastSlideSrc) slideImg.src = lastSlideSrc;
+      if (lastZoomSrc) zoomImg.src = lastZoomSrc;
 
+      lastSlideSrc = "";
+      lastZoomSrc = "";
+    }
 
-        function refreshModalIfOpen() {
-            if (!modalOpen()) return;
-            if (!items.length) { closeModal(); return; }
-            const it = items[idx];
-            modalBadge.textContent = it?.title || "Comunicado";
-            updateModalCounter();
-            zoomImg.src = it.url;
-            scale = 1;
-            applyZoom();
-        }
+    // Best-effort triggers (NO es “screenshot detectado”, es lo más cercano permitido)
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) lockContent(SECURITY_TEXT);
+      else unlockContent();
+    });
 
-        // ===== Init =====
-        const defaultArea = session?.areaLabel || areaSel.value;
-        areaSel.value = defaultArea;
-        mountArea(defaultArea);
-    </script>
+    window.addEventListener("blur", () => lockContent(SECURITY_TEXT));
+    window.addEventListener("focus", () => unlockContent());
 
-    <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/comunicados/sw.js")
-                .then(() => console.log("✅ Service Worker registrado"))
-                .catch(err => console.error("❌ Error al registrar SW", err));
-        }
-    </script>
+    // Desktop/teclado: intenta bloquear prints
+    window.addEventListener("keydown", (e) => {
+      const k = String(e.key || "").toLowerCase();
+      const isPrint =
+        k === "printscreen" ||
+        (e.metaKey && e.shiftKey && (k === "3" || k === "4")) ||
+        (e.ctrlKey && (k === "p" || k === "s"));
+
+      if (isPrint) {
+        e.preventDefault?.();
+        lockContent(SECURITY_TEXT);
+      }
+    }, { passive: false });
+
+    // Evita “drag/save” por gestures comunes
+    ["copy", "cut", "dragstart"].forEach(evt =>
+      document.addEventListener(evt, (e) => e.preventDefault())
+    );
+
+    // ===== Init =====
+    const defaultArea = session?.areaLabel || areaSel.value;
+    areaSel.value = defaultArea;
+    mountArea(defaultArea);
+  </script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/comunicados/sw.js")
+        .then(() => console.log("✅ Service Worker registrado"))
+        .catch(err => console.error("❌ Error al registrar SW", err));
+    }
+  </script>
 </body>
 
 </html>
