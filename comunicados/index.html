@@ -422,9 +422,9 @@
     .modal-body {
       flex: 1;
       background: #0b1220;
-      overflow: hidden;              /* ✅ ahora movemos con translate, no con scroll */
+      overflow: hidden;
       position: relative;
-      touch-action: none;            /* ✅ pinch/pan controlado por JS */
+      touch-action: none;
     }
 
     .zoom-wrap {
@@ -438,7 +438,7 @@
     .zoom-img {
       max-width: 100%;
       max-height: 100%;
-      transform-origin: 0 0;         /* ✅ origen para translate+scale */
+      transform-origin: 0 0;
       border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
       user-select: none;
@@ -529,6 +529,58 @@
     }
 
     .toast.show { display: block }
+
+    /* ===== Modal Aviso Privacidad (AGREGADO) ===== */
+    .modal-aviso {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      padding: 20px;
+    }
+
+    .modal-aviso.open { display: flex; }
+
+    .modal-aviso-card {
+      background: #fff;
+      width: min(800px, 100%);
+      max-height: 85vh;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, .25);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-aviso-header {
+      background: var(--bdf-blue);
+      color: #fff;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+
+    .modal-aviso-close {
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .modal-aviso-body {
+      padding: 20px;
+      overflow: auto;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 
@@ -616,7 +668,13 @@
     </div>
   </div>
 
-  <div class="footer">©️ 2026. Todos los derechos reservados.</div>
+  <!-- Footer (MODIFICADO SOLO PARA AGREGAR LINK) -->
+  <div class="footer">
+    ©️ 2026. Todos los derechos reservados. -
+    <span id="openAviso" style="text-decoration:underline; cursor:pointer; font-weight:600;">
+      Aviso de Privacidad
+    </span>
+  </div>
 
   <!-- ✅ Best-effort seguridad -->
   <div class="secure-overlay" id="secureOverlay" aria-hidden="true">
@@ -651,6 +709,17 @@
         </div>
         <div class="zoom-hint">Pinch = zoom · Arrastra para mover · Doble tap = reset</div>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal Aviso de Privacidad (AGREGADO) -->
+  <div id="modalAviso" class="modal-aviso" aria-hidden="true">
+    <div class="modal-aviso-card" role="dialog" aria-modal="true" aria-label="Aviso de Privacidad">
+      <div class="modal-aviso-header">
+        <span>Aviso de Privacidad</span>
+        <span id="closeAviso" class="modal-aviso-close" aria-label="Cerrar">✖</span>
+      </div>
+      <div id="avisoContent" class="modal-aviso-body">Cargando aviso...</div>
     </div>
   </div>
 
@@ -989,7 +1058,6 @@
     }
 
     function zoomAt(clientX, clientY, newScale) {
-      // zoom relativo al punto donde está el dedo (o centro)
       const rect = modalBody.getBoundingClientRect();
       const x = clientX - rect.left;
       const y = clientY - rect.top;
@@ -998,7 +1066,6 @@
       const ns = clampScale(newScale);
       if (ns === oldScale) return;
 
-      // Ajuste para que el punto (x,y) “permanezca” en el mismo lugar visual
       tx = x - (x - tx) * (ns / oldScale);
       ty = y - (y - ty) * (ns / oldScale);
       scale = ns;
@@ -1042,22 +1109,18 @@
     zoomInBtn.addEventListener("click", zoomIn);
     zoomOutBtn.addEventListener("click", zoomOut);
 
-    // bloquear menú de “guardar” en móvil
     zoomImg.addEventListener("contextmenu", (e) => e.preventDefault());
     slideImg.addEventListener("contextmenu", (e) => e.preventDefault());
 
-    // Pointer events para pinch/pan
     modalBody.addEventListener("pointerdown", (e) => {
       if (!modalOpen()) return;
       modalBody.setPointerCapture?.(e.pointerId);
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
       if (pointers.size === 1) {
-        // pan si ya hay zoom
         isPanning = scale > 1;
         panStart = { x: e.clientX, y: e.clientY, tx, ty };
       } else if (pointers.size === 2) {
-        // pinch start
         const pts = [...pointers.values()];
         const dx = pts[0].x - pts[1].x;
         const dy = pts[0].y - pts[1].y;
@@ -1083,7 +1146,6 @@
         if (lastPinchDist > 0) {
           const factor = dist / lastPinchDist;
           const newScale = clampScale(scale * factor);
-          // zoom “anclado” al centro del pinch
           zoomAt(center.x, center.y, newScale);
         }
 
@@ -1120,11 +1182,10 @@
     modalBody.addEventListener("pointercancel", endPointer);
     modalBody.addEventListener("pointerleave", endPointer);
 
-    // Doble tap = reset
     let lastTap = 0;
     modalBody.addEventListener("pointerup", (e) => {
       if (!modalOpen()) return;
-      if (pointers.size > 0) return; // si aún hay dedo, no
+      if (pointers.size > 0) return;
       const now = Date.now();
       if (now - lastTap < 280) resetTransform();
       lastTap = now;
@@ -1157,7 +1218,6 @@
 
     const SECURITY_TEXT = "Accion no permitida, Su organizacion no permite la captura de pantalla ni la grabación";
 
-    // 1x1 PNG negro
     const BLACK_PIXEL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMB/af8Z9kAAAAASUVORK5CYII=";
 
     let locked = false;
@@ -1178,7 +1238,6 @@
       secureMsg.textContent = reason;
       secureOverlay.classList.add("show");
 
-      // guarda src actuales y pinta negro
       lastSlideSrc = slideImg.getAttribute("src") || "";
       lastZoomSrc = zoomImg.getAttribute("src") || "";
 
@@ -1194,7 +1253,6 @@
 
       secureOverlay.classList.remove("show");
 
-      // restaura imagen si existía
       if (lastSlideSrc) slideImg.src = lastSlideSrc;
       if (lastZoomSrc) zoomImg.src = lastZoomSrc;
 
@@ -1202,7 +1260,6 @@
       lastZoomSrc = "";
     }
 
-    // Best-effort triggers (NO es “screenshot detectado”, es lo más cercano permitido)
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) lockContent(SECURITY_TEXT);
       else unlockContent();
@@ -1211,7 +1268,6 @@
     window.addEventListener("blur", () => lockContent(SECURITY_TEXT));
     window.addEventListener("focus", () => unlockContent());
 
-    // Desktop/teclado: intenta bloquear prints
     window.addEventListener("keydown", (e) => {
       const k = String(e.key || "").toLowerCase();
       const isPrint =
@@ -1225,7 +1281,6 @@
       }
     }, { passive: false });
 
-    // Evita “drag/save” por gestures comunes
     ["copy", "cut", "dragstart"].forEach(evt =>
       document.addEventListener(evt, (e) => e.preventDefault())
     );
@@ -1234,6 +1289,48 @@
     const defaultArea = session?.areaLabel || areaSel.value;
     areaSel.value = defaultArea;
     mountArea(defaultArea);
+  </script>
+
+  <!-- JS Modal Aviso (AGREGADO) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const modalAviso = document.getElementById("modalAviso");
+      const openAviso = document.getElementById("openAviso");
+      const closeAviso = document.getElementById("closeAviso");
+      const avisoContent = document.getElementById("avisoContent");
+
+      if (!modalAviso || !openAviso || !closeAviso || !avisoContent) return;
+
+      const openModalAviso = async () => {
+        modalAviso.classList.add("open");
+        modalAviso.setAttribute("aria-hidden", "false");
+        avisoContent.textContent = "Cargando aviso...";
+
+        try {
+          const res = await fetch("/comunicados/docs/aviso.txt?t=" + Date.now(), { cache: "no-store" });
+          const text = await res.text();
+          avisoContent.textContent = text;
+        } catch (e) {
+          avisoContent.textContent = "No se pudo cargar el Aviso de Privacidad.";
+        }
+      };
+
+      const closeModalAviso = () => {
+        modalAviso.classList.remove("open");
+        modalAviso.setAttribute("aria-hidden", "true");
+      };
+
+      openAviso.addEventListener("click", openModalAviso);
+      closeAviso.addEventListener("click", closeModalAviso);
+
+      modalAviso.addEventListener("click", (e) => {
+        if (e.target === modalAviso) closeModalAviso();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modalAviso.classList.contains("open")) closeModalAviso();
+      });
+    });
   </script>
 
   <script>
@@ -1246,4 +1343,3 @@
 </body>
 
 </html>
-
