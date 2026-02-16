@@ -328,11 +328,9 @@
                 grid-template-columns: 1fr
             }
 
-            /* ✅ En móvil: que la imagen NO sea un monstruo, pero sí completa */
             .left {
                 height: clamp(220px, 38vh, 420px);
                 aspect-ratio: 4 / 3;
-                /* ayuda a mantener proporción */
             }
 
             .panel {
@@ -355,16 +353,13 @@
             }
         }
 
-        /* ✅ SOLO en móvil/tablet */
         @media (max-width: 980px) {
-
             .container {
                 grid-template-columns: 1fr;
             }
 
             .left {
                 aspect-ratio: auto;
-                /* deja que crezca natural */
                 height: auto;
                 max-height: none;
             }
@@ -372,7 +367,6 @@
             .left img {
                 height: auto;
                 object-fit: contain;
-                /* móvil sin recorte */
             }
         }
     </style>
@@ -426,6 +420,16 @@
         </span>
     </div>
 
+    <!-- Modal Aviso de Privacidad (✅ AHORA antes de los scripts) -->
+    <div id="modalAviso" class="modal-aviso" aria-hidden="true">
+        <div class="modal-aviso-card" role="dialog" aria-modal="true" aria-label="Aviso de Privacidad">
+            <div class="modal-aviso-header">
+                <span>Aviso de Privacidad</span>
+                <span id="closeAviso" class="modal-aviso-close" aria-label="Cerrar">✖</span>
+            </div>
+            <div id="avisoContent" class="modal-aviso-body">Cargando aviso...</div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
@@ -539,32 +543,43 @@
     </script>
 
     <script>
-        const modalAviso = document.getElementById("modalAviso");
-        const openAviso = document.getElementById("openAviso");
-        const closeAviso = document.getElementById("closeAviso");
-        const avisoContent = document.getElementById("avisoContent");
+        document.addEventListener("DOMContentLoaded", () => {
+            const modalAviso = document.getElementById("modalAviso");
+            const openAviso = document.getElementById("openAviso");
+            const closeAviso = document.getElementById("closeAviso");
+            const avisoContent = document.getElementById("avisoContent");
 
-        openAviso.addEventListener("click", async () => {
-            modalAviso.classList.add("open");
-            avisoContent.textContent = "Cargando aviso...";
+            if (!modalAviso || !openAviso || !closeAviso || !avisoContent) return;
 
-            try {
-                const res = await fetch("/comunicados/docs/aviso.txt?t=" + Date.now());
-                const text = await res.text();
-                avisoContent.textContent = text;
-            } catch (e) {
-                avisoContent.textContent = "No se pudo cargar el Aviso de Privacidad.";
-            }
-        });
+            const openModal = async () => {
+                modalAviso.classList.add("open");
+                modalAviso.setAttribute("aria-hidden", "false");
+                avisoContent.textContent = "Cargando aviso...";
 
-        closeAviso.addEventListener("click", () => {
-            modalAviso.classList.remove("open");
-        });
+                try {
+                    const res = await fetch("/comunicados/docs/aviso.txt?t=" + Date.now(), { cache: "no-store" });
+                    const text = await res.text();
+                    avisoContent.textContent = text;
+                } catch (e) {
+                    avisoContent.textContent = "No se pudo cargar el Aviso de Privacidad.";
+                }
+            };
 
-        modalAviso.addEventListener("click", (e) => {
-            if (e.target === modalAviso) {
+            const closeModal = () => {
                 modalAviso.classList.remove("open");
-            }
+                modalAviso.setAttribute("aria-hidden", "true");
+            };
+
+            openAviso.addEventListener("click", openModal);
+            closeAviso.addEventListener("click", closeModal);
+
+            modalAviso.addEventListener("click", (e) => {
+                if (e.target === modalAviso) closeModal();
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && modalAviso.classList.contains("open")) closeModal();
+            });
         });
     </script>
 
@@ -575,23 +590,6 @@
                 .catch(err => console.error("❌ Error al registrar SW", err));
         }
     </script>
-
-    <!-- Modal Aviso de Privacidad -->
-    <div id="modalAviso" class="modal-aviso">
-        <div class="modal-aviso-card">
-
-            <div class="modal-aviso-header">
-                <span>Aviso de Privacidad</span>
-                <span id="closeAviso" class="modal-aviso-close">✖</span>
-            </div>
-
-            <div id="avisoContent" class="modal-aviso-body">
-                Cargando aviso...
-            </div>
-
-        </div>
-    </div>
-
 
 </body>
 
