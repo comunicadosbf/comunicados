@@ -947,6 +947,11 @@
 
     swipeArea.addEventListener("pointerdown", (e) => {
       if (modalOpen()) return;
+
+      // ✅ FIX: si el click es sobre la imagen, NO capturamos el pointer
+      // porque eso rompe el "click" en desktop (se lo queda el swipeArea)
+      if (e.target === slideImg) return;
+
       swipeArea.setPointerCapture?.(e.pointerId);
       onStart(e.clientX, e.clientY);
     });
@@ -1044,6 +1049,8 @@
 
     function applyTransform() {
       zoomImg.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+      // ✅ UX desktop: cursor cambia si ya hay zoom
+      zoomImg.style.cursor = scale > 1 ? "grab" : "default";
     }
 
     function resetTransform() {
@@ -1103,6 +1110,14 @@
     }
 
     slideImg.addEventListener("click", openModal);
+
+    // ✅ FIX extra: en desktop algunos browsers no disparan click por captura/gestos
+    // abrimos modal también con pointerup del mouse directamente sobre la imagen
+    slideImg.addEventListener("pointerup", (e) => {
+      if (modalOpen()) return;
+      if (e.pointerType === "mouse") openModal();
+    });
+
     modalClose.addEventListener("click", closeModal);
     modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 
@@ -1112,6 +1127,34 @@
     zoomImg.addEventListener("contextmenu", (e) => e.preventDefault());
     slideImg.addEventListener("contextmenu", (e) => e.preventDefault());
 
+    // ==========================
+    // ✅ ZOOM EN WEB: rueda + doble click
+    // ==========================
+    modalBody.addEventListener("wheel", (e) => {
+      if (!modalOpen()) return;
+      e.preventDefault(); // evita scroll detrás del modal
+
+      const delta = Math.sign(e.deltaY); // + abajo, - arriba
+      const step = 0.22; // sensibilidad (ajústala si quieres)
+
+      const nextScale = delta < 0
+        ? +(scale + step).toFixed(2)
+        : +(scale - step).toFixed(2);
+
+      zoomAt(e.clientX, e.clientY, nextScale);
+
+      if (scale === 1) { tx = 0; ty = 0; applyTransform(); }
+    }, { passive: false });
+
+    modalBody.addEventListener("dblclick", (e) => {
+      if (!modalOpen()) return;
+      if (scale <= 1.01) zoomAt(e.clientX, e.clientY, 2.5);
+      else resetTransform();
+    });
+
+    // ==========================
+    // Pinch / Pan
+    // ==========================
     modalBody.addEventListener("pointerdown", (e) => {
       if (!modalOpen()) return;
       modalBody.setPointerCapture?.(e.pointerId);
