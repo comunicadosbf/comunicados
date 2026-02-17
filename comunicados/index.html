@@ -419,25 +419,31 @@
 
     .modal-top .mini:hover { background: rgba(255, 255, 255, .14) }
 
+    /* ✅ CAMBIO: permitir scroll natural cuando scale=1 (imagen larga) */
     .modal-body {
       flex: 1;
       background: #0b1220;
-      overflow: hidden;
+      overflow: auto;            /* antes: hidden */
       position: relative;
       touch-action: none;
     }
 
+    /* ✅ CAMBIO: que la imagen larga pueda “bajar” y el contenedor haga scroll */
     .zoom-wrap {
       width: 100%;
-      height: 100%;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
+      min-height: 100%;
+      display: flex;             /* antes: grid */
+      justify-content: center;
+      align-items: flex-start;   /* antes: center */
+      overflow: visible;
+      padding: 12px;
     }
 
+    /* ✅ CAMBIO: que no fuerce max-height=100% (porque recorta la altura) */
     .zoom-img {
       max-width: 100%;
-      max-height: 100%;
+      max-height: none;          /* antes: 100% */
+      height: auto;
       transform-origin: 0 0;
       border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
@@ -588,7 +594,7 @@
   <div class="topbar">
     <div class="topbar-inner">
       <a class="brand" href="/comunicados/" title="Inicio">
-        <img src="/comunicados/img/bf.png" alt="BF">        
+        <img src="/comunicados/img/bf.png" alt="BF">
       </a>
 
       <div class="actions">
@@ -707,7 +713,7 @@
         <div class="zoom-wrap">
           <img class="zoom-img" id="zoomImg" alt="Comunicado ampliado" />
         </div>
-        <div class="zoom-hint">Pinch = zoom · Arrastra para mover · Doble tap = reset</div>
+        <div class="zoom-hint">Pinch = zoom · Arrastra para mover · Doble tap = reset · Wheel = zoom</div>
       </div>
     </div>
   </div>
@@ -947,11 +953,6 @@
 
     swipeArea.addEventListener("pointerdown", (e) => {
       if (modalOpen()) return;
-
-      // ✅ FIX: si el click es sobre la imagen, NO capturamos el pointer
-      // porque eso rompe el "click" en desktop (se lo queda el swipeArea)
-      if (e.target === slideImg) return;
-
       swipeArea.setPointerCapture?.(e.pointerId);
       onStart(e.clientX, e.clientY);
     });
@@ -1015,7 +1016,7 @@
     });
 
     // ==========================
-    // ✅ Modal + Pinch Zoom (móvil)
+    // ✅ Modal + Zoom (web + móvil)
     // ==========================
     const modal = $("modal");
     const modalClose = $("modalClose");
@@ -1047,10 +1048,23 @@
       modalCounter.textContent = `${idx + 1}/${items.length}`;
     }
 
+    function setModalOverflowMode() {
+      // ✅ Si no hay zoom, scroll natural para comunicados largos.
+      // ✅ Si hay zoom (>1), bloquea scroll para que arrastre sea suave.
+      if (scale <= 1) {
+        modalBody.style.overflow = "auto";
+        modalBody.style.cursor = "auto";
+      } else {
+        modalBody.style.overflow = "hidden";
+        modalBody.style.cursor = isPanning ? "grabbing" : "grab";
+      }
+    }
+
     function applyTransform() {
+      // cuando scale=1, lo dejamos en (0,0) y scroll hace el resto
+      if (scale <= 1) { tx = 0; ty = 0; }
       zoomImg.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
-      // ✅ UX desktop: cursor cambia si ya hay zoom
-      zoomImg.style.cursor = scale > 1 ? "grab" : "default";
+      setModalOverflowMode();
     }
 
     function resetTransform() {
@@ -1058,6 +1072,9 @@
       tx = 0;
       ty = 0;
       applyTransform();
+      // ✅ vuelve al top del scroll cuando reseteas
+      modalBody.scrollTop = 0;
+      modalBody.scrollLeft = 0;
     }
 
     function clampScale(s) {
@@ -1066,12 +1083,21 @@
 
     function zoomAt(clientX, clientY, newScale) {
       const rect = modalBody.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
+      const x = clientX - rect.left + modalBody.scrollLeft;
+      const y = clientY - rect.top + modalBody.scrollTop;
 
       const oldScale = scale;
       const ns = clampScale(newScale);
       if (ns === oldScale) return;
+
+      // cambia a modo “sin scroll” cuando empezamos a hacer zoom real
+      if (oldScale <= 1 && ns > 1) {
+        // ancla donde estás viendo
+        tx = -modalBody.scrollLeft;
+        ty = -modalBody.scrollTop;
+        modalBody.scrollTop = 0;
+        modalBody.scrollLeft = 0;
+      }
 
       tx = x - (x - tx) * (ns / oldScale);
       ty = y - (y - ty) * (ns / oldScale);
@@ -1096,9 +1122,10 @@
       updateModalCounter();
       zoomImg.src = it.url;
       zoomImg.alt = it?.title || "Comunicado";
-      resetTransform();
       modal.classList.add("open");
       document.body.style.overflow = "hidden";
+      // ✅ importantísimo: resetea scroll + transform siempre al abrir
+      resetTransform();
     }
 
     function closeModal() {
@@ -1109,13 +1136,28 @@
       setTimeout(() => { zoomImg.removeAttribute("src"); }, 120);
     }
 
-    slideImg.addEventListener("click", openModal);
+    // ✅ FIX: en web, el swipeArea captura el pointer y “mata” el click.
+    //     Aquí evitamos propagación para que SIEMPRE abra modal en desktop.
+    let _down = null;
+    slideImg.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+      if (e.button !== 0) return;
+      _down = { x: e.clientX, y: e.clientY };
+    });
 
-    // ✅ FIX extra: en desktop algunos browsers no disparan click por captura/gestos
-    // abrimos modal también con pointerup del mouse directamente sobre la imagen
     slideImg.addEventListener("pointerup", (e) => {
-      if (modalOpen()) return;
-      if (e.pointerType === "mouse") openModal();
+      e.stopPropagation();
+      if (!_down) return;
+      const dx = Math.abs(e.clientX - _down.x);
+      const dy = Math.abs(e.clientY - _down.y);
+      _down = null;
+      if (dx < 8 && dy < 8) openModal();
+    });
+
+    // (se deja tu click también, pero ya no dependemos de él en web)
+    slideImg.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openModal();
     });
 
     modalClose.addEventListener("click", closeModal);
@@ -1127,42 +1169,30 @@
     zoomImg.addEventListener("contextmenu", (e) => e.preventDefault());
     slideImg.addEventListener("contextmenu", (e) => e.preventDefault());
 
-    // ==========================
-    // ✅ ZOOM EN WEB: rueda + doble click
-    // ==========================
+    // ✅ Zoom con rueda en PC (trackpad/mouse)
     modalBody.addEventListener("wheel", (e) => {
       if (!modalOpen()) return;
-      e.preventDefault(); // evita scroll detrás del modal
-
-      const delta = Math.sign(e.deltaY); // + abajo, - arriba
-      const step = 0.22; // sensibilidad (ajústala si quieres)
-
-      const nextScale = delta < 0
-        ? +(scale + step).toFixed(2)
-        : +(scale - step).toFixed(2);
-
-      zoomAt(e.clientX, e.clientY, nextScale);
-
-      if (scale === 1) { tx = 0; ty = 0; applyTransform(); }
+      // si vienes en modo scroll (scale=1) y usas wheel:
+      // - si presionas CTRL/Meta (trackpad pinch) o quieres zoom normal, hacemos zoom
+      // - si no, dejamos scroll natural
+      const wantsZoom = e.ctrlKey || e.metaKey; // pinch-to-zoom en trackpad
+      if (!wantsZoom) return;
+      e.preventDefault();
+      const step = (e.deltaY < 0 ? 0.28 : -0.28);
+      zoomAt(e.clientX, e.clientY, +(scale + step).toFixed(2));
     }, { passive: false });
 
-    modalBody.addEventListener("dblclick", (e) => {
-      if (!modalOpen()) return;
-      if (scale <= 1.01) zoomAt(e.clientX, e.clientY, 2.5);
-      else resetTransform();
-    });
-
-    // ==========================
-    // Pinch / Pan
-    // ==========================
+    // Pointer gestures (pinch / pan)
     modalBody.addEventListener("pointerdown", (e) => {
       if (!modalOpen()) return;
       modalBody.setPointerCapture?.(e.pointerId);
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
       if (pointers.size === 1) {
+        // ✅ en web: pan solo cuando ya estás en zoom real
         isPanning = scale > 1;
         panStart = { x: e.clientX, y: e.clientY, tx, ty };
+        setModalOverflowMode();
       } else if (pointers.size === 2) {
         const pts = [...pointers.values()];
         const dx = pts[0].x - pts[1].x;
@@ -1195,6 +1225,7 @@
         lastPinchDist = dist;
         lastCenter = center;
         isPanning = false;
+        setModalOverflowMode();
         return;
       }
 
@@ -1218,6 +1249,7 @@
 
       if (pointers.size === 0) {
         isPanning = false;
+        setModalOverflowMode();
       }
     }
 
