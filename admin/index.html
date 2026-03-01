@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portal de Comunicados</title>
 
-    <!-- ✅ GitHub Pages repo: /comunicados -->
+    
     <link rel="manifest" href="/comunicados/manifest.json">
     <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
     <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
@@ -423,9 +423,9 @@
 <body>
     <div class="topbar">
         <div class="topbar-inner">
-            <!-- ✅ Logo correcto -->
-            <a class="brand" href="" title="Volver">
-                <img src="/comunicados/img/bf.png" alt="Beiersdorf" />
+            
+            <a class="brand" href="/comunicados/login/" title="Volver">
+                <img src="/comunicados/img/bf.png" alt="BF" />
             </a>
 
             <div class="header-actions">
@@ -528,7 +528,7 @@
         </div>
     </div>
 
-    <!-- Footer (MODIFICADO SOLO PARA AGREGAR LINK) -->
+    
     <div class="footer">
         ©️ 2026. Todos los derechos reservados. -
         <span id="openAviso" style="text-decoration:underline; cursor:pointer; font-weight:600;">
@@ -536,7 +536,7 @@
         </span>
     </div>
 
-    <!-- Modal Aviso de Privacidad (AGREGADO) -->
+    
     <div id="modalAviso" class="modal-aviso" aria-hidden="true">
         <div class="modal-aviso-card" role="dialog" aria-modal="true" aria-label="Aviso de Privacidad">
             <div class="modal-aviso-header">
@@ -577,7 +577,7 @@
         // ==============================
         const session = JSON.parse(localStorage.getItem("session") || "null");
         if (!session || session.role !== "admin") {
-            window.location.href = "/comunicados/login/"; // ✅ FIX
+            window.location.href = "/comunicados/login/"; 
         }
 
         const adminName = session?.nombre || session?.name || "Admin";
@@ -586,7 +586,7 @@
 
         document.getElementById("btnLogout").addEventListener("click", () => {
             localStorage.removeItem("session");
-            window.location.href = "/comunicados/login/"; // ✅ FIX
+            window.location.href = "/comunicados/login/"; 
         });
 
         // ==============================
@@ -934,7 +934,7 @@
         mountListListener();
     </script>
 
-    <!-- Script Modal Aviso (AGREGADO) -->
+    
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const modalAviso = document.getElementById("modalAviso");
@@ -977,7 +977,7 @@
     </script>
 
     <script>
-        // ✅ FIX: SW desde raíz del repo
+        
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("/comunicados/sw.js")
                 .then(() => console.log("✅ Service Worker registrado"))
@@ -987,3 +987,4 @@
 
 </body>
 </html>
+
