@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Comunicados</title>
 
-  <!-- ✅ App vive en /comunicados/ -->
+  
   <link rel="manifest" href="/comunicados/manifest.json">
   <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
@@ -419,16 +419,16 @@
 
     .modal-top .mini:hover { background: rgba(255, 255, 255, .14) }
 
-    /* ✅ CAMBIO: permitir scroll natural cuando scale=1 (imagen larga) */
+    
     .modal-body {
       flex: 1;
       background: #0b1220;
-      overflow: auto;            /* antes: hidden */
+      overflow: auto;            
       position: relative;
       touch-action: none;
     }
 
-    /* ✅ CAMBIO: que la imagen larga pueda “bajar” y el contenedor haga scroll */
+    
     .zoom-wrap {
       width: 100%;
       min-height: 100%;
@@ -439,10 +439,10 @@
       padding: 12px;
     }
 
-    /* ✅ CAMBIO: que no fuerce max-height=100% (porque recorta la altura) */
+    
     .zoom-img {
       max-width: 100%;
-      max-height: none;          /* antes: 100% */
+      max-height: none;          
       height: auto;
       transform-origin: 0 0;
       border-radius: 12px;
@@ -593,7 +593,7 @@
 <body>
   <div class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="/comunicados/" title="Inicio">
+      <a class="brand" href="/comunicados/comunicados/" title="Inicio">
         <img src="/comunicados/img/bf.png" alt="BF">
       </a>
 
@@ -676,7 +676,7 @@
     </div>
   </div>
 
-  <!-- Footer (MODIFICADO SOLO PARA AGREGAR LINK) -->
+  
   <div class="footer">
     ©️ 2026. Todos los derechos reservados. -
     <span id="openAviso" style="text-decoration:underline; cursor:pointer; font-weight:600;">
@@ -684,7 +684,7 @@
     </span>
   </div>
 
-  <!-- ✅ Best-effort seguridad -->
+  
   <div class="secure-overlay" id="secureOverlay" aria-hidden="true">
     <div class="secure-card">
       <div class="secure-title">Acción no permitida</div>
@@ -700,11 +700,11 @@
     <div class="modal-card" role="dialog" aria-modal="true" aria-label="Vista ampliada">
       <div class="modal-top">
         <div class="left">
-          <!-- ✅ quitamos el nombre del comunicado -->
+          
           <span class="badge" id="modalCounter">1/1</span>
         </div>
         <div class="right">
-          <!-- ✅ solo - + y Cerrar -->
+          
           <button class="mini" id="zoomOut" type="button">-</button>
           <button class="mini" id="zoomIn" type="button">+</button>
           <button class="mini" id="modalClose" type="button">Cerrar ✖</button>
@@ -1028,7 +1028,7 @@
     const zoomOutBtn = $("zoomOut");
     const modalBody = $("modalBody");
 
-    // estado transform
+    
     let scale = 1;
     let tx = 0;
     let ty = 0;
@@ -1036,7 +1036,7 @@
     const minScale = 1;
     const maxScale = 6;
 
-    // pointers para pinch/pan
+    
     const pointers = new Map();
     let lastPinchDist = 0;
     let lastCenter = null;
@@ -1051,8 +1051,8 @@
     }
 
     function setModalOverflowMode() {
-      // ✅ Si no hay zoom, scroll natural para comunicados largos.
-      // ✅ Si hay zoom (>1), bloquea scroll para que arrastre sea suave.
+      
+      
       if (scale <= 1) {
         modalBody.style.overflow = "auto";
         modalBody.style.cursor = "auto";
@@ -1063,7 +1063,7 @@
     }
 
     function applyTransform() {
-      // cuando scale=1, lo dejamos en (0,0) y scroll hace el resto
+      
       if (scale <= 1) { tx = 0; ty = 0; }
       zoomImg.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
       setModalOverflowMode();
@@ -1074,7 +1074,7 @@
       tx = 0;
       ty = 0;
       applyTransform();
-      // ✅ vuelve al top del scroll cuando reseteas
+      
       modalBody.scrollTop = 0;
       modalBody.scrollLeft = 0;
     }
@@ -1092,9 +1092,9 @@
       const ns = clampScale(newScale);
       if (ns === oldScale) return;
 
-      // cambia a modo “sin scroll” cuando empezamos a hacer zoom real
+      
       if (oldScale <= 1 && ns > 1) {
-        // ancla donde estás viendo
+        
         tx = -modalBody.scrollLeft;
         ty = -modalBody.scrollTop;
         modalBody.scrollTop = 0;
@@ -1126,7 +1126,7 @@
       zoomImg.alt = it?.title || "Comunicado";
       modal.classList.add("open");
       document.body.style.overflow = "hidden";
-      // ✅ importantísimo: resetea scroll + transform siempre al abrir
+      
       resetTransform();
     }
 
@@ -1138,8 +1138,8 @@
       setTimeout(() => { zoomImg.removeAttribute("src"); }, 120);
     }
 
-    // ✅ FIX: en web, el swipeArea captura el pointer y “mata” el click.
-    //     Aquí evitamos propagación para que SIEMPRE abra modal en desktop.
+    
+    
     let _down = null;
     slideImg.addEventListener("pointerdown", (e) => {
       e.stopPropagation();
@@ -1156,7 +1156,7 @@
       if (dx < 8 && dy < 8) openModal();
     });
 
-    // (se deja tu click también, pero ya no dependemos de él en web)
+    
     slideImg.addEventListener("click", (e) => {
       e.stopPropagation();
       openModal();
@@ -1171,27 +1171,27 @@
     zoomImg.addEventListener("contextmenu", (e) => e.preventDefault());
     slideImg.addEventListener("contextmenu", (e) => e.preventDefault());
 
-    // ✅ Zoom con rueda en PC (trackpad/mouse)
+    
     modalBody.addEventListener("wheel", (e) => {
       if (!modalOpen()) return;
-      // si vienes en modo scroll (scale=1) y usas wheel:
-      // - si presionas CTRL/Meta (trackpad pinch) o quieres zoom normal, hacemos zoom
-      // - si no, dejamos scroll natural
-      const wantsZoom = e.ctrlKey || e.metaKey; // pinch-to-zoom en trackpad
+      
+      
+      
+      const wantsZoom = e.ctrlKey || e.metaKey; 
       if (!wantsZoom) return;
       e.preventDefault();
       const step = (e.deltaY < 0 ? 0.28 : -0.28);
       zoomAt(e.clientX, e.clientY, +(scale + step).toFixed(2));
     }, { passive: false });
 
-    // Pointer gestures (pinch / pan)
+    
     modalBody.addEventListener("pointerdown", (e) => {
       if (!modalOpen()) return;
       modalBody.setPointerCapture?.(e.pointerId);
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
       if (pointers.size === 1) {
-        // ✅ en web: pan solo cuando ya estás en zoom real
+        
         isPanning = scale > 1;
         panStart = { x: e.clientX, y: e.clientY, tx, ty };
         setModalOverflowMode();
@@ -1420,4 +1420,5 @@
 </body>
 
 </html>
+
 
