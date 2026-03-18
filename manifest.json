@@ -1,6 +1,6 @@
 {
   "name": "Comunicados BMM",
-  "short_name": "Comunicados",
+  "short_name": "BConecta",
   "start_url": "/comunicados/login/",
   "scope": "/comunicados/",
   "display": "standalone",
