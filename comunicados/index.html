@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Comunicados</title>
 
-  
+
   <link rel="manifest" href="/comunicados/manifest.json">
   <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
@@ -24,9 +24,14 @@
       --border: 1px solid rgba(0, 0, 0, .08);
     }
 
-    * { box-sizing: border-box }
+    * {
+      box-sizing: border-box
+    }
 
-    html, body { height: 100% }
+    html,
+    body {
+      height: 100%
+    }
 
     body {
       margin: 0;
@@ -115,7 +120,9 @@
       cursor: pointer;
     }
 
-    .btn-logout:hover { background: rgba(255, 255, 255, .14) }
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, .14)
+    }
 
     /* ===== Layout ===== */
     .wrap {
@@ -134,7 +141,9 @@
     }
 
     @media(max-width: 980px) {
-      .container { grid-template-columns: 1fr }
+      .container {
+        grid-template-columns: 1fr
+      }
     }
 
     .card {
@@ -151,7 +160,8 @@
       background: #fff;
     }
 
-    .card-head h1, .card-head h2 {
+    .card-head h1,
+    .card-head h2 {
       margin: 0;
       font-size: 18px;
       letter-spacing: .4px;
@@ -164,7 +174,9 @@
       color: rgba(11, 18, 32, .70);
     }
 
-    .card-body { padding: 16px 18px 18px }
+    .card-body {
+      padding: 16px 18px 18px
+    }
 
     label {
       display: block;
@@ -285,7 +297,9 @@
     }
 
     /* carousel area */
-    .stage { padding: 14px }
+    .stage {
+      padding: 14px
+    }
 
     .swipe-area {
       border-radius: 14px;
@@ -299,8 +313,17 @@
       touch-action: pan-y;
     }
 
-    @media(max-width: 980px) { .swipe-area { min-height: 360px } }
-    @media(max-width: 560px) { .swipe-area { min-height: 300px } }
+    @media(max-width: 980px) {
+      .swipe-area {
+        min-height: 360px
+      }
+    }
+
+    @media(max-width: 560px) {
+      .swipe-area {
+        min-height: 300px
+      }
+    }
 
     .slide {
       width: 100%;
@@ -362,7 +385,9 @@
       padding: 16px;
     }
 
-    .modal.open { display: flex }
+    .modal.open {
+      display: flex
+    }
 
     .modal-card {
       width: min(1200px, 100%);
@@ -417,32 +442,36 @@
       user-select: none;
     }
 
-    .modal-top .mini:hover { background: rgba(255, 255, 255, .14) }
+    .modal-top .mini:hover {
+      background: rgba(255, 255, 255, .14)
+    }
 
-    
+
     .modal-body {
       flex: 1;
       background: #0b1220;
-      overflow: auto;            
+      overflow: auto;
       position: relative;
       touch-action: none;
     }
 
-    
+
     .zoom-wrap {
       width: 100%;
       min-height: 100%;
-      display: flex;             /* antes: grid */
+      display: flex;
+      /* antes: grid */
       justify-content: center;
-      align-items: flex-start;   /* antes: center */
+      align-items: flex-start;
+      /* antes: center */
       overflow: visible;
       padding: 12px;
     }
 
-    
+
     .zoom-img {
       max-width: 100%;
-      max-height: none;          
+      max-height: none;
       height: auto;
       transform-origin: 0 0;
       border-radius: 12px;
@@ -490,7 +519,9 @@
       text-align: center;
     }
 
-    .secure-overlay.show { display: flex }
+    .secure-overlay.show {
+      display: flex
+    }
 
     .secure-card {
       max-width: 520px;
@@ -534,7 +565,9 @@
       text-align: center;
     }
 
-    .toast.show { display: block }
+    .toast.show {
+      display: block
+    }
 
     /* ===== Modal Aviso Privacidad (AGREGADO) ===== */
     .modal-aviso {
@@ -548,7 +581,9 @@
       padding: 20px;
     }
 
-    .modal-aviso.open { display: flex; }
+    .modal-aviso.open {
+      display: flex;
+    }
 
     .modal-aviso-card {
       background: #fff;
@@ -623,6 +658,8 @@
             <option value="CI">CI</option>
             <option value="Comedor">Comedor</option>
             <option value="Compounding">Compounding</option>
+            <option value="Diversidad, Equidad e Inclusión DE&I">Diversidad, Equidad e Inclusión DE&I</option>
+            <option value="Eventos">Eventos</option>
             <option value="F&P">F&P</option>
             <option value="HR">HR</option>
             <option value="IT">IT</option>
@@ -676,7 +713,7 @@
     </div>
   </div>
 
-  
+
   <div class="footer">
     ©️ 2026. Todos los derechos reservados. -
     <span id="openAviso" style="text-decoration:underline; cursor:pointer; font-weight:600;">
@@ -684,7 +721,7 @@
     </span>
   </div>
 
-  
+
   <div class="secure-overlay" id="secureOverlay" aria-hidden="true">
     <div class="secure-card">
       <div class="secure-title">Acción no permitida</div>
@@ -700,11 +737,11 @@
     <div class="modal-card" role="dialog" aria-modal="true" aria-label="Vista ampliada">
       <div class="modal-top">
         <div class="left">
-          
+
           <span class="badge" id="modalCounter">1/1</span>
         </div>
         <div class="right">
-          
+
           <button class="mini" id="zoomOut" type="button">-</button>
           <button class="mini" id="zoomIn" type="button">+</button>
           <button class="mini" id="modalClose" type="button">Cerrar ✖</button>
@@ -801,6 +838,8 @@
         "CI": "ci",
         "Comedor": "comedor",
         "Compounding": "compounding",
+        "Diversidad, Equidad e Inclusión DE&I": "dei",
+        "Eventos": "eventos",
         "F&P": "fp",
         "HR": "hr",
         "IT": "it",
@@ -1028,7 +1067,7 @@
     const zoomOutBtn = $("zoomOut");
     const modalBody = $("modalBody");
 
-    
+
     let scale = 1;
     let tx = 0;
     let ty = 0;
@@ -1036,7 +1075,7 @@
     const minScale = 1;
     const maxScale = 6;
 
-    
+
     const pointers = new Map();
     let lastPinchDist = 0;
     let lastCenter = null;
@@ -1051,8 +1090,8 @@
     }
 
     function setModalOverflowMode() {
-      
-      
+
+
       if (scale <= 1) {
         modalBody.style.overflow = "auto";
         modalBody.style.cursor = "auto";
@@ -1063,7 +1102,7 @@
     }
 
     function applyTransform() {
-      
+
       if (scale <= 1) { tx = 0; ty = 0; }
       zoomImg.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
       setModalOverflowMode();
@@ -1074,7 +1113,7 @@
       tx = 0;
       ty = 0;
       applyTransform();
-      
+
       modalBody.scrollTop = 0;
       modalBody.scrollLeft = 0;
     }
@@ -1092,9 +1131,9 @@
       const ns = clampScale(newScale);
       if (ns === oldScale) return;
 
-      
+
       if (oldScale <= 1 && ns > 1) {
-        
+
         tx = -modalBody.scrollLeft;
         ty = -modalBody.scrollTop;
         modalBody.scrollTop = 0;
@@ -1126,7 +1165,7 @@
       zoomImg.alt = it?.title || "Comunicado";
       modal.classList.add("open");
       document.body.style.overflow = "hidden";
-      
+
       resetTransform();
     }
 
@@ -1138,8 +1177,8 @@
       setTimeout(() => { zoomImg.removeAttribute("src"); }, 120);
     }
 
-    
-    
+
+
     let _down = null;
     slideImg.addEventListener("pointerdown", (e) => {
       e.stopPropagation();
@@ -1156,7 +1195,7 @@
       if (dx < 8 && dy < 8) openModal();
     });
 
-    
+
     slideImg.addEventListener("click", (e) => {
       e.stopPropagation();
       openModal();
@@ -1171,27 +1210,27 @@
     zoomImg.addEventListener("contextmenu", (e) => e.preventDefault());
     slideImg.addEventListener("contextmenu", (e) => e.preventDefault());
 
-    
+
     modalBody.addEventListener("wheel", (e) => {
       if (!modalOpen()) return;
-      
-      
-      
-      const wantsZoom = e.ctrlKey || e.metaKey; 
+
+
+
+      const wantsZoom = e.ctrlKey || e.metaKey;
       if (!wantsZoom) return;
       e.preventDefault();
       const step = (e.deltaY < 0 ? 0.28 : -0.28);
       zoomAt(e.clientX, e.clientY, +(scale + step).toFixed(2));
     }, { passive: false });
 
-    
+
     modalBody.addEventListener("pointerdown", (e) => {
       if (!modalOpen()) return;
       modalBody.setPointerCapture?.(e.pointerId);
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
       if (pointers.size === 1) {
-        
+
         isPanning = scale > 1;
         panStart = { x: e.clientX, y: e.clientY, tx, ty };
         setModalOverflowMode();
@@ -1420,5 +1459,3 @@
 </body>
 
 </html>
-
-
