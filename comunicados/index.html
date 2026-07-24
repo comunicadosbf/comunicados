@@ -622,6 +622,70 @@
       color: #333;
       white-space: pre-wrap;
     }
+
+    /* ===== Tarjeta de PDF (AGREGADO) ===== */
+    .pdf-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .pdf-card-icon {
+      width: 64px;
+      height: 76px;
+      border-radius: 8px;
+      background: #d64545;
+      color: #fff;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: .4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .15);
+    }
+
+    .pdf-card-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: #0b1b55;
+      max-width: 320px;
+      word-break: break-word;
+    }
+
+    .pdf-card-sub {
+      font-size: 12px;
+      color: rgba(11, 18, 32, .65);
+      margin-top: -6px;
+    }
+
+    .pdf-card-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .pdf-card-actions .btn,
+    .pdf-card-actions .btn-light {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    /* ===== Marca de agua (AGREGADO) ===== */
+    .watermark-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      background-repeat: repeat;
+      background-position: 0 0;
+    }
   </style>
 </head>
 
@@ -704,6 +768,17 @@
             <div class="slide" id="slide" hidden>
               <img id="slideImg" alt="Comunicado" />
             </div>
+
+            <div class="pdf-card" id="pdfCard" hidden>
+              <div class="pdf-card-icon">PDF</div>
+              <div class="pdf-card-title" id="pdfCardTitle"></div>
+              <div class="pdf-card-sub">Documento PDF</div>
+              <div class="pdf-card-actions">
+                <a class="btn" id="pdfCardOpen" href="#" target="_blank" rel="noopener">ABRIR PDF</a>
+              </div>
+            </div>
+
+            <div class="watermark-layer" id="wmSwipe" aria-hidden="true"></div>
           </div>
 
           <div class="dots" id="dots" hidden></div>
@@ -734,7 +809,7 @@
 
   <!-- Modal -->
   <div class="modal" id="modal">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Vista ampliada">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Vista ampliada" style="position:relative;">
       <div class="modal-top">
         <div class="left">
 
@@ -754,6 +829,8 @@
         </div>
         <div class="zoom-hint">Pinch = zoom · Arrastra para mover · Doble tap = reset · Wheel = zoom</div>
       </div>
+
+      <div class="watermark-layer" id="wmModal" aria-hidden="true"></div>
     </div>
   </div>
 
@@ -873,6 +950,9 @@
     const hint = $("hint");
     const slide = $("slide");
     const slideImg = $("slideImg");
+    const pdfCard = $("pdfCard");
+    const pdfCardTitle = $("pdfCardTitle");
+    const pdfCardOpen = $("pdfCardOpen");
     const swipeArea = $("swipeArea");
     const btnPrev = $("btnPrev");
     const btnNext = $("btnNext");
@@ -906,6 +986,7 @@
       idx = 0;
 
       clearSlide();
+      pdfCard.hidden = true;
       dots.hidden = true;
       dots.innerHTML = "";
 
@@ -925,19 +1006,32 @@
       const it = items[idx];
       const title = it?.title || "Comunicado";
       const when = it?.createdAt?.toDate ? it.createdAt.toDate().toLocaleString() : "";
+      const isPdf = it?.fileType === "pdf";
 
       viewerTitle.textContent = `Comunicados · ${areaSel.value}`;
       viewerSub.textContent = when ? `Publicado: ${when}` : " ";
 
       hint.style.display = "none";
-      slide.hidden = false;
 
-      const prevU = items[(idx - 1 + items.length) % items.length]?.url;
-      const nextU = items[(idx + 1) % items.length]?.url;
-      [prevU, nextU].forEach(u => { if (u) { const im = new Image(); im.src = u; } });
+      if (isPdf) {
+        slide.hidden = true;
+        slideImg.removeAttribute("src");
+        slideImg.alt = "";
 
-      slideImg.src = it.url;
-      slideImg.alt = title;
+        pdfCardTitle.textContent = title;
+        pdfCardOpen.href = it.url;
+        pdfCard.hidden = false;
+      } else {
+        pdfCard.hidden = true;
+        slide.hidden = false;
+
+        const prevIt = items[(idx - 1 + items.length) % items.length];
+        const nextIt = items[(idx + 1) % items.length];
+        [prevIt, nextIt].forEach(x => { if (x && x.fileType !== "pdf" && x.url) { const im = new Image(); im.src = x.url; } });
+
+        slideImg.src = it.url;
+        slideImg.alt = title;
+      }
 
       updateNav();
       renderDots();
@@ -1160,6 +1254,7 @@
     function openModal() {
       if (!items.length) return;
       const it = items[idx];
+      if (it.fileType === "pdf") return;
       updateModalCounter();
       zoomImg.src = it.url;
       zoomImg.alt = it?.title || "Comunicado";
@@ -1320,10 +1415,53 @@
       if (!modalOpen()) return;
       if (!items.length) { closeModal(); return; }
       const it = items[idx];
+      if (it.fileType === "pdf") { closeModal(); return; }
       updateModalCounter();
       zoomImg.src = it.url;
       resetTransform();
     }
+
+    // ==========================
+    // ✅ Marca de agua: nómina + fecha/hora (AGREGADO)
+    // ==========================
+    const wmSwipe = $("wmSwipe");
+    const wmModal = $("wmModal");
+
+    function makeWatermarkTile(text, color) {
+      const size = 260;
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, size, size);
+      ctx.save();
+      ctx.translate(size / 2, size / 2);
+      ctx.rotate(-28 * Math.PI / 180);
+      ctx.fillStyle = color;
+      ctx.font = "600 13px 'Segoe UI', system-ui, Arial, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
+      return canvas.toDataURL("image/png");
+    }
+
+    function updateWatermarks() {
+      const now = new Date();
+      const fecha = now.toLocaleDateString("es-MX");
+      const hora = now.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+      const text = `${nomina || "SIN NÓMINA"} · ${fecha} ${hora}`;
+
+      if (wmSwipe) {
+        wmSwipe.style.backgroundImage = `url(${makeWatermarkTile(text, "rgba(11,18,32,0.45)")})`;
+      }
+      if (wmModal) {
+        wmModal.style.backgroundImage = `url(${makeWatermarkTile(text, "rgba(255,255,255,0.55)")})`;
+      }
+    }
+
+    updateWatermarks();
+    setInterval(updateWatermarks, 60000);
 
     // ==========================
     // ✅ “Seguridad” best-effort (web/PWA)
