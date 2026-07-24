@@ -1088,12 +1088,14 @@
 
     swipeArea.addEventListener("pointerdown", (e) => {
       if (modalOpen()) return;
+      if (e.target.closest && e.target.closest("#pdfCard")) return;
       swipeArea.setPointerCapture?.(e.pointerId);
       onStart(e.clientX, e.clientY);
     });
 
     swipeArea.addEventListener("pointerup", (e) => {
       if (modalOpen()) return;
+      if (e.target.closest && e.target.closest("#pdfCard")) return;
       onEnd(e.clientX, e.clientY);
     });
 
@@ -1108,6 +1110,7 @@
       setStatus("info", `Cargando comunicados de ${areaLabel}...`);
 
       clearSlide();
+      pdfCard.hidden = true;
       dots.hidden = true;
       dots.innerHTML = "";
 
