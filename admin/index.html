@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portal de Comunicados</title>
 
-    
+
     <link rel="manifest" href="/comunicados/manifest.json">
     <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
     <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
@@ -25,8 +25,14 @@
             --border: 1px solid rgba(0, 0, 0, .08);
         }
 
-        * { box-sizing: border-box; }
-        html, body { height: 100%; }
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
 
         body {
             margin: 0;
@@ -105,7 +111,9 @@
             cursor: pointer;
         }
 
-        .btn-logout:hover { background: rgba(231, 76, 60, .28); }
+        .btn-logout:hover {
+            background: rgba(231, 76, 60, .28);
+        }
 
         .footer {
             background: var(--bdf-blue);
@@ -146,7 +154,8 @@
             background: #fff;
         }
 
-        .card-head h1, .card-head h2 {
+        .card-head h1,
+        .card-head h2 {
             margin: 0;
             font-size: 18px;
             letter-spacing: .4px;
@@ -159,9 +168,13 @@
             color: rgba(11, 18, 32, .70);
         }
 
-        .card-body { padding: 16px 18px 18px; }
+        .card-body {
+            padding: 16px 18px 18px;
+        }
 
-        .field { margin-bottom: 12px; }
+        .field {
+            margin-bottom: 12px;
+        }
 
         label {
             display: block;
@@ -172,7 +185,8 @@
             letter-spacing: .2px;
         }
 
-        select, input[type="file"] {
+        select,
+        input[type="file"] {
             width: 100%;
             height: 46px;
             border-radius: 12px;
@@ -183,9 +197,16 @@
             background: #fff;
         }
 
-        input[type="file"] { padding: 10px 12px; height: auto; }
+        input[type="file"] {
+            padding: 10px 12px;
+            height: auto;
+        }
 
-        .help { margin-top: 6px; font-size: 12px; color: rgba(11, 18, 32, .62); }
+        .help {
+            margin-top: 6px;
+            font-size: 12px;
+            color: rgba(11, 18, 32, .62);
+        }
 
         .preview {
             margin-top: 14px;
@@ -209,7 +230,12 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, .10);
         }
 
-        .actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
 
         .btn {
             height: 46px;
@@ -226,7 +252,11 @@
             min-width: 160px;
         }
 
-        .btn:disabled { opacity: .6; cursor: not-allowed; box-shadow: none; }
+        .btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
 
         .btn-light {
             background: #fff;
@@ -275,7 +305,12 @@
             flex-wrap: wrap;
         }
 
-        .toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
 
         .search {
             height: 40px;
@@ -314,7 +349,12 @@
             overflow: hidden;
         }
 
-        .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
 
         .meta {
             padding: 10px 12px 12px;
@@ -331,9 +371,17 @@
             line-height: 1.25;
         }
 
-        .meta .sub { font-size: 12px; color: rgba(11, 18, 32, .65); }
+        .meta .sub {
+            font-size: 12px;
+            color: rgba(11, 18, 32, .65);
+        }
 
-        .meta .row2 { display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+        .meta .row2 {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+            flex-wrap: wrap;
+        }
 
         .btn-mini {
             height: 34px;
@@ -353,15 +401,31 @@
         }
 
         @media (max-width: 1100px) {
-            .grid { grid-template-columns: 1fr; }
-            .list { grid-template-columns: repeat(2, 1fr); }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .list {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 560px) {
-            .list { grid-template-columns: 1fr; }
-            .btn { width: 100%; }
-            .actions { flex-direction: column; }
-            .search { width: 100%; }
+            .list {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .search {
+                width: 100%;
+            }
         }
 
         /* =========================
@@ -378,7 +442,9 @@
             padding: 20px;
         }
 
-        .modal-aviso.open { display: flex; }
+        .modal-aviso.open {
+            display: flex;
+        }
 
         .modal-aviso-card {
             background: #fff;
@@ -423,7 +489,7 @@
 <body>
     <div class="topbar">
         <div class="topbar-inner">
-            
+
             <a class="brand" href="/comunicados/" title="Volver">
                 <img src="/comunicados/img/bf.png" alt="BF" />
             </a>
@@ -455,6 +521,9 @@
                             <option value="CI">CI</option>
                             <option value="Comedor">Comedor</option>
                             <option value="Compounding">Compounding</option>
+                            <option value="Diversidad, Equidad e Inclusión DE&I">Diversidad, Equidad e Inclusión DE&I
+                            </option>
+                            <option value="Eventos">Eventos</option>
                             <option value="F&P">F&P</option>
                             <option value="HR">HR</option>
                             <option value="IT">IT</option>
@@ -508,6 +577,9 @@
                             <option value="CI">CI</option>
                             <option value="Comedor">Comedor</option>
                             <option value="Compounding">Compounding</option>
+                            <option value="Diversidad, Equidad e Inclusión DE&I">Diversidad, Equidad e Inclusión
+                                DE&amp;I</option>
+                            <option value="Eventos">Eventos</option>
                             <option value="F&P">F&amp;P</option>
                             <option value="HR">HR</option>
                             <option value="IT">IT</option>
@@ -528,7 +600,7 @@
         </div>
     </div>
 
-    
+
     <div class="footer">
         ©️ 2026. Todos los derechos reservados. -
         <span id="openAviso" style="text-decoration:underline; cursor:pointer; font-weight:600;">
@@ -536,7 +608,7 @@
         </span>
     </div>
 
-    
+
     <div id="modalAviso" class="modal-aviso" aria-hidden="true">
         <div class="modal-aviso-card" role="dialog" aria-modal="true" aria-label="Aviso de Privacidad">
             <div class="modal-aviso-header">
@@ -577,7 +649,7 @@
         // ==============================
         const session = JSON.parse(localStorage.getItem("session") || "null");
         if (!session || session.role !== "admin") {
-            window.location.href = "/comunicados/login/"; 
+            window.location.href = "/comunicados/login/";
         }
 
         const adminName = session?.nombre || session?.name || "Admin";
@@ -586,7 +658,7 @@
 
         document.getElementById("btnLogout").addEventListener("click", () => {
             localStorage.removeItem("session");
-            window.location.href = "/comunicados/login/"; 
+            window.location.href = "/comunicados/login/";
         });
 
         // ==============================
@@ -636,6 +708,8 @@
                 "CI": "ci",
                 "Comedor": "comedor",
                 "Compounding": "compounding",
+                "Diversidad, Equidad e Inclusión DE&I": "dei",
+                "Eventos": "eventos",
                 "F&P": "fp",
                 "HR": "hr",
                 "IT": "it",
@@ -934,7 +1008,7 @@
         mountListListener();
     </script>
 
-    
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const modalAviso = document.getElementById("modalAviso");
@@ -977,7 +1051,7 @@
     </script>
 
     <script>
-        
+
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("/comunicados/sw.js")
                 .then(() => console.log("✅ Service Worker registrado"))
@@ -986,6 +1060,5 @@
     </script>
 
 </body>
+
 </html>
-
-
