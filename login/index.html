@@ -495,6 +495,18 @@
             return rol === "admin";
         }
 
+        // ==========================
+        // ✅ Registro de accesos en Google Sheets (AGREGADO)
+        // ==========================
+        function logAccess(nomina) {
+            try {
+                const url = `${API_URL}?log=1&nomina=${encodeURIComponent(nomina)}&t=${Date.now()}`;
+                fetch(url, { method: "GET", mode: "no-cors" }).catch(() => { });
+            } catch (e) {
+                console.warn("[Log accesos] error:", e);
+            }
+        }
+
         async function login() {
             const nomina = $("nomina").value.trim().replace(/\s+/g, "");
 
@@ -514,6 +526,7 @@
 
                 if (inSheets) {
                     localStorage.setItem("session", JSON.stringify({ nomina, role: "viewer" }));
+                    logAccess(nomina);
                     setStatus("ok", "Acceso correcto. Entrando...");
                     setTimeout(() => (window.location.href = VIEWER_PAGE), 350);
                     return;
@@ -525,6 +538,7 @@
 
                 if (isAdmin) {
                     localStorage.setItem("session", JSON.stringify({ nomina, role: "admin" }));
+                    logAccess(nomina);
                     setStatus("ok", "Acceso administrador. Entrando...");
                     setTimeout(() => (window.location.href = ADMIN_PAGE), 350);
                     return;
@@ -594,4 +608,3 @@
 </body>
 
 </html>
-
