@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Beeper BMM - Escalación</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, Arial, sans-serif;
+    background: #1a1a1a;
+    color: #eee;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  /* ---------- LOGIN ---------- */
+  .login-card {
+    background: #2d2d2d;
+    border-radius: 16px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 380px;
+  }
+  .login-card h1 { font-size: 20px; color: #ff6b35; margin-bottom: 4px; }
+  .login-card p { font-size: 13px; color: #999; margin-bottom: 20px; }
+  .login-card input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #1a1a1a;
+    color: #eee;
+    font-size: 18px;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+  .login-card button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 16px;
+    border: none;
+    border-radius: 8px;
+    background: #ff6b35;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .login-error {
+    margin-top: 12px;
+    color: #ff8787;
+    font-size: 13px;
+    text-align: center;
+    display: none;
+  }
+
+  /* ---------- BEEPER ---------- */
+  .beeper-body { display: none; width: 100%; max-width: 400px; }
+  .beeper-device {
+    background: #262626;
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  .beeper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px 12px;
+    font-size: 12px;
+    color: #999;
+  }
+  .badge-count {
+    background: #ff6b35;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: bold;
+  }
+  .lcd-screen {
+    background: #9fb89a;
+    border-radius: 8px;
+    padding: 20px 16px;
+    min-height: 180px;
+    font-family: 'Courier New', monospace;
+    color: #1a2e1a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .lcd-empty { text-align: center; font-size: 15px; opacity: 0.7; }
+  .lcd-nivel { font-size: 11px; font-weight: bold; margin-bottom: 6px; opacity: 0.8; }
+  .lcd-fit { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+  .lcd-emisor { font-size: 12px; margin-bottom: 10px; opacity: 0.85; }
+  .lcd-mensaje { font-size: 15px; line-height: 1.4; word-wrap: break-word; }
+  .lcd-tiempo { font-size: 11px; margin-top: 12px; opacity: 0.7; }
+
+  .beeper-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .btn-ctrl {
+    padding: 14px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+  }
+  .btn-nav { background: #444; }
+  .btn-visto { background: #4a6fa5; }
+  .btn-atendido { background: #2d8a4e; }
+  .btn-ctrl:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+  .user-info {
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    margin-top: 14px;
+  }
+  .alarm-indicator {
+    text-align: center;
+    color: #ff6b35;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 8px;
+    display: none;
+  }
+  .alarm-indicator.activa { display: block; animation: parpadeo 1s infinite; }
+  @keyframes parpadeo { 50% { opacity: 0.3; } }
+</style>
+</head>
+<body>
+
+<!-- PANTALLA DE LOGIN -->
+<div class="login-card" id="loginCard">
+  <h1>📟 Beeper BMM</h1>
+  <p>Ingresa tu número de nómina</p>
+  <input type="text" id="inputNomina" inputmode="numeric" placeholder="Ej. 12345" maxlength="10">
+  <button id="btnLogin">Ingresar</button>
+  <div class="login-error" id="loginError"></div>
+</div>
+
+<!-- PANTALLA DEL BEEPER -->
+<div class="beeper-body" id="beeperBody">
+  <div class="beeper-device">
+    <div class="beeper-header">
+      <span id="nombreUsuario">-</span>
+      <span class="badge-count" id="contadorAlertas">0</span>
+    </div>
+
+    <div class="lcd-screen" id="lcdScreen">
+      <div class="lcd-empty">Sin alertas pendientes</div>
+    </div>
+
+    <div class="alarm-indicator" id="alarmaIndicador">🔊 ALERTA SIN VER</div>
+
+    <div class="beeper-controls">
+      <button class="btn-ctrl btn-nav" id="btnPrev">◀</button>
+      <button class="btn-ctrl btn-visto" id="btnVisto">Visto</button>
+      <button class="btn-ctrl btn-atendido" id="btnAtendido">Atendido</button>
+      <button class="btn-ctrl btn-nav" id="btnNext">▶</button>
+    </div>
+
+    <div class="user-info" id="infoRango">-</div>
+  </div>
+</div>
+
+<!-- Sonido de alarma en loop (base64 corto, tono simple) -->
+<audio id="audioAlarma" loop>
+  <source src="https://cdn.jsdelivr.net/gh/anars/blank-audio@master/1-second-of-silence.mp3" type="audio/mpeg">
+</audio>
+
+<script type="module">
+  import { db, auth, messaging, iniciarSesionAnonima, VAPID_KEY, APPS_SCRIPT_URL } from "./firebase-config.js";
+  import { doc, setDoc, collection, query, where, onSnapshot, updateDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+  import { getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging.js";
+
+  iniciarSesionAnonima().catch(err => console.error("Error auth anónima:", err));
+
+  let empleadoActual = null;
+  let alertasPendientes = [];
+  let indiceActual = 0;
+  let unsubscribe = null;
+
+  const loginCard = document.getElementById("loginCard");
+  const beeperBody = document.getElementById("beeperBody");
+  const inputNomina = document.getElementById("inputNomina");
+  const btnLogin = document.getElementById("btnLogin");
+  const loginError = document.getElementById("loginError");
+  const audioAlarma = document.getElementById("audioAlarma");
+
+  // ---------- LOGIN ----------
+  btnLogin.addEventListener("click", hacerLogin);
+  inputNomina.addEventListener("keypress", (e) => { if (e.key === "Enter") hacerLogin(); });
+
+  async function hacerLogin() {
+    const nomina = inputNomina.value.trim();
+    if (!nomina) return;
+
+    btnLogin.disabled = true;
+    btnLogin.textContent = "Verificando...";
+    loginError.style.display = "none";
+
+    try {
+      const res = await fetch(`${APPS_SCRIPT_URL}?action=login&nomina=${encodeURIComponent(nomina)}`);
+      const data = await res.json();
+
+      if (!data.valido) {
+        throw new Error(data.mensaje || "Nómina no encontrada");
+      }
+
+      empleadoActual = data.empleado;
+      await registrarTokenFCM();
+      mostrarBeeper();
+      escucharAlertas();
+
+    } catch (err) {
+      loginError.textContent = "❌ " + err.message;
+      loginError.style.display = "block";
+    } finally {
+      btnLogin.disabled = false;
+      btnLogin.textContent = "Ingresar";
+    }
+  }
+
+  // ---------- REGISTRAR TOKEN FCM ----------
+  async function registrarTokenFCM() {
+    try {
+      const permiso = await Notification.requestPermission();
+      if (permiso !== "granted") {
+        console.warn("Permiso de notificaciones no otorgado");
+        return;
+      }
+      const registration = await navigator.serviceWorker.register("./firebase-messaging-sw.js");
+      const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
+
+      if (token) {
+        await setDoc(doc(db, "tokens", empleadoActual.nomina), {
+          nomina: empleadoActual.nomina,
+          nombre: empleadoActual.nombre,
+          rango: empleadoActual.rango,
+          fcmToken: token,
+          actualizado: serverTimestamp()
+        });
+      }
+    } catch (err) {
+      console.error("Error registrando token FCM:", err);
+    }
+  }
+
+  // ---------- MOSTRAR BEEPER ----------
+  function mostrarBeeper() {
+    loginCard.style.display = "none";
+    beeperBody.style.display = "block";
+    document.getElementById("nombreUsuario").textContent = empleadoActual.nombre;
+    document.getElementById("infoRango").textContent = empleadoActual.rango;
+  }
+
+  // ---------- ESCUCHAR ALERTAS EN TIEMPO REAL ----------
+  function escucharAlertas() {
+    const nivelPorRango = {
+      "Team Leader": "TeamLeader",
+      "Operations Manager": "OperationsManager",
+      "PC Director": "PCDirector"
+    };
+    const nivelEsperado = nivelPorRango[empleadoActual.rango];
+
+    const q = query(
+      collection(db, "alertas"),
+      where("destinatarioActual.nomina", "==", empleadoActual.nomina),
+      where("estado", "==", "pendiente")
+    );
+
+    unsubscribe = onSnapshot(q, (snapshot) => {
+      alertasPendientes = [];
+      snapshot.forEach((docSnap) => {
+        alertasPendientes.push({ id: docSnap.id, ...docSnap.data() });
+      });
+
+      // ordenar por más reciente primero
+      alertasPendientes.sort((a, b) => (b.horaCreacion?.seconds || 0) - (a.horaCreacion?.seconds || 0));
+
+      if (indiceActual >= alertasPendientes.length) indiceActual = 0;
+
+      renderizarPantalla();
+      actualizarAlarma();
+    });
+  }
+
+  // ---------- RENDERIZAR LCD ----------
+  function renderizarPantalla() {
+    const lcd = document.getElementById("lcdScreen");
+    const contador = document.getElementById("contadorAlertas");
+    contador.textContent = alertasPendientes.length;
+
+    if (alertasPendientes.length === 0) {
+      lcd.innerHTML = '<div class="lcd-empty">Sin alertas pendientes</div>';
+      document.getElementById("btnVisto").disabled = true;
+      document.getElementById("btnAtendido").disabled = true;
+      return;
+    }
+
+    const alerta = alertasPendientes[indiceActual];
+    const nivelTexto = { TeamLeader: "TEAM LEADER", OperationsManager: "OPERATIONS MGR", PCDirector: "PC DIRECTOR" };
+
+    lcd.innerHTML = `
+      <div class="lcd-nivel">${nivelTexto[alerta.nivelActual] || alerta.nivelActual} · Mensaje ${indiceActual + 1} de ${alertasPendientes.length}</div>
+      <div class="lcd-fit">📍 Línea: ${alerta.fit}</div>
+      <div class="lcd-emisor">De: ${alerta.emisor}</div>
+      <div class="lcd-mensaje">${alerta.mensaje}</div>
+    `;
+
+    document.getElementById("btnVisto").disabled = false;
+    document.getElementById("btnAtendido").disabled = false;
+  }
+
+  // ---------- ALARMA ----------
+  function actualizarAlarma() {
+    const hayNoVistas = alertasPendientes.some(a => a.visto === false);
+    const indicador = document.getElementById("alarmaIndicador");
+
+    if (hayNoVistas) {
+      indicador.classList.add("activa");
+      audioAlarma.play().catch(() => {}); // algunos navegadores requieren interacción previa
+    } else {
+      indicador.classList.remove("activa");
+      audioAlarma.pause();
+      audioAlarma.currentTime = 0;
+    }
+  }
+
+  // ---------- NAVEGACIÓN ----------
+  document.getElementById("btnPrev").addEventListener("click", () => {
+    if (alertasPendientes.length === 0) return;
+    indiceActual = (indiceActual - 1 + alertasPendientes.length) % alertasPendientes.length;
+    renderizarPantalla();
+  });
+
+  document.getElementById("btnNext").addEventListener("click", () => {
+    if (alertasPendientes.length === 0) return;
+    indiceActual = (indiceActual + 1) % alertasPendientes.length;
+    renderizarPantalla();
+  });
+
+  // ---------- BOTÓN VISTO ----------
+  document.getElementById("btnVisto").addEventListener("click", async () => {
+    if (alertasPendientes.length === 0) return;
+    const alerta = alertasPendientes[indiceActual];
+    try {
+      await updateDoc(doc(db, "alertas", alerta.id), { visto: true });
+    } catch (err) {
+      console.error("Error marcando visto:", err);
+    }
+  });
+
+  // ---------- BOTÓN ATENDIDO ----------
+  document.getElementById("btnAtendido").addEventListener("click", async () => {
+    if (alertasPendientes.length === 0) return;
+    const alerta = alertasPendientes[indiceActual];
+    if (!confirm("¿Confirmas que esta alerta fue atendida?")) return;
+
+    try {
+      await updateDoc(doc(db, "alertas", alerta.id), {
+        estado: "atendido",
+        historial: arrayUnion({
+          nivel: alerta.nivelActual,
+          accion: "atendido",
+          nombreDestinatario: empleadoActual.nombre
+        })
+      });
+      indiceActual = 0;
+    } catch (err) {
+      console.error("Error marcando atendido:", err);
+    }
+  });
+
+  // ---------- PUSH EN PRIMER PLANO (app abierta) ----------
+  onMessage(messaging, (payload) => {
+    console.log("Push recibido en primer plano:", payload);
+    audioAlarma.play().catch(() => {});
+  });
+</script>
+
+</body>
+</html>

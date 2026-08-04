@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Levantar Alerta - Beeper BMM</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, Arial, sans-serif;
+    background: #1a1a1a;
+    color: #eee;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #2d2d2d;
+    border-radius: 16px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 420px;
+  }
+  h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+    color: #ff6b35;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 24px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: #ccc;
+    margin-bottom: 6px;
+    margin-top: 18px;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #1a1a1a;
+    color: #eee;
+    font-size: 15px;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 24px;
+    border: none;
+    border-radius: 8px;
+    background: #ff6b35;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  button:disabled { background: #555; cursor: not-allowed; }
+  .msg {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    display: none;
+  }
+  .msg.ok { background: #1b4332; color: #74c69d; display: block; }
+  .msg.error { background: #4a1919; color: #ff8787; display: block; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>🔴 Levantar Alerta</h1>
+  <p class="subtitle">Planta BMM Silao</p>
+
+  <form id="formAlerta">
+    <label for="nombre">Tu nombre</label>
+    <input type="text" id="nombre" required placeholder="Ej. Pedro Ramírez">
+
+    <label for="fit">Línea de producción (FIT)</label>
+    <select id="fit" required>
+      <option value="">Cargando líneas...</option>
+    </select>
+
+    <label for="mensaje">Mensaje / descripción del problema</label>
+    <textarea id="mensaje" required placeholder="Describe brevemente la situación..."></textarea>
+
+    <button type="submit" id="btnEnviar">Enviar Alerta</button>
+  </form>
+
+  <div id="resultado" class="msg"></div>
+</div>
+
+<script type="module">
+  import { db, iniciarSesionAnonima, APPS_SCRIPT_URL } from "./firebase-config.js";
+  import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+  // Inicia sesión anónima al cargar la página
+  iniciarSesionAnonima().catch(err => console.error("Error auth anónima:", err));
+
+  const selectFit = document.getElementById("fit");
+  const form = document.getElementById("formAlerta");
+  const btnEnviar = document.getElementById("btnEnviar");
+  const resultado = document.getElementById("resultado");
+
+  // Carga la lista de FITs disponibles desde Apps Script
+  async function cargarFITs() {
+    try {
+      const res = await fetch(`${APPS_SCRIPT_URL}?action=getFITs`);
+      const data = await res.json();
+      selectFit.innerHTML = '<option value="">Selecciona una línea...</option>';
+      data.fits.forEach(fit => {
+        const opt = document.createElement("option");
+        opt.value = fit;
+        opt.textContent = fit;
+        selectFit.appendChild(opt);
+      });
+    } catch (err) {
+      selectFit.innerHTML = '<option value="">Error al cargar líneas</option>';
+      console.error(err);
+    }
+  }
+  cargarFITs();
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = "Enviando...";
+    resultado.className = "msg";
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const fit = selectFit.value;
+    const mensaje = document.getElementById("mensaje").value.trim();
+
+    try {
+      // 1. Buscar el Team Leader asignado a ese FIT
+      const resTL = await fetch(`${APPS_SCRIPT_URL}?action=getTeamLeader&fit=${encodeURIComponent(fit)}`);
+      const dataTL = await resTL.json();
+
+      if (!dataTL.encontrado) {
+        throw new Error("No se encontró un Team Leader para esa línea.");
+      }
+
+      const teamLeader = dataTL.teamLeaders[0]; // toma el primero si hay varios
+
+      // 2. Crear la alerta en Firestore
+      const ahora = serverTimestamp();
+      const docRef = await addDoc(collection(db, "alertas"), {
+        emisor: nombre,
+        fit: fit,
+        mensaje: mensaje,
+        estado: "pendiente",
+        nivelActual: "TeamLeader",
+        destinatarioActual: {
+          nomina: teamLeader.nomina,
+          nombre: teamLeader.nombre,
+          rango: teamLeader.rango
+        },
+        horaCreacion: ahora,
+        horaLlegadaNivelActual: ahora,
+        visto: false,
+        historial: [
+          { nivel: "TeamLeader", accion: "creada", nombreDestinatario: teamLeader.nombre }
+        ]
+      });
+
+      // 3. Disparar el push al Team Leader (vía Apps Script)
+      await fetch(`${APPS_SCRIPT_URL}?action=enviarPush&nomina=${teamLeader.nomina}&alertaId=${docRef.id}&mensaje=${encodeURIComponent(mensaje)}&fit=${encodeURIComponent(fit)}`);
+
+      resultado.className = "msg ok";
+      resultado.textContent = `✅ Alerta enviada a ${teamLeader.nombre} (Team Leader)`;
+      form.reset();
+
+    } catch (err) {
+      resultado.className = "msg error";
+      resultado.textContent = "❌ " + err.message;
+      console.error(err);
+    } finally {
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = "Enviar Alerta";
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Beeper BMM - Escalación</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, Arial, sans-serif;
+    background: #1a1a1a;
+    color: #eee;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #2d2d2d;
+    border-radius: 16px;
+    padding: 32px 24px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  .logo { font-size: 40px; margin-bottom: 8px; }
+  h1 { font-size: 20px; color: #ff6b35; margin-bottom: 4px; }
+  p.subtitle { font-size: 13px; color: #999; margin-bottom: 32px; }
+
+  .opcion {
+    display: block;
+    width: 100%;
+    padding: 20px 16px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.1s;
+  }
+  .opcion:active { transform: scale(0.98); }
+
+  .opcion-emisor {
+    background: #3a2418;
+    border: 1px solid #ff6b35;
+  }
+  .opcion-emisor .titulo { color: #ff6b35; }
+
+  .opcion-beeper {
+    background: #1e2d3a;
+    border: 1px solid #4a6fa5;
+  }
+  .opcion-beeper .titulo { color: #6fa8dc; }
+
+  .icono { font-size: 24px; margin-bottom: 6px; }
+  .titulo { font-size: 16px; font-weight: bold; margin-bottom: 4px; }
+  .desc { font-size: 12px; color: #aaa; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">📟</div>
+  <h1>Beeper BMM</h1>
+  <p class="subtitle">Sistema de Alertas y Escalación · Planta Silao</p>
+
+  <a href="emisor.html" class="opcion opcion-emisor">
+    <div class="icono">🔴</div>
+    <div class="titulo">Levantar Alerta</div>
+    <div class="desc">Operador o Líder de Línea reportando un problema</div>
+  </a>
+
+  <a href="beeper.html" class="opcion opcion-beeper">
+    <div class="icono">📟</div>
+    <div class="titulo">Soy Team Leader / OM / PC Director</div>
+    <div class="desc">Iniciar sesión con número de nómina para recibir alertas</div>
+  </a>
+</div>
+
+</body>
+</html>
