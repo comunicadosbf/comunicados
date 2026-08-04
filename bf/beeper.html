@@ -431,31 +431,33 @@
     }
 
     // ---------- RENDERIZAR LCD ----------
-    function renderizarPantalla() {
-      const lcd = document.getElementById("lcdScreen");
-      const contador = document.getElementById("contadorAlertas");
-      contador.textContent = alertasPendientes.length;
-
-      if (alertasPendientes.length === 0) {
-        lcd.innerHTML = '<div class="lcd-empty">Sin alertas pendientes</div>';
-        document.getElementById("btnVisto").disabled = true;
-        document.getElementById("btnAtendido").disabled = true;
-        return;
-      }
-
-      const alerta = alertasPendientes[indiceActual];
-      const nivelTexto = { TeamLeader: "TEAM LEADER", OperationsManager: "OPERATIONS MGR", PCDirector: "PC DIRECTOR" };
-
-      lcd.innerHTML = `
-      <div class="lcd-nivel">${nivelTexto[alerta.nivelActual] || alerta.nivelActual} · Mensaje ${indiceActual + 1} de ${alertasPendientes.length}</div>
+   function renderizarPantalla() {
+    const lcd = document.getElementById("lcdScreen");
+    const contador = document.getElementById("contadorAlertas");
+    const noVistas = alertasPendientes.filter(a => a.visto === false).length;
+    contador.textContent = noVistas;
+  
+    if (alertasPendientes.length === 0) {
+      lcd.innerHTML = '<div class="lcd-empty">Sin alertas pendientes</div>';
+      document.getElementById("btnVisto").disabled = true;
+      document.getElementById("btnAtendido").disabled = true;
+      return;
+    }
+  
+    const alerta = alertasPendientes[indiceActual];
+    const nivelTexto = { TeamLeader: "TEAM LEADER", OperationsManager: "OPERATIONS MGR", PCDirector: "PC DIRECTOR" };
+    const estadoVisto = alerta.visto ? "👁 Visto" : "🔴 SIN VER";
+  
+    lcd.innerHTML = `
+      <div class="lcd-nivel">${nivelTexto[alerta.nivelActual] || alerta.nivelActual} · Mensaje ${indiceActual + 1} de ${alertasPendientes.length} · ${estadoVisto}</div>
       <div class="lcd-fit">📍 Línea: ${alerta.fit}</div>
       <div class="lcd-emisor">De: ${alerta.emisor}</div>
       <div class="lcd-mensaje">${alerta.mensaje}</div>
     `;
-
-      document.getElementById("btnVisto").disabled = false;
-      document.getElementById("btnAtendido").disabled = false;
-    }
+  
+    document.getElementById("btnVisto").disabled = alerta.visto; // ya no se puede volver a marcar
+    document.getElementById("btnAtendido").disabled = false;
+  }
 
     // ---------- ALARMA ----------
     function actualizarAlarma() {
@@ -485,16 +487,20 @@
     });
 
     // ---------- BOTÓN VISTO ----------
-    document.getElementById("btnVisto").addEventListener("click", async () => {
-      if (alertasPendientes.length === 0) return;
-      const alerta = alertasPendientes[indiceActual];
-      try {
-        await updateDoc(doc(db, "alertas", alerta.id), { visto: true });
-        detenerAlarma(); // detiene el sonido inmediatamente al dar clic
-      } catch (err) {
-        console.error("Error marcando visto:", err);
-      }
-    });
+  document.getElementById("btnVisto").addEventListener("click", async () => {
+    if (alertasPendientes.length === 0) return;
+    const alerta = alertasPendientes[indiceActual];
+    try {
+      await updateDoc(doc(db, "alertas", alerta.id), { visto: true });
+  
+      // Actualiza el estado local de inmediato (no esperar el round-trip de Firestore)
+      alerta.visto = true;
+      renderizarPantalla();
+      actualizarAlarma(); // revisa si AÚN quedan otras sin ver antes de detener
+    } catch (err) {
+      console.error("Error marcando visto:", err);
+    }
+  });
 
     // ---------- BOTÓN ATENDIDO ----------
     document.getElementById("btnAtendido").addEventListener("click", async () => {
