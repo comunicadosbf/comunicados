@@ -202,8 +202,10 @@
     border: 1px solid var(--border);
     border-left: 5px solid var(--blue-500);
     border-radius: var(--radius-lg);
-    padding: 28px 22px;
-    min-height: 300px;
+    padding: 30px 22px;
+    min-height: 52vh;
+    max-height: 58vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -253,7 +255,14 @@
     font-size: 18px;
     line-height: 1.55;
     color: var(--text);
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 6px;
   }
+  .lcd-mensaje::-webkit-scrollbar { width: 5px; }
+  .lcd-mensaje::-webkit-scrollbar-track { background: transparent; }
+  .lcd-mensaje::-webkit-scrollbar-thumb { background: var(--navy-700); border-radius: 10px; }
 
   /* Indicador de alarma */
   .alarm-indicator {
