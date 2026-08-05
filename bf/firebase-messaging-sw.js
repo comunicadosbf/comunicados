@@ -59,7 +59,7 @@ messaging.onBackgroundMessage((payload) => {
       return;
     }
 
-    const titulo = payload.notification?.title || "🔔 Nueva alerta - Beeper BMM";
+    const titulo = payload.notification?.title || "⚠️ Nueva alerta - Beeper BMM";
     const opciones = {
       body: payload.notification?.body || "Tienes una alerta pendiente",
       icon: "icons/icon-192.png",
