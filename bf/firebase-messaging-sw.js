@@ -12,36 +12,50 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-const DEDUP_CACHE = "beeper-dedup-v1";
-const VENTANA_DEDUP_MS = 8000; // 8 segundos
+const DB_NAME = "beeper-dedup-db";
+const STORE_NAME = "pushes";
 
-// ---------- Verifica (de forma persistente) si ya mostramos este push ----------
-async function esDuplicado(alertaId) {
+// ---------- Abre (o crea) la base de datos IndexedDB ----------
+function abrirDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore(STORE_NAME, { keyPath: "id" });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// ---------- Intenta REGISTRAR este alertaId de forma atómica ----------
+// Regresa true si YA EXISTÍA (duplicado) o false si se registró por primera vez
+async function yaFueRegistrado(alertaId) {
   if (!alertaId) return false;
 
-  const cache = await caches.open(DEDUP_CACHE);
-  const clave = new Request("https://dedup.local/" + alertaId);
-  const existente = await cache.match(clave);
+  const db = await abrirDB();
 
-  if (existente) {
-    const data = await existente.json();
-    const ahora = Date.now();
-    if (ahora - data.ts < VENTANA_DEDUP_MS) {
-      return true; // duplicado dentro de la ventana de tiempo
-    }
-  }
+  return new Promise((resolve) => {
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
 
-  // guarda/actualiza el timestamp de este alertaId
-  await cache.put(clave, new Response(JSON.stringify({ ts: Date.now() })));
-  return false;
+    // add() falla si la llave ya existe -> eso es lo que nos da la atomicidad
+    const req = store.add({ id: alertaId, ts: Date.now() });
+
+    req.onsuccess = () => resolve(false); // se registró, NO era duplicado
+    req.onerror = (e) => {
+      e.preventDefault(); // evita que el error se propague como no manejado
+      resolve(true); // ya existía -> SÍ es duplicado
+    };
+  });
 }
 
 messaging.onBackgroundMessage((payload) => {
   const alertaId = payload.data?.alertaId || null;
 
   const manejar = async () => {
-    if (await esDuplicado(alertaId)) {
-      console.log("Push duplicado ignorado:", alertaId);
+    const esDup = await yaFueRegistrado(alertaId);
+    if (esDup) {
+      console.log("Push duplicado ignorado (IndexedDB):", alertaId);
       return;
     }
 
@@ -51,7 +65,7 @@ messaging.onBackgroundMessage((payload) => {
       icon: "icons/icon-192.png",
       badge: "icons/icon-192.png",
       vibrate: [300, 100, 300, 100, 300],
-      tag: "beeper-alerta-" + alertaId, // tag único por alerta
+      tag: "beeper-alerta-" + alertaId,
       requireInteraction: true,
       data: {
         alertaId: alertaId,
@@ -83,3 +97,7 @@ self.addEventListener("notificationclick", (event) => {
     })
   );
 });
+
+// Fuerza que este Service Worker tome control inmediatamente al actualizarse
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (event) => event.waitUntil(clients.claim()));
