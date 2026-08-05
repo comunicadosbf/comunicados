@@ -266,7 +266,7 @@
       <div class="field">
         <label class="field-label" for="fit">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-          Línea de producción (FIT) <span class="required">*</span>
+          FIT <span class="required">*</span>
         </label>
         <div class="input-wrap">
           <select id="fit" required>
@@ -325,7 +325,7 @@
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?action=getFITs`);
       const data = await res.json();
-      selectFit.innerHTML = '<option value="">Selecciona una línea...</option>';
+      selectFit.innerHTML = '<option value="">Selecciona el FIT...</option>';
       data.fits.forEach(fit => {
         const opt = document.createElement("option");
         opt.value = fit;
