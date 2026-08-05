@@ -12,49 +12,57 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// ---------- PROTECCIÓN CONTRA PUSH DUPLICADOS (bug conocido de iOS Safari) ----------
-const notificacionesRecientes = new Map(); // alertaId -> timestamp
+const DEDUP_CACHE = "beeper-dedup-v1";
+const VENTANA_DEDUP_MS = 8000; // 8 segundos
 
-function esDuplicado(alertaId) {
+// ---------- Verifica (de forma persistente) si ya mostramos este push ----------
+async function esDuplicado(alertaId) {
   if (!alertaId) return false;
-  const ahora = Date.now();
-  const anterior = notificacionesRecientes.get(alertaId);
 
-  // limpia entradas viejas (más de 10 segundos) para no acumular memoria
-  notificacionesRecientes.forEach((ts, id) => {
-    if (ahora - ts > 10000) notificacionesRecientes.delete(id);
-  });
+  const cache = await caches.open(DEDUP_CACHE);
+  const clave = new Request("https://dedup.local/" + alertaId);
+  const existente = await cache.match(clave);
 
-  if (anterior && (ahora - anterior) < 5000) {
-    return true; // ya se mostró esta misma alerta hace menos de 5 segundos
+  if (existente) {
+    const data = await existente.json();
+    const ahora = Date.now();
+    if (ahora - data.ts < VENTANA_DEDUP_MS) {
+      return true; // duplicado dentro de la ventana de tiempo
+    }
   }
-  notificacionesRecientes.set(alertaId, ahora);
+
+  // guarda/actualiza el timestamp de este alertaId
+  await cache.put(clave, new Response(JSON.stringify({ ts: Date.now() })));
   return false;
 }
 
 messaging.onBackgroundMessage((payload) => {
   const alertaId = payload.data?.alertaId || null;
 
-  if (esDuplicado(alertaId)) {
-    console.log("Push duplicado ignorado:", alertaId);
-    return;
-  }
-
-  const titulo = payload.notification?.title || "🔔 Nueva alerta - Beeper BMM";
-  const opciones = {
-    body: payload.notification?.body || "Tienes una alerta pendiente",
-    icon: "icons/icon-192.png",
-    badge: "icons/icon-192.png",
-    vibrate: [300, 100, 300, 100, 300],
-    tag: "beeper-alerta",
-    requireInteraction: true,
-    data: {
-      alertaId: alertaId,
-      url: "./beeper.html"
+  const manejar = async () => {
+    if (await esDuplicado(alertaId)) {
+      console.log("Push duplicado ignorado:", alertaId);
+      return;
     }
+
+    const titulo = payload.notification?.title || "🔔 Nueva alerta - Beeper BMM";
+    const opciones = {
+      body: payload.notification?.body || "Tienes una alerta pendiente",
+      icon: "icons/icon-192.png",
+      badge: "icons/icon-192.png",
+      vibrate: [300, 100, 300, 100, 300],
+      tag: "beeper-alerta-" + alertaId, // tag único por alerta
+      requireInteraction: true,
+      data: {
+        alertaId: alertaId,
+        url: "./beeper.html"
+      }
+    };
+
+    return self.registration.showNotification(titulo, opciones);
   };
 
-  self.registration.showNotification(titulo, opciones);
+  return manejar();
 });
 
 self.addEventListener("notificationclick", (event) => {
