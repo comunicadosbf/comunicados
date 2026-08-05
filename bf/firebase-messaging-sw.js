@@ -1,4 +1,3 @@
-// firebase-messaging-sw.js
 importScripts("https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging-compat.js");
 
@@ -13,20 +12,44 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Cuando llega un push y la app está CERRADA o en 2do plano
+// ---------- PROTECCIÓN CONTRA PUSH DUPLICADOS (bug conocido de iOS Safari) ----------
+const notificacionesRecientes = new Map(); // alertaId -> timestamp
+
+function esDuplicado(alertaId) {
+  if (!alertaId) return false;
+  const ahora = Date.now();
+  const anterior = notificacionesRecientes.get(alertaId);
+
+  // limpia entradas viejas (más de 10 segundos) para no acumular memoria
+  notificacionesRecientes.forEach((ts, id) => {
+    if (ahora - ts > 10000) notificacionesRecientes.delete(id);
+  });
+
+  if (anterior && (ahora - anterior) < 5000) {
+    return true; // ya se mostró esta misma alerta hace menos de 5 segundos
+  }
+  notificacionesRecientes.set(alertaId, ahora);
+  return false;
+}
+
 messaging.onBackgroundMessage((payload) => {
-  console.log("Push recibido en 2do plano:", payload);
+  const alertaId = payload.data?.alertaId || null;
+
+  if (esDuplicado(alertaId)) {
+    console.log("Push duplicado ignorado:", alertaId);
+    return;
+  }
 
   const titulo = payload.notification?.title || "🔔 Nueva alerta - Beeper BMM";
   const opciones = {
     body: payload.notification?.body || "Tienes una alerta pendiente",
     icon: "icons/icon-192.png",
     badge: "icons/icon-192.png",
-    vibrate: [300, 100, 300, 100, 300], // patrón de vibración insistente
-    tag: "beeper-alerta", // agrupa notificaciones repetidas en una sola
-    requireInteraction: true, // la notificación NO desaparece sola
+    vibrate: [300, 100, 300, 100, 300],
+    tag: "beeper-alerta",
+    requireInteraction: true,
     data: {
-      alertaId: payload.data?.alertaId || null,
+      alertaId: alertaId,
       url: "./beeper.html"
     }
   };
@@ -34,7 +57,6 @@ messaging.onBackgroundMessage((payload) => {
   self.registration.showNotification(titulo, opciones);
 });
 
-// Cuando el usuario TOCA la notificación → abre/enfoca la app en beeper.html
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
@@ -42,13 +64,11 @@ self.addEventListener("notificationclick", (event) => {
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       const url = event.notification.data?.url || "./beeper.html";
 
-      // Si ya hay una ventana abierta, enfócala
       for (const client of clientList) {
         if (client.url.includes("beeper.html") && "focus" in client) {
           return client.focus();
         }
       }
-      // Si no, abre una nueva
       if (clients.openWindow) {
         return clients.openWindow(url);
       }
