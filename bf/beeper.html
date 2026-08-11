@@ -172,6 +172,22 @@
   }
   .badge-count.cero { background: var(--navy-700); color: var(--text-muted); }
 
+  .token-warning {
+    display: none;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    border-radius: var(--radius-md);
+    background: var(--amber-dim);
+    color: #FFD9A0;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .token-warning.visible { display: flex; }
+  .token-warning .icono { flex-shrink: 0; font-size: 16px; }
+
   /* Tarjeta de alerta */
   .alert-shell {
     display: flex;
@@ -347,6 +363,8 @@
     <span class="badge-count" id="contadorAlertas">0</span>
   </div>
 
+  <div class="token-warning" id="tokenWarning"></div>
+
   <div class="alert-shell">
     <button class="nav-btn" id="btnPrev" aria-label="Alerta anterior">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -476,26 +494,49 @@
   }
 
   // ---------- REGISTRAR TOKEN FCM ----------
+  function mostrarAvisoToken(mensaje) {
+    const banner = document.getElementById("tokenWarning");
+    if (!mensaje) {
+      banner.classList.remove("visible");
+      banner.textContent = "";
+      return;
+    }
+    banner.innerHTML = `<span class="icono">⚠️</span><span>${mensaje}</span>`;
+    banner.classList.add("visible");
+  }
+
   async function registrarTokenFCM() {
     try {
-      const permiso = await Notification.requestPermission();
-      if (permiso !== "granted") {
-        console.warn("Permiso de notificaciones no otorgado");
+      if (!("Notification" in window)) {
+        mostrarAvisoToken("Este navegador no soporta notificaciones. En iPhone, agrega la app a pantalla de inicio desde Safari y ábrela desde ahí.");
         return;
       }
+
+      const permiso = await Notification.requestPermission();
+      if (permiso !== "granted") {
+        mostrarAvisoToken("No se otorgó permiso de notificaciones — no vas a recibir alertas. Revisa los permisos de notificación de esta app en Ajustes del celular.");
+        return;
+      }
+
       const registration = await navigator.serviceWorker.register("./firebase-messaging-sw.js");
       const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
 
-      if (token) {
-        await setDoc(doc(db, "tokens", empleadoActual.nomina), {
-          nomina: empleadoActual.nomina,
-          nombre: empleadoActual.nombre,
-          rango: empleadoActual.rango,
-          fcmToken: token,
-          actualizado: serverTimestamp()
-        });
+      if (!token) {
+        mostrarAvisoToken("No se pudo generar el token de notificaciones. Cierra la app, ábrela de nuevo e inicia sesión otra vez.");
+        return;
       }
+
+      await setDoc(doc(db, "tokens", empleadoActual.nomina), {
+        nomina: empleadoActual.nomina,
+        nombre: empleadoActual.nombre,
+        rango: empleadoActual.rango,
+        fcmToken: token,
+        actualizado: serverTimestamp()
+      });
+
+      mostrarAvisoToken(null); // todo salió bien, oculta el banner
     } catch (err) {
+      mostrarAvisoToken("Error activando notificaciones: " + err.message);
       console.error("Error registrando token FCM:", err);
     }
   }
@@ -520,7 +561,7 @@
   function escucharAlertas() {
     const q = query(
       collection(db, "alertas"),
-      where("destinatarioActual.nomina", "==", empleadoActual.nomina),
+      where("destinatariosNominas", "array-contains", empleadoActual.nomina),
       where("estado", "==", "pendiente")
     );
 
@@ -534,8 +575,21 @@
 
       if (indiceActual >= alertasPendientes.length) indiceActual = 0;
 
+      mostrarAvisoToken(null); // si antes hubo error de índice y ya se resolvió, oculta el aviso
       renderizarPantalla();
       actualizarAlarma();
+    }, (err) => {
+      // Firestore puede pedir crear un índice compuesto la primera vez.
+      // El mensaje de error TRAE un link directo para crearlo con un clic.
+      console.error("Error escuchando alertas:", err);
+      const match = err.message.match(/https:\/\/[^\s]+/);
+      if (match) {
+        const banner = document.getElementById("tokenWarning");
+        banner.innerHTML = `<span class="icono">⚠️</span><span>Firestore necesita un índice nuevo. <a href="${match[0]}" target="_blank" style="color:#FFD9A0;text-decoration:underline;">Toca aquí para crearlo</a>, espera 1-2 min y vuelve a abrir la app.</span>`;
+        banner.classList.add("visible");
+      } else {
+        mostrarAvisoToken("Error cargando alertas: " + err.message);
+      }
     });
   }
 
