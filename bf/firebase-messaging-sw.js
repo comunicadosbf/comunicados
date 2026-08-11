@@ -12,71 +12,6 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// ============ CACHÉ DE ARCHIVOS ESTÁTICOS (para carga rápida en datos móviles) ============
-// IMPORTANTE: esto NUNCA cachea Apps Script, Firestore, Auth ni FCM — solo archivos
-// que no cambian (HTML/JS propios, fuentes de Google, SDK de Firebase, íconos).
-const CACHE_VERSION = "beeper-shell-v1";
-
-const ARCHIVOS_PROPIOS = [
-  "./",
-  "./index.html",
-  "./emisor.html",
-  "./beeper.html",
-  "./firebase-config.js",
-  "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png"
-];
-
-// Dominios externos que SÍ es seguro cachear (contenido estático, no datos)
-function esEstaticoPermitido(url) {
-  if (url.origin === self.location.origin) return true; // nuestros propios archivos
-  if (url.hostname === "fonts.googleapis.com") return true; // hoja de estilos de fuentes
-  if (url.hostname === "fonts.gstatic.com") return true; // archivos de fuente
-  if (url.hostname === "www.gstatic.com" && url.pathname.startsWith("/firebasejs/")) return true; // SDK de Firebase
-  return false; // TODO lo demás (Apps Script, Firestore, Auth, FCM) NUNCA se cachea
-}
-
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(ARCHIVOS_PROPIOS)).catch((err) => {
-      console.warn("No se pudo precachear todo el app shell:", err);
-    })
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
-
-  // Solo GET, y solo si está en la lista blanca de contenido estático
-  if (event.request.method !== "GET" || !esEstaticoPermitido(url)) {
-    return; // no interceptar: pasa directo a la red, tal como si no hubiera Service Worker
-  }
-
-  event.respondWith(
-    caches.match(event.request).then((cacheado) => {
-      if (cacheado) {
-        // Cache-first: responde rápido, y de paso actualiza el caché en segundo plano
-        fetch(event.request).then((res) => {
-          if (res && res.ok) {
-            caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, res));
-          }
-        }).catch(() => {});
-        return cacheado;
-      }
-      // No estaba en caché: ve a la red y guárdalo para la próxima vez
-      return fetch(event.request).then((res) => {
-        if (res && res.ok) {
-          const copia = res.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, copia));
-        }
-        return res;
-      });
-    })
-  );
-});
-
 const DB_NAME = "beeper-dedup-db";
 const STORE_NAME = "pushes";
 
@@ -124,7 +59,7 @@ messaging.onBackgroundMessage((payload) => {
       return;
     }
 
-    const titulo = payload.notification?.title || "⚠️ Nueva Alerta - Beeper BMM";
+    const titulo = payload.notification?.title || "⚠️ Nueva alerta - Beeper BMM";
     const opciones = {
       body: payload.notification?.body || "Tienes una alerta pendiente",
       icon: "icons/icon-192.png",
@@ -163,14 +98,6 @@ self.addEventListener("notificationclick", (event) => {
   );
 });
 
-// Limpia versiones viejas del caché y toma control inmediatamente al actualizarse
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    Promise.all([
-      caches.keys().then((nombres) =>
-        Promise.all(nombres.filter((n) => n !== CACHE_VERSION).map((n) => caches.delete(n)))
-      ),
-      clients.claim()
-    ])
-  );
-});
+// Fuerza que este Service Worker tome control inmediatamente al actualizarse
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (event) => event.waitUntil(clients.claim()));
