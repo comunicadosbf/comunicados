@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Beeper BMM</title>
+<style>
+  @font-face { font-family: 'Inter'; font-weight: 400; font-style: normal; font-display: swap; src: url('./fonts/inter-400.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 500; font-style: normal; font-display: swap; src: url('./fonts/inter-500.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 600; font-style: normal; font-display: swap; src: url('./fonts/inter-600.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 700; font-style: normal; font-display: swap; src: url('./fonts/inter-700.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Grotesk'; font-weight: 600; font-style: normal; font-display: swap; src: url('./fonts/space-grotesk-600.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Grotesk'; font-weight: 700; font-style: normal; font-display: swap; src: url('./fonts/space-grotesk-700.woff2') format('woff2'); }
+
+  :root {
+    --navy-900: #00284D;
+    --blue-700: #00549F;
+    --blue-500: #0072CE;
+    --blue-100: #E4F0FC;
+    --amber: #F5A623;
+    --amber-bg: #FDF3E3;
+    --red: #E64545;
+    --red-bg: #FCEAEA;
+    --green: #1FA971;
+    --green-bg: #E7F7EE;
+    --surface: #F4F7FB;
+    --card: #FFFFFF;
+    --text: #101828;
+    --text-muted: #5B6472;
+    --border: #E2E8F0;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body);
+    background: var(--surface);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  .header {
+    background: linear-gradient(135deg, var(--navy-900) 0%, var(--blue-700) 65%, var(--blue-500) 100%);
+    padding: 28px 32px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header-left .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9DBEDD; margin-bottom: 4px; }
+  .header-left h1 { font-family: var(--font-display); font-size: 26px; font-weight: 700; }
+  .header-right { display: flex; align-items: center; gap: 14px; }
+  .status-pill { display: flex; align-items: center; gap: 7px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 7px 14px; border-radius: 100px; font-size: 12.5px; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; }
+  .btn-refrescar {
+    background: white; color: var(--blue-700); border: none; padding: 9px 18px;
+    border-radius: 10px; font-family: var(--font-body); font-size: 13.5px; font-weight: 600; cursor: pointer;
+  }
+  .btn-refrescar:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .contenido { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
+  .estado-carga { text-align: center; padding: 80px 20px; color: var(--text-muted); font-size: 14px; }
+
+  /* ---------- KPIs ---------- */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+  .kpi-label { font-size: 12.5px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; }
+  .kpi-valor { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--navy-900); }
+  .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ---------- Secciones / tarjetas ---------- */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .panel-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--navy-900); margin-bottom: 4px; }
+  .panel-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px; }
+
+  .leyenda { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .leyenda-item { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+  .leyenda-izq { display: flex; align-items: center; gap: 8px; }
+  .leyenda-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .leyenda-valor { font-weight: 700; color: var(--navy-900); }
+
+  .barra-fila { display: grid; grid-template-columns: 90px 1fr 46px; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .barra-nombre { font-size: 13px; font-weight: 600; color: var(--text); }
+  .barra-track { background: var(--surface); border-radius: 8px; height: 20px; overflow: hidden; }
+  .barra-fill { height: 100%; background: linear-gradient(90deg, var(--blue-500), var(--blue-700)); border-radius: 8px; }
+  .barra-num { font-size: 12.5px; color: var(--text-muted); text-align: right; font-weight: 600; }
+
+  /* ---------- Tabla ---------- */
+  .tabla-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 12px; background: var(--surface); color: var(--text-muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; }
+  .badge-informar { background: var(--blue-100); color: var(--blue-700); }
+  .badge-escalar { background: var(--navy-900); color: white; }
+  .badge-pendiente { background: var(--amber-bg); color: #B87200; }
+  .badge-atendido { background: var(--green-bg); color: #1A7A44; }
+  .badge-tl { background: var(--blue-100); color: var(--blue-700); }
+  .badge-om { background: var(--amber-bg); color: #B87200; }
+  .badge-pcd { background: var(--red-bg); color: #C0292F; }
+
+  .footer-nota { text-align: center; font-size: 11.5px; color: var(--text-muted); margin-top: 24px; }
+
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="eyebrow">BMM · Digital Manufacturing</div>
+    <h1>Dashboard — Beeper BMM</h1>
+  </div>
+  <div class="header-right">
+    <div class="status-pill"><span class="status-dot"></span> <span id="ultimaActualizacion">Cargando...</span></div>
+    <button class="btn-refrescar" id="btnRefrescar">↻ Refrescar</button>
+  </div>
+</div>
+
+<div class="contenido">
+  <div id="estadoCarga" class="estado-carga">Cargando datos de Firestore...</div>
+  <div id="dashboardBody" style="display:none;">
+
+    <div class="kpis">
+      <div class="kpi-card">
+        <div class="kpi-label">Total de alertas</div>
+        <div class="kpi-valor" id="kpiTotal">-</div>
+        <div class="kpi-sub" id="kpiTotalSub">-</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Activas ahora</div>
+        <div class="kpi-valor" id="kpiActivas">-</div>
+        <div class="kpi-sub">Pendientes sin cerrar</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Tasa de escalación</div>
+        <div class="kpi-valor" id="kpiEscalacion">-</div>
+        <div class="kpi-sub">De alertas "Escalar", % que subió de Team Leader</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Tiempo promedio de atención</div>
+        <div class="kpi-valor" id="kpiTiempo">-</div>
+        <div class="kpi-sub" id="kpiTiempoSub">-</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Alertas por tipo</div>
+        <div class="panel-sub">Informar vs. Escalar</div>
+        <div style="display:flex; align-items:center; gap:24px;">
+          <div id="donutTipo"></div>
+          <div class="leyenda" id="leyendaTipo" style="flex:1;"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Dónde se cierran las alertas</div>
+        <div class="panel-sub">Nivel en el que terminó cada alerta atendida</div>
+        <div style="display:flex; align-items:center; gap:24px;">
+          <div id="donutNivel"></div>
+          <div class="leyenda" id="leyendaNivel" style="flex:1;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:16px;">
+      <div class="panel-title">Alertas por línea de producción (FIT)</div>
+      <div class="panel-sub">Líneas que más reportan — útil para priorizar mantenimiento o capacitación</div>
+      <div id="barrasFit"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Trazabilidad — actividad reciente</div>
+      <div class="panel-sub">Últimas 25 alertas registradas</div>
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>FIT</th>
+              <th>Emisor</th>
+              <th>Tipo</th>
+              <th>Nivel</th>
+              <th>Estado</th>
+              <th>Duración</th>
+            </tr>
+          </thead>
+          <tbody id="tablaBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer-nota">Datos en vivo desde Firestore · Beeper BMM · Planta BMM Silao</div>
+  </div>
+</div>
+
+<script type="module">
+  import { db, iniciarSesionAnonima } from "./firebase-config.js";
+  import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+  iniciarSesionAnonima().catch(err => console.error("Error auth anónima:", err));
+
+  const NIVEL_TEXTO = { TeamLeader: "Team Leader", OperationsManager: "Operations Mgr", PCDirector: "PC Director" };
+  const NIVEL_BADGE = { TeamLeader: "badge-tl", OperationsManager: "badge-om", PCDirector: "badge-pcd" };
+  const NIVEL_COLOR = { TeamLeader: "#0072CE", OperationsManager: "#F5A623", PCDirector: "#E64545" };
+
+  document.getElementById("btnRefrescar").addEventListener("click", cargarDashboard);
+  cargarDashboard();
+
+  async function cargarDashboard() {
+    const btn = document.getElementById("btnRefrescar");
+    btn.disabled = true;
+    btn.textContent = "Cargando...";
+    document.getElementById("estadoCarga").style.display = "block";
+    document.getElementById("dashboardBody").style.display = "none";
+
+    try {
+      const snapshot = await getDocs(collection(db, "alertas"));
+      const alertas = [];
+      snapshot.forEach(docSnap => alertas.push({ id: docSnap.id, ...docSnap.data() }));
+
+      renderizarDashboard(alertas);
+
+      document.getElementById("estadoCarga").style.display = "none";
+      document.getElementById("dashboardBody").style.display = "block";
+      document.getElementById("ultimaActualizacion").textContent =
+        "Actualizado " + new Date().toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+    } catch (err) {
+      document.getElementById("estadoCarga").textContent = "❌ Error cargando datos: " + err.message;
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "↻ Refrescar";
+    }
+  }
+
+  function renderizarDashboard(alertas) {
+    // ---------- KPIs ----------
+    const total = alertas.length;
+    const activas = alertas.filter(a => a.estado === "pendiente").length;
+    document.getElementById("kpiTotal").textContent = total;
+    document.getElementById("kpiTotalSub").textContent = `${alertas.filter(a => a.estado === "atendido").length} atendidas`;
+    document.getElementById("kpiActivas").textContent = activas;
+
+    const escalarAlertas = alertas.filter(a => (a.tipoAlerta || "escalar") === "escalar");
+    const escalaron = escalarAlertas.filter(a => a.nivelActual && a.nivelActual !== "TeamLeader").length;
+    const tasaEsc = escalarAlertas.length > 0 ? Math.round((escalaron / escalarAlertas.length) * 100) : 0;
+    document.getElementById("kpiEscalacion").textContent = escalarAlertas.length > 0 ? tasaEsc + "%" : "—";
+
+    const conDuracion = alertas.filter(a => a.horaCreacion?.seconds && a.horaCierre?.seconds);
+    if (conDuracion.length > 0) {
+      const totalMin = conDuracion.reduce((sum, a) => sum + (a.horaCierre.seconds - a.horaCreacion.seconds) / 60, 0);
+      const promedioMin = totalMin / conDuracion.length;
+      document.getElementById("kpiTiempo").textContent = promedioMin < 60
+        ? Math.round(promedioMin) + " min"
+        : (promedioMin / 60).toFixed(1) + " h";
+      document.getElementById("kpiTiempoSub").textContent = `Basado en ${conDuracion.length} alertas cerradas`;
+    } else {
+      document.getElementById("kpiTiempo").textContent = "—";
+      document.getElementById("kpiTiempoSub").textContent = "Aún sin datos suficientes";
+    }
+
+    // ---------- Donut: por tipo ----------
+    const porTipo = { informar: 0, escalar: 0 };
+    alertas.forEach(a => { porTipo[a.tipoAlerta || "escalar"]++; });
+    dibujarDonut("donutTipo", [
+      { label: "Informar", valor: porTipo.informar, color: "#0072CE" },
+      { label: "Escalar", valor: porTipo.escalar, color: "#00284D" }
+    ], "leyendaTipo", total);
+
+    // ---------- Donut: nivel de cierre (solo atendidas) ----------
+    const atendidas = alertas.filter(a => a.estado === "atendido");
+    const porNivel = { TeamLeader: 0, OperationsManager: 0, PCDirector: 0 };
+    atendidas.forEach(a => { if (porNivel[a.nivelActual] !== undefined) porNivel[a.nivelActual]++; });
+    dibujarDonut("donutNivel", [
+      { label: "Team Leader", valor: porNivel.TeamLeader, color: NIVEL_COLOR.TeamLeader },
+      { label: "Operations Mgr", valor: porNivel.OperationsManager, color: NIVEL_COLOR.OperationsManager },
+      { label: "PC Director", valor: porNivel.PCDirector, color: NIVEL_COLOR.PCDirector }
+    ], "leyendaNivel", atendidas.length);
+
+    // ---------- Barras: por FIT ----------
+    const porFit = {};
+    alertas.forEach(a => { const f = a.fit || "Sin FIT"; porFit[f] = (porFit[f] || 0) + 1; });
+    const fitsOrdenados = Object.entries(porFit).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    const maxFit = fitsOrdenados.length > 0 ? fitsOrdenados[0][1] : 1;
+    const cont = document.getElementById("barrasFit");
+    cont.innerHTML = fitsOrdenados.map(([fit, count]) => `
+      <div class="barra-fila">
+        <div class="barra-nombre">FIT ${fit}</div>
+        <div class="barra-track"><div class="barra-fill" style="width:${(count / maxFit) * 100}%"></div></div>
+        <div class="barra-num">${count}</div>
+      </div>
+    `).join("") || '<div style="color:#5B6472;font-size:13px;">Sin datos todavía.</div>';
+
+    // ---------- Tabla ----------
+    const recientes = [...alertas]
+      .filter(a => a.horaCreacion?.seconds)
+      .sort((a, b) => b.horaCreacion.seconds - a.horaCreacion.seconds)
+      .slice(0, 25);
+
+    document.getElementById("tablaBody").innerHTML = recientes.map(a => {
+      const fecha = new Date(a.horaCreacion.seconds * 1000).toLocaleString("es-MX", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+      const tipoBadge = (a.tipoAlerta || "escalar") === "informar"
+        ? '<span class="badge badge-informar">Informar</span>'
+        : '<span class="badge badge-escalar">Escalar</span>';
+      const nivelBadge = `<span class="badge ${NIVEL_BADGE[a.nivelActual] || "badge-tl"}">${NIVEL_TEXTO[a.nivelActual] || a.nivelActual || "-"}</span>`;
+      const estadoBadge = a.estado === "atendido"
+        ? '<span class="badge badge-atendido">Atendida</span>'
+        : '<span class="badge badge-pendiente">Pendiente</span>';
+      let duracion = "—";
+      if (a.horaCreacion?.seconds && a.horaCierre?.seconds) {
+        const min = Math.round((a.horaCierre.seconds - a.horaCreacion.seconds) / 60);
+        duracion = min < 60 ? `${min} min` : `${(min / 60).toFixed(1)} h`;
+      }
+      return `<tr>
+        <td>${fecha}</td>
+        <td>${a.fit || "-"}</td>
+        <td>${a.emisor || "-"}</td>
+        <td>${tipoBadge}</td>
+        <td>${nivelBadge}</td>
+        <td>${estadoBadge}</td>
+        <td>${duracion}</td>
+      </tr>`;
+    }).join("") || '<tr><td colspan="7" style="text-align:center;color:#5B6472;">Sin alertas registradas todavía.</td></tr>';
+  }
+
+  // ---------- Dibuja un donut simple en SVG ----------
+  function dibujarDonut(contenedorId, datos, leyendaId, total) {
+    const cont = document.getElementById(contenedorId);
+    const leyenda = document.getElementById(leyendaId);
+    const size = 140, r = 52, cx = size / 2, cy = size / 2, grosor = 22;
+    const circunferencia = 2 * Math.PI * r;
+
+    if (total === 0) {
+      cont.innerHTML = `<svg width="${size}" height="${size}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#E2E8F0" stroke-width="${grosor}"/></svg>`;
+      leyenda.innerHTML = '<div style="color:#5B6472;font-size:13px;">Sin datos todavía.</div>';
+      return;
+    }
+
+    let offsetAcumulado = 0;
+    const segmentos = datos.map(d => {
+      const frac = d.valor / total;
+      const largo = frac * circunferencia;
+      const dasharray = `${largo} ${circunferencia - largo}`;
+      const dashoffset = -offsetAcumulado;
+      offsetAcumulado += largo;
+      return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${d.color}" stroke-width="${grosor}"
+        stroke-dasharray="${dasharray}" stroke-dashoffset="${dashoffset}" transform="rotate(-90 ${cx} ${cy})" />`;
+    }).join("");
+
+    cont.innerHTML = `
+      <svg width="${size}" height="${size}">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#E2E8F0" stroke-width="${grosor}"/>
+        ${segmentos}
+        <text x="${cx}" y="${cy - 3}" text-anchor="middle" font-family="Space Grotesk" font-size="22" font-weight="700" fill="#00284D">${total}</text>
+        <text x="${cx}" y="${cy + 15}" text-anchor="middle" font-family="Inter" font-size="10" fill="#5B6472">total</text>
+      </svg>`;
+
+    leyenda.innerHTML = datos.map(d => `
+      <div class="leyenda-item">
+        <div class="leyenda-izq">
+          <span class="leyenda-dot" style="background:${d.color}"></span>
+          <span>${d.label}</span>
+        </div>
+        <span class="leyenda-valor">${d.valor} ${total > 0 ? "(" + Math.round((d.valor / total) * 100) + "%)" : ""}</span>
+      </div>
+    `).join("");
+  }
+</script>
+
+</body>
+</html>
