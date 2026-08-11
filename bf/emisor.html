@@ -266,7 +266,7 @@
       <div class="field">
         <label class="field-label" for="fit">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-          FIT <span class="required">*</span>
+          Línea de producción (FIT) <span class="required">*</span>
         </label>
         <div class="input-wrap">
           <select id="fit" required>
@@ -325,7 +325,7 @@
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?action=getFITs`);
       const data = await res.json();
-      selectFit.innerHTML = '<option value="">Selecciona el FIT...</option>';
+      selectFit.innerHTML = '<option value="">Selecciona una línea...</option>';
       data.fits.forEach(fit => {
         const opt = document.createElement("option");
         opt.value = fit;
@@ -375,7 +375,7 @@
         throw new Error("No se encontró un Team Leader para esa línea.");
       }
 
-      const teamLeader = dataTL.teamLeaders[0];
+      const teamLeaders = dataTL.teamLeaders; // ahora usamos TODOS, no solo el primero
       const ahora = serverTimestamp();
 
       // 2. Crear la alerta en Firestore, con tipoAlerta según el botón usado
@@ -386,25 +386,29 @@
         estado: "pendiente",
         tipoAlerta: tipoAlerta, // "informar" | "escalar"
         nivelActual: "TeamLeader",
-        destinatarioActual: {
-          nomina: teamLeader.nomina,
-          nombre: teamLeader.nombre,
-          rango: teamLeader.rango
-        },
+        destinatariosActuales: teamLeaders.map(tl => ({
+          nomina: tl.nomina,
+          nombre: tl.nombre,
+          rango: tl.rango
+        })),
+        destinatariosNominas: teamLeaders.map(tl => tl.nomina),
         horaCreacion: ahora,
         horaLlegadaNivelActual: ahora,
         visto: false,
         historial: [
-          { nivel: "TeamLeader", accion: "creada", tipoAlerta: tipoAlerta, nombreDestinatario: teamLeader.nombre }
+          { nivel: "TeamLeader", accion: "creada", tipoAlerta: tipoAlerta, nombreDestinatario: teamLeaders.map(tl => tl.nombre).join(", ") }
         ]
       });
 
-      // 3. Disparar el push al Team Leader
-      await fetch(`${APPS_SCRIPT_URL}?action=enviarPush&nomina=${teamLeader.nomina}&alertaId=${docRef.id}&mensaje=${encodeURIComponent(mensaje)}&fit=${encodeURIComponent(fit)}`);
+      // 3. Disparar el push a CADA Team Leader de esa línea
+      await Promise.all(teamLeaders.map(tl =>
+        fetch(`${APPS_SCRIPT_URL}?action=enviarPush&nomina=${tl.nomina}&alertaId=${docRef.id}&mensaje=${encodeURIComponent(mensaje)}&fit=${encodeURIComponent(fit)}`)
+      ));
 
       resultado.className = "resultado ok";
       const etiqueta = tipoAlerta === "informar" ? "Informada" : "Escalada";
-      resultado.textContent = `✅ Alerta enviada a ${teamLeader.nombre} (Team Leader) · ${etiqueta}`;
+      const nombresTL = teamLeaders.map(tl => tl.nombre).join(", ");
+      resultado.textContent = `✅ Alerta enviada a ${nombresTL} (Team Leader) · ${etiqueta}`;
       document.getElementById("formAlerta").reset();
       cargarFITs(); // recarga el placeholder del select tras el reset
 
