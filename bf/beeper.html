@@ -680,10 +680,12 @@
         await updateDoc(doc(db, "alertas", alerta.id), {
           visto: true,
           estado: "atendido",
+          horaCierre: serverTimestamp(),
           historial: arrayUnion({
             nivel: alerta.nivelActual,
             accion: "atendido_automatico_informar",
-            nombreDestinatario: empleadoActual.nombre
+            nombreDestinatario: empleadoActual.nombre,
+            hora: new Date().toISOString()
           })
         });
       } else {
@@ -706,10 +708,12 @@
     try {
       await updateDoc(doc(db, "alertas", alerta.id), {
         estado: "atendido",
+        horaCierre: serverTimestamp(),
         historial: arrayUnion({
           nivel: alerta.nivelActual,
           accion: "atendido",
-          nombreDestinatario: empleadoActual.nombre
+          nombreDestinatario: empleadoActual.nombre,
+          hora: new Date().toISOString()
         })
       });
       indiceActual = 0;
