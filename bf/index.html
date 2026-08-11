@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Beeper BMM</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-950: #06111F;
+    --navy-900: #0B1B2E;
+    --navy-800: #122841;
+    --navy-700: #1B3A5C;
+    --blue-700: #00549F;
+    --blue-500: #0072CE;
+    --blue-400: #2E92E8;
+    --blue-100: #E4F0FC;
+    --text: #EAF1FA;
+    --text-muted: #8FA3BC;
+    --border: rgba(255,255,255,0.08);
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 17px; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--navy-950);
+    background-image: radial-gradient(circle at 15% 0%, rgba(0,114,206,0.14) 0%, transparent 45%);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* ---------- HEADER ---------- */
+  .header {
+    text-align: center;
+    margin-bottom: 34px;
+  }
+  .header-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 18px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--blue-500), var(--blue-700) 60%, #003D75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 28px rgba(0, 114, 206, 0.30);
+  }
+  .eyebrow {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* ---------- TARJETAS DE OPCIÓN ---------- */
+  .opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .opcion {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 22px 20px;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    background: var(--navy-900);
+    border: 1.5px solid var(--border);
+    transition: transform 0.12s, border-color 0.15s, background 0.15s;
+  }
+  .opcion:active { transform: scale(0.985); }
+
+  .opcion-emisor:hover { border-color: rgba(0, 114, 206, 0.35); background: #0D2036; }
+  .opcion-beeper:hover { border-color: rgba(0, 114, 206, 0.35); background: #0D2036; }
+
+  .opcion-icon {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .opcion-emisor .opcion-icon { background: rgba(0, 114, 206, 0.14); }
+  .opcion-beeper .opcion-icon {
+    background: linear-gradient(135deg, var(--blue-500), #003D75);
+    box-shadow: 0 6px 16px rgba(0, 114, 206, 0.25);
+  }
+
+  .opcion-texto { flex: 1; }
+  .opcion-titulo {
+    font-family: var(--font-display);
+    font-size: 16.5px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .opcion-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+  .opcion-chevron {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    margin-top: 12px;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 30px;
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="header-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </div>
+    <div class="eyebrow">BMM · Beiersdorf Manufacturing México</div>
+    <div class="title">Beeper BMM</div>
+    <div class="subtitle">Sistema de Alertas y Escalación</div>
+  </div>
+
+  <div class="opciones">
+    <a href="emisor.html" class="opcion opcion-emisor">
+      <div class="opcion-icon">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2E92E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="opcion-texto">
+        <div class="opcion-titulo">Levantar Alerta</div>
+        <div class="opcion-desc">Operador o Líder de Línea reportando un problema</div>
+      </div>
+      <svg class="opcion-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+
+    <a href="beeper.html" class="opcion opcion-beeper">
+      <div class="opcion-icon">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="opcion-texto">
+        <div class="opcion-titulo">Soy Team Leader / Op. Manager / PC Director</div>
+        <div class="opcion-desc">Iniciar sesión con número de nómina para recibir alertas</div>
+      </div>
+      <svg class="opcion-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
+  </div>
+
+  <div class="footer-note">Sistema activo · Planta BMM</div>
+</div>
+
+</body>
+</html>
