@@ -12,74 +12,6 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// ============ CACHÉ DE ARCHIVOS ESTÁTICOS (para carga rápida en datos móviles) ============
-// Solo cachea archivos que NO cambian: HTML propio, fuentes locales, SDK de Firebase.
-// NUNCA cachea Apps Script, Firestore, Auth ni FCM — esos siempre van a la red.
-const CACHE_VERSION = "beeper-shell-v2";
-
-const ARCHIVOS_PROPIOS = [
-  "./",
-  "./index.html",
-  "./emisor.html",
-  "./beeper.html",
-  "./firebase-config.js",
-  "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./fonts/inter-400.woff2",
-  "./fonts/inter-500.woff2",
-  "./fonts/inter-600.woff2",
-  "./fonts/inter-700.woff2",
-  "./fonts/space-grotesk-500.woff2",
-  "./fonts/space-grotesk-600.woff2",
-  "./fonts/space-grotesk-700.woff2",
-  "./fonts/jetbrains-mono-500.woff2",
-  "./fonts/jetbrains-mono-600.woff2"
-];
-
-function esEstaticoPermitido(url) {
-  if (url.origin === self.location.origin) return true; // nuestros propios archivos (HTML, fuentes, íconos)
-  if (url.hostname === "www.gstatic.com" && url.pathname.startsWith("/firebasejs/")) return true; // SDK de Firebase
-  return false; // Apps Script, Firestore, Auth, FCM: NUNCA se cachean
-}
-
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(ARCHIVOS_PROPIOS)).catch((err) => {
-      console.warn("No se pudo precachear todo el app shell:", err);
-    })
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
-
-  if (event.request.method !== "GET" || !esEstaticoPermitido(url)) {
-    return; // deja pasar directo a la red, sin intervenir
-  }
-
-  event.respondWith(
-    caches.match(event.request).then((cacheado) => {
-      if (cacheado) {
-        fetch(event.request).then((res) => {
-          if (res && res.ok) {
-            caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, res));
-          }
-        }).catch(() => {});
-        return cacheado;
-      }
-      return fetch(event.request).then((res) => {
-        if (res && res.ok) {
-          const copia = res.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, copia));
-        }
-        return res;
-      });
-    })
-  );
-});
-
 const DB_NAME = "beeper-dedup-db";
 const STORE_NAME = "pushes";
 
@@ -166,14 +98,6 @@ self.addEventListener("notificationclick", (event) => {
   );
 });
 
-// Limpia versiones viejas del caché y toma control inmediatamente al actualizarse
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    Promise.all([
-      caches.keys().then((nombres) =>
-        Promise.all(nombres.filter((n) => n !== CACHE_VERSION).map((n) => caches.delete(n)))
-      ),
-      clients.claim()
-    ])
-  );
-});
+// Fuerza que este Service Worker tome control inmediatamente al actualizarse
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (event) => event.waitUntil(clients.claim()));
