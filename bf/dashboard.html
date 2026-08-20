@@ -191,6 +191,7 @@
               <th>Fecha</th>
               <th>FIT</th>
               <th>Emisor</th>
+              <th>Mensaje</th>
               <th>Tipo</th>
               <th>Nivel</th>
               <th>Estado</th>
@@ -202,7 +203,7 @@
       </div>
     </div>
 
-    <div class="footer-nota">Datos en vivo · Beeper BMM · Planta BMM</div>
+    <div class="footer-nota">Datos en vivo desde Firestore · Beeper BMM · Planta BMM Silao</div>
   </div>
 </div>
 
@@ -324,16 +325,19 @@
         const min = Math.round((a.horaCierre.seconds - a.horaCreacion.seconds) / 60);
         duracion = min < 60 ? `${min} min` : `${(min / 60).toFixed(1)} h`;
       }
+      const mensajeCompleto = (a.mensaje || "").replace(/"/g, "&quot;");
+      const mensajeCorto = mensajeCompleto.length > 40 ? mensajeCompleto.slice(0, 40) + "…" : mensajeCompleto;
       return `<tr>
         <td>${fecha}</td>
         <td>${a.fit || "-"}</td>
         <td>${a.emisor || "-"}</td>
+        <td style="white-space:normal; max-width:220px;" title="${mensajeCompleto}">${mensajeCorto || "-"}</td>
         <td>${tipoBadge}</td>
         <td>${nivelBadge}</td>
         <td>${estadoBadge}</td>
         <td>${duracion}</td>
       </tr>`;
-    }).join("") || '<tr><td colspan="7" style="text-align:center;color:#5B6472;">Sin alertas registradas todavía.</td></tr>';
+    }).join("") || '<tr><td colspan="8" style="text-align:center;color:#5B6472;">Sin alertas registradas todavía.</td></tr>';
   }
 
   // ---------- Dibuja un donut simple en SVG ----------
