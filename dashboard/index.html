@@ -2,963 +2,921 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard · BConecta</title>
-
-  <link rel="manifest" href="/comunicados/manifest.json">
-  <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
-  <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
-
-  <style>
-    :root {
-      --bdf-blue: #0d1c84;
-      --bdf-blue-2: #0b1570;
-      --bdf-white: #ffffff;
-      --bdf-gray: #f4f6fb;
-      --text: #0b1220;
-      --radius: 16px;
-      --shadow-soft: 0 10px 30px rgba(0, 0, 0, .10);
-      --border: 1px solid rgba(0, 0, 0, .08);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      height: 100%;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
-      color: var(--text);
-      background: var(--bdf-gray);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .topbar {
-      background: var(--bdf-blue);
-      color: var(--bdf-white);
-      box-shadow: 0 5px 14px rgba(0, 0, 0, .18);
-    }
-
-    .topbar-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--bdf-white);
-      user-select: none;
-    }
-
-    .brand img {
-      height: 28px;
-      width: auto;
-      display: block;
-    }
-
-    .topbar-line {
-      height: 5px;
-      background: linear-gradient(90deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .05));
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .chip {
-      font-size: 12px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, .12);
-      border: 1px solid rgba(255, 255, 255, .18);
-      color: rgba(255, 255, 255, .92);
-      white-space: nowrap;
-    }
-
-    .btn-logout {
-      height: 34px;
-      padding: 0 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, .35);
-      background: rgb(255, 25, 0);
-      color: #fff;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .btn-back {
-      height: 34px;
-      padding: 0 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, .35);
-      background: rgba(255, 255, 255, .10);
-      color: #fff;
-      font-weight: 800;
-      cursor: pointer;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-    }
-
-    .wrap {
-      flex: 1;
-      padding: 20px 16px 40px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .page-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .page-title h1 {
-      margin: 0;
-      font-size: 20px;
-      color: var(--bdf-blue);
-      letter-spacing: .3px;
-    }
-
-    .btn-refresh {
-      height: 40px;
-      padding: 0 16px;
-      border-radius: 12px;
-      border: 0;
-      background: linear-gradient(135deg, var(--bdf-blue), var(--bdf-blue-2));
-      color: #fff;
-      font-weight: 900;
-      font-size: 13px;
-      cursor: pointer;
-      box-shadow: 0 10px 24px rgba(13, 28, 132, .22);
-    }
-
-    .btn-refresh:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
-    .kpis {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-    }
-
-    @media (max-width: 900px) {
-      .kpis {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 520px) {
-      .kpis {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .kpi-card {
-      background: #fff;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-soft);
-      border: var(--border);
-      padding: 16px 18px;
-    }
-
-    .kpi-card .label {
-      font-size: 12px;
-      font-weight: 800;
-      color: rgba(11, 18, 32, .60);
-      text-transform: uppercase;
-      letter-spacing: .4px;
-    }
-
-    .kpi-card .value {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--bdf-blue);
-      margin-top: 6px;
-      word-break: break-word;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-soft);
-      border: var(--border);
-      overflow: hidden;
-    }
-
-    .card-head {
-      padding: 16px 18px 12px;
-      border-bottom: 1px solid rgba(0, 0, 0, .06);
-    }
-
-    .card-head h2 {
-      margin: 0;
-      font-size: 16px;
-      color: var(--bdf-blue);
-      letter-spacing: .3px;
-    }
-
-    .card-head p {
-      margin: 6px 0 0;
-      font-size: 12.5px;
-      color: rgba(11, 18, 32, .65);
-    }
-
-    .card-body {
-      padding: 16px 18px 18px;
-    }
-
-    .search-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .search-row input {
-      flex: 1 1 220px;
-      height: 42px;
-      border-radius: 12px;
-      border: 1px solid rgba(0, 0, 0, .14);
-      padding: 0 12px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .search-row input:focus {
-      border-color: rgba(13, 28, 132, .55);
-      box-shadow: 0 0 0 4px rgba(13, 28, 132, .12);
-    }
-
-    .search-row button {
-      height: 42px;
-      padding: 0 16px;
-      border-radius: 12px;
-      border: 0;
-      background: linear-gradient(135deg, var(--bdf-blue), var(--bdf-blue-2));
-      color: #fff;
-      font-weight: 900;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .history-summary {
-      margin-top: 12px;
-      font-size: 13px;
-      color: rgba(11, 18, 32, .75);
-      display: none;
-    }
-
-    .history-summary.show {
-      display: block;
-    }
-
-    .history-summary b {
-      color: var(--bdf-blue);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    thead th {
-      text-align: left;
-      padding: 8px 10px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .3px;
-      color: rgba(11, 18, 32, .55);
-      border-bottom: 2px solid rgba(0, 0, 0, .06);
-    }
-
-    tbody td {
-      padding: 9px 10px;
-      border-bottom: 1px solid rgba(0, 0, 0, .05);
-    }
-
-    tbody tr:hover {
-      background: rgba(244, 246, 251, .6);
-    }
-
-    .table-wrap {
-      margin-top: 12px;
-      max-height: 360px;
-      overflow: auto;
-    }
-
-    .badge-dup {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 900;
-    }
-
-    .badge-dup.high {
-      background: rgba(231, 76, 60, .12);
-      color: #8b2b22;
-    }
-
-    .badge-dup.mid {
-      background: rgba(241, 196, 15, .18);
-      color: #8a6d00;
-    }
-
-    .badge-dup.low {
-      background: rgba(46, 204, 113, .14);
-      color: #1f6b3f;
-    }
-
-    .bar-row {
-      display: grid;
-      grid-template-columns: 140px 1fr 40px;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .bar-label {
-      font-size: 12.5px;
-      font-weight: 800;
-      color: rgba(11, 18, 32, .75);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .bar-track {
-      height: 12px;
-      border-radius: 999px;
-      background: rgba(13, 28, 132, .08);
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--bdf-blue), var(--bdf-blue-2));
-    }
-
-    .bar-value {
-      font-size: 12.5px;
-      font-weight: 900;
-      color: var(--bdf-blue);
-      text-align: right;
-    }
-
-    .empty-msg {
-      padding: 20px;
-      text-align: center;
-      color: rgba(11, 18, 32, .55);
-      font-size: 13px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    @media (max-width: 900px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* ===== Filtro de fechas (AGREGADO) ===== */
-    .filter-row {
-      display: flex;
-      align-items: flex-end;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .filter-field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .filter-field label {
-      font-size: 11px;
-      font-weight: 800;
-      color: rgba(11, 18, 32, .60);
-      text-transform: uppercase;
-      letter-spacing: .3px;
-    }
-
-    .filter-field input[type="date"] {
-      height: 40px;
-      border-radius: 10px;
-      border: 1px solid rgba(0, 0, 0, .14);
-      padding: 0 10px;
-      font-size: 13px;
-      outline: none;
-    }
-
-    .filter-field input[type="date"]:focus {
-      border-color: rgba(13, 28, 132, .55);
-      box-shadow: 0 0 0 4px rgba(13, 28, 132, .12);
-    }
-
-    .filter-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-filter,
-    .btn-filter-clear {
-      height: 40px;
-      padding: 0 14px;
-      border-radius: 10px;
-      border: 0;
-      font-weight: 900;
-      font-size: 12.5px;
-      cursor: pointer;
-    }
-
-    .btn-filter {
-      background: linear-gradient(135deg, var(--bdf-blue), var(--bdf-blue-2));
-      color: #fff;
-    }
-
-    .btn-filter-clear {
-      background: #fff;
-      color: var(--bdf-blue);
-      border: 1px solid rgba(13, 28, 132, .25);
-    }
-
-    .filter-period {
-      font-size: 12.5px;
-      font-weight: 800;
-      color: rgba(11, 18, 32, .65);
-      margin-left: auto;
-      align-self: center;
-    }
-
-    .filter-period b {
-      color: var(--bdf-blue);
-    }
-
-    .status-msg {
-      font-size: 13px;
-      padding: 10px 14px;
-      border-radius: 12px;
-      display: none;
-    }
-
-    .status-msg.show {
-      display: block;
-    }
-
-    .status-msg.err {
-      background: rgba(231, 76, 60, .10);
-      border: 1px solid rgba(231, 76, 60, .22);
-      color: #8b2b22;
-    }
-
-    .status-msg.info {
-      background: rgba(13, 28, 132, .10);
-      border: 1px solid rgba(13, 28, 132, .22);
-      color: #0b1b55;
-    }
-
-    .footer {
-      background: var(--bdf-blue);
-      color: rgba(255, 255, 255, .92);
-      text-align: center;
-      padding: 10px 10px;
-      font-size: 12px;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard · BConecta</title>
+
+    <link rel="manifest" href="/comunicados/manifest.json">
+    <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --bdf-blue: #0d1c84;
+            --bdf-blue-2: #0b1570;
+            --bdf-white: #ffffff;
+            --bdf-gray: #f4f6fb;
+            --text: #0b1220;
+            --radius: 16px;
+            --radius-sm: 12px;
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, .10);
+            --border: 1px solid rgba(0, 0, 0, .08);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+            color: var(--text);
+            background: var(--bdf-gray);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== Topbar ===== */
+        .topbar {
+            background: var(--bdf-blue);
+            color: var(--bdf-white);
+            box-shadow: 0 5px 14px rgba(0, 0, 0, .18);
+            flex: 0 0 auto;
+        }
+
+        .topbar-inner {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--bdf-white); }
+        .brand img { height: 24px; width: auto; display: block; }
+
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+
+        .chip {
+            font-size: 11.5px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .12);
+            border: 1px solid rgba(255, 255, 255, .18);
+            color: rgba(255, 255, 255, .92);
+            white-space: nowrap;
+        }
+
+        .btn-logout, .btn-back, .btn-refresh-sm {
+            height: 30px;
+            padding: 0 11px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, .35);
+            font-weight: 800;
+            font-size: 11.5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-logout { background: rgb(255, 25, 0); color: #fff; }
+        .btn-back { background: rgba(255, 255, 255, .10); color: #fff; }
+        .btn-refresh-sm { background: rgba(255, 255, 255, .10); color: #fff; }
+        .btn-refresh-sm:hover, .btn-back:hover { background: rgba(255, 255, 255, .18); }
+
+        /* ===== Layout principal (fit-to-viewport) ===== */
+        .wrap {
+            flex: 1;
+            min-height: 0;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1500px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 0;
+        }
+
+        /* Filtro compacto */
+        .filter-bar {
+            background: #fff;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-soft);
+            border: var(--border);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 0 0 auto;
+        }
+
+        .filter-bar label {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: rgba(11, 18, 32, .55);
+            text-transform: uppercase;
+            margin-right: 4px;
+        }
+
+        .filter-bar input[type="date"] {
+            height: 30px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, .14);
+            padding: 0 8px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .filter-bar button {
+            height: 30px;
+            padding: 0 12px;
+            border-radius: 8px;
+            border: 0;
+            font-weight: 800;
+            font-size: 11.5px;
+            cursor: pointer;
+        }
+
+        .btn-filter { background: linear-gradient(135deg, var(--bdf-blue), var(--bdf-blue-2)); color: #fff; }
+        .btn-filter-clear { background: #fff; color: var(--bdf-blue); border: 1px solid rgba(13, 28, 132, .25) !important; }
+
+        .filter-period {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: rgba(11, 18, 32, .65);
+            margin-left: auto;
+        }
+
+        .filter-period b { color: var(--bdf-blue); }
+
+        .status-msg {
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .status-msg.show { display: block; }
+
+        .status-msg.err { background: rgba(231, 76, 60, .10); border: 1px solid rgba(231, 76, 60, .22); color: #8b2b22; }
+        .status-msg.info { background: rgba(13, 28, 132, .10); border: 1px solid rgba(13, 28, 132, .22); color: #0b1b55; }
+
+        /* KPIs */
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            flex: 0 0 auto;
+        }
+
+        .kpi-card {
+            background: #fff;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-soft);
+            border: var(--border);
+            padding: 10px 14px;
+        }
+
+        .kpi-card .label {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: rgba(11, 18, 32, .55);
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        .kpi-card .value {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--bdf-blue);
+            margin-top: 2px;
+            line-height: 1.15;
+            word-break: break-word;
+        }
+
+        /* Grid principal de gráficas 2x2 */
+        .main-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 900px) {
+            html, body { overflow: auto; }
+            .main-grid { grid-template-columns: 1fr; grid-template-rows: none; }
+            .kpis { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .chart-card {
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-soft);
+            border: var(--border);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .chart-card-head {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, .06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex: 0 0 auto;
+        }
+
+        .chart-card-head h2 {
+            margin: 0;
+            font-size: 13.5px;
+            color: var(--bdf-blue);
+            letter-spacing: .2px;
+        }
+
+        .link-btn {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--bdf-blue);
+            cursor: pointer;
+            background: rgba(13, 28, 132, .08);
+            border: 0;
+            padding: 4px 9px;
+            border-radius: 999px;
+        }
+
+        .link-btn:hover { background: rgba(13, 28, 132, .14); }
+
+        .chart-body {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+            padding: 8px 12px 12px;
+        }
+
+        .chart-empty {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: rgba(11, 18, 32, .45);
+            font-size: 12.5px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* Panel de búsqueda */
+        .search-panel-body {
+            padding: 10px 14px 14px;
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .search-row-mini { display: flex; gap: 8px; }
+
+        .search-row-mini input {
+            flex: 1;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, .14);
+            padding: 0 10px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-row-mini button {
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 0;
+            background: linear-gradient(135deg, var(--bdf-blue), var(--bdf-blue-2));
+            color: #fff;
+            font-weight: 900;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .search-result { font-size: 13px; }
+
+        .search-summary { color: rgba(11, 18, 32, .75); margin-bottom: 8px; }
+        .search-summary b { color: var(--bdf-blue); }
+
+        .btn-view-detail {
+            height: 34px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(13, 28, 132, .25);
+            background: #fff;
+            color: var(--bdf-blue);
+            font-weight: 900;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .search-hint {
+            font-size: 12px;
+            color: rgba(11, 18, 32, .55);
+            margin-top: auto;
+            line-height: 1.5;
+        }
+
+        .empty-msg { padding: 10px; color: rgba(11, 18, 32, .5); font-size: 12.5px; }
+
+        /* ===== Modal de detalle ===== */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 20px;
+        }
+
+        .modal.open { display: flex; }
+
+        .modal-card {
+            background: #fff;
+            width: min(640px, 100%);
+            max-height: 78vh;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, .25);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-head {
+            background: var(--bdf-blue);
+            color: #fff;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 900;
+            font-size: 14px;
+        }
+
+        .modal-head .close { cursor: pointer; font-size: 18px; }
+
+        .modal-body-inner { padding: 16px 18px; overflow: auto; }
+
+        .modal-table-wrap { max-height: 50vh; overflow: auto; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+        thead th {
+            text-align: left;
+            padding: 7px 8px;
+            font-size: 10.5px;
+            text-transform: uppercase;
+            color: rgba(11, 18, 32, .55);
+            border-bottom: 2px solid rgba(0, 0, 0, .06);
+            position: sticky;
+            top: 0;
+            background: #fff;
+        }
+
+        tbody td { padding: 7px 8px; border-bottom: 1px solid rgba(0, 0, 0, .05); }
+        tbody tr:hover { background: rgba(244, 246, 251, .6); }
+    </style>
 </head>
 
 <body>
-  <div class="topbar">
-    <div class="topbar-inner">
-      <a class="brand" href="/comunicados/admin/">
-        <img src="/comunicados/img/bf.png" alt="BF" />
-      </a>
-      <div class="header-actions">
-        <div class="chip" id="chipUser">Admin</div>
-        <a class="btn-back" href="/comunicados/admin/">← ADMIN</a>
-        <button class="btn-logout" id="btnLogout" type="button">SALIR</button>
-      </div>
+    <div class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="/comunicados/admin/">
+                <img src="/comunicados/img/bf.png" alt="BF" />
+            </a>
+            <div class="header-actions">
+                <div class="chip" id="chipUser">Admin</div>
+                <button class="btn-refresh-sm" id="btnRefresh" type="button">ACTUALIZAR</button>
+                <a class="btn-back" href="/comunicados/admin/">← ADMIN</a>
+                <button class="btn-logout" id="btnLogout" type="button">SALIR</button>
+            </div>
+        </div>
     </div>
-    <div class="topbar-line"></div>
-  </div>
 
-  <div class="wrap">
-    <div class="container">
+    <div class="wrap">
+        <div class="container">
 
-      <div class="page-title">
-        <h1>DASHBOARD · ACCESOS BCONECTA</h1>
-        <button class="btn-refresh" id="btnRefresh" type="button">ACTUALIZAR DATOS</button>
-      </div>
+            <section class="filter-bar" aria-label="Filtro de periodo">
+                <label for="filterDesde">Desde</label>
+                <input id="filterDesde" type="date" />
+                <label for="filterHasta">Hasta</label>
+                <input id="filterHasta" type="date" />
+                <button class="btn-filter" id="btnApplyFilter" type="button">APLICAR</button>
+                <button class="btn-filter-clear" id="btnClearFilter" type="button">VER TODO</button>
+                <div class="filter-period" id="filterPeriodLabel">Mostrando: <b>Todo el historial</b></div>
+            </section>
 
-      <div id="statusMsg" class="status-msg"></div>
+            <div id="statusMsg" class="status-msg"></div>
 
-      <section class="card" aria-label="Filtro de periodo">
-        <div class="card-body">
-          <div class="filter-row">
-            <div class="filter-field">
-              <label for="filterDesde">Desde</label>
-              <input id="filterDesde" type="date" />
+            <div class="kpis">
+                <div class="kpi-card">
+                    <div class="label">Total de accesos</div>
+                    <div class="value" id="kpiTotal">—</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">Usuarios únicos</div>
+                    <div class="value" id="kpiUnicos">—</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">Promedio accesos / usuario</div>
+                    <div class="value" id="kpiPromedio">—</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">Área más visitada</div>
+                    <div class="value" id="kpiAreaTop">—</div>
+                </div>
             </div>
-            <div class="filter-field">
-              <label for="filterHasta">Hasta</label>
-              <input id="filterHasta" type="date" />
+
+            <div class="main-grid">
+
+                <section class="chart-card" aria-label="Distribución por área">
+                    <div class="chart-card-head">
+                        <h2>Distribución por área</h2>
+                        <button class="link-btn" id="linkAreaAll" type="button">Ver todas</button>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="areaChart"></canvas>
+                        <div class="chart-empty" id="areaChartEmpty">Aún no hay visitas por área registradas.</div>
+                    </div>
+                </section>
+
+                <section class="chart-card" aria-label="Accesos por día">
+                    <div class="chart-card-head">
+                        <h2>Accesos por día (últimos 14)</h2>
+                        <button class="link-btn" id="linkDayAll" type="button">Ver historial</button>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="dayChart"></canvas>
+                        <div class="chart-empty" id="dayChartEmpty">Aún no hay accesos registrados.</div>
+                    </div>
+                </section>
+
+                <section class="chart-card" aria-label="Top nóminas">
+                    <div class="chart-card-head">
+                        <h2>Top nóminas con más accesos</h2>
+                        <button class="link-btn" id="linkTopAll" type="button">Ver tabla completa</button>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="topChart"></canvas>
+                        <div class="chart-empty" id="topChartEmpty">Aún no hay accesos registrados.</div>
+                    </div>
+                </section>
+
+                <section class="chart-card" aria-label="Buscar nómina">
+                    <div class="chart-card-head">
+                        <h2>Buscar nómina</h2>
+                    </div>
+                    <div class="search-panel-body">
+                        <div class="search-row-mini">
+                            <input id="searchNomina" type="text" inputmode="numeric" placeholder="Ej. 6555" />
+                            <button id="btnSearch" type="button">BUSCAR</button>
+                        </div>
+                        <div id="searchResult" class="search-result"></div>
+                        <div class="search-hint">
+                            Escribe una nómina y presiona buscar (o Enter). También puedes hacer clic directo en
+                            cualquier barra o rebanada de las gráficas para ver su detalle.
+                        </div>
+                    </div>
+                </section>
+
             </div>
-            <div class="filter-actions">
-              <button class="btn-filter" id="btnApplyFilter" type="button">APLICAR FILTRO</button>
-              <button class="btn-filter-clear" id="btnClearFilter" type="button">VER TODO</button>
-            </div>
-            <div class="filter-period" id="filterPeriodLabel">Mostrando: <b>Todo el historial</b></div>
-          </div>
         </div>
-      </section>
-
-      <div class="kpis">
-        <div class="kpi-card">
-          <div class="label">Total de accesos</div>
-          <div class="value" id="kpiTotal">—</div>
-        </div>
-        <div class="kpi-card">
-          <div class="label">Usuarios únicos</div>
-          <div class="value" id="kpiUnicos">—</div>
-        </div>
-        <div class="kpi-card">
-          <div class="label">Promedio accesos / usuario</div>
-          <div class="value" id="kpiPromedio">—</div>
-        </div>
-        <div class="kpi-card">
-          <div class="label">Área más visitada</div>
-          <div class="value" id="kpiAreaTop">—</div>
-        </div>
-      </div>
-
-      <section class="card" aria-label="Buscar historial por nómina">
-        <div class="card-head">
-          <h2>Historial individual por nómina</h2>
-          <p>Escribe una nómina para ver cada vez que ha ingresado (fecha y hora).</p>
-        </div>
-        <div class="card-body">
-          <div class="search-row">
-            <input id="searchNomina" type="text" inputmode="numeric" placeholder="Ej. 6555" />
-            <button id="btnSearch" type="button">BUSCAR</button>
-          </div>
-          <div id="historySummary" class="history-summary"></div>
-          <div class="table-wrap">
-            <table id="historyTable" style="display:none;">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Hora</th>
-                </tr>
-              </thead>
-              <tbody id="historyBody"></tbody>
-            </table>
-            <div id="historyEmpty" class="empty-msg" style="display:none;">Sin registros para esa nómina.</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="card" aria-label="Top nóminas con más accesos">
-        <div class="card-head">
-          <h2>Nóminas con más accesos (posibles duplicados)</h2>
-          <p>Ordenado de mayor a menor número de ingresos.</p>
-        </div>
-        <div class="card-body">
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nómina</th>
-                  <th>Accesos</th>
-                  <th>Primer acceso</th>
-                  <th>Último acceso</th>
-                </tr>
-              </thead>
-              <tbody id="topNominasBody"></tbody>
-            </table>
-            <div id="topNominasEmpty" class="empty-msg" style="display:none;">Aún no hay accesos registrados.</div>
-          </div>
-        </div>
-      </section>
-
-      <div class="grid-2">
-        <section class="card" aria-label="Áreas más visitadas">
-          <div class="card-head">
-            <h2>Áreas más visitadas</h2>
-            <p>Cuántas veces se abrió cada área en comunicados.</p>
-          </div>
-          <div class="card-body" id="areasChart">
-            <div class="empty-msg">Cargando...</div>
-          </div>
-        </section>
-
-        <section class="card" aria-label="Accesos por día">
-          <div class="card-head">
-            <h2>Accesos por día (últimos 30 días)</h2>
-            <p>Actividad de inicio de sesión en el portal.</p>
-          </div>
-          <div class="card-body" id="diasChart">
-            <div class="empty-msg">Cargando...</div>
-          </div>
-        </section>
-      </div>
-
     </div>
-  </div>
 
-  <div class="footer">©️ 2026. Todos los derechos reservados.</div>
+    <!-- Modal de detalle -->
+    <div class="modal" id="detailModal">
+        <div class="modal-card">
+            <div class="modal-head">
+                <span id="detailModalTitle">Detalle</span>
+                <span class="close" id="detailModalClose">✖</span>
+            </div>
+            <div class="modal-body-inner" id="detailModalBody"></div>
+        </div>
+    </div>
 
-  <script>
-    // ===== Session guard =====
-    const session = JSON.parse(localStorage.getItem("session") || "null");
-    if (!session || session.role !== "admin") {
-      window.location.href = "/comunicados/login/";
-    }
-
-    const adminNomina = session?.nomina ? String(session.nomina) : "";
-    document.getElementById("chipUser").textContent = adminNomina ? `Admin · ${adminNomina}` : "Admin";
-
-    document.getElementById("btnLogout").addEventListener("click", () => {
-      localStorage.removeItem("session");
-      window.location.href = "/comunicados/login/";
-    });
-
-    const API_URL = "https://script.google.com/macros/s/AKfycbzAcZGJVBBLDSi0AfI5MMCDgpC1YmFRgjJItQWAmw2izTFLpk9o9eWQX5WrerowNOrG2A/exec";
-
-    const $ = (id) => document.getElementById(id);
-
-    function setStatus(type, msg) {
-      const el = $("statusMsg");
-      if (!msg) { el.className = "status-msg"; el.textContent = ""; return; }
-      el.className = "status-msg show " + type;
-      el.textContent = msg;
-    }
-
-    function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, (m) => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-      }[m]));
-    }
-
-    function parseFechaHora(fecha, hora) {
-      const partes = String(fecha || "").split("/");
-      if (partes.length !== 3) return new Date(0);
-      const [d, m, y] = partes.map(Number);
-      const [hh, mm, ss] = String(hora || "00:00:00").split(":").map(Number);
-      return new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, ss || 0);
-    }
-
-    let dashboardData = { logins: [], areas: [] };
-    let filteredData = { logins: [], areas: [] };
-    let currentFilter = { desde: null, hasta: null };
-
-    // ===== Filtro de rango de fechas (AGREGADO) =====
-    function isWithinRange(dateObj, desde, hasta) {
-      if (desde && dateObj < desde) return false;
-      if (hasta && dateObj > hasta) return false;
-      return true;
-    }
-
-    function computeFilteredData() {
-      const { desde, hasta } = currentFilter;
-
-      if (!desde && !hasta) {
-        filteredData = dashboardData;
-        return;
-      }
-
-      const desdeDate = desde ? new Date(desde + "T00:00:00") : null;
-      const hastaDate = hasta ? new Date(hasta + "T23:59:59") : null;
-
-      filteredData = {
-        logins: dashboardData.logins.filter(l => isWithinRange(parseFechaHora(l.fecha, l.hora), desdeDate, hastaDate)),
-        areas: dashboardData.areas.filter(a => isWithinRange(parseFechaHora(a.fecha, a.hora), desdeDate, hastaDate))
-      };
-    }
-
-    function updateFilterLabel() {
-      const label = $("filterPeriodLabel");
-      const { desde, hasta } = currentFilter;
-
-      if (!desde && !hasta) {
-        label.innerHTML = "Mostrando: <b>Todo el historial</b>";
-        return;
-      }
-
-      const fmt = (v) => v ? new Date(v + "T00:00:00").toLocaleDateString("es-MX") : "";
-
-      if (desde && hasta) {
-        label.innerHTML = `Mostrando: <b>${fmt(desde)} — ${fmt(hasta)}</b>`;
-      } else if (desde) {
-        label.innerHTML = `Mostrando: desde <b>${fmt(desde)}</b>`;
-      } else {
-        label.innerHTML = `Mostrando: hasta <b>${fmt(hasta)}</b>`;
-      }
-    }
-
-    function renderAll() {
-      computeFilteredData();
-      updateFilterLabel();
-
-      renderKPIs(filteredData.logins, filteredData.areas);
-      renderTopNominas(filteredData.logins);
-      renderAreasChart(filteredData.areas);
-      renderDiasChart(filteredData.logins);
-      searchHistory();
-    }
-
-    $("btnApplyFilter").addEventListener("click", () => {
-      currentFilter = {
-        desde: $("filterDesde").value || null,
-        hasta: $("filterHasta").value || null
-      };
-      renderAll();
-    });
-
-    $("btnClearFilter").addEventListener("click", () => {
-      $("filterDesde").value = "";
-      $("filterHasta").value = "";
-      currentFilter = { desde: null, hasta: null };
-      renderAll();
-    });
-
-    async function fetchDashboard() {
-      const url = `${API_URL}?data=dashboard&t=${Date.now()}`;
-      const res = await fetch(url, { cache: "no-store" });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error || "Error desconocido al cargar datos");
-      return data;
-    }
-
-    function renderKPIs(logins, areas) {
-      const total = logins.length;
-      const nominasUnicas = new Set(logins.map(l => l.nomina)).size;
-      const promedio = nominasUnicas ? (total / nominasUnicas).toFixed(1) : "0";
-
-      const areaCounts = {};
-      areas.forEach(a => { areaCounts[a.area] = (areaCounts[a.area] || 0) + 1; });
-      let areaTop = "—";
-      let maxCount = 0;
-      Object.entries(areaCounts).forEach(([area, count]) => {
-        if (count > maxCount) { maxCount = count; areaTop = area; }
-      });
-
-      $("kpiTotal").textContent = total;
-      $("kpiUnicos").textContent = nominasUnicas;
-      $("kpiPromedio").textContent = promedio;
-      $("kpiAreaTop").textContent = areaTop;
-    }
-
-    function renderTopNominas(logins) {
-      const map = {};
-      logins.forEach(l => {
-        if (!map[l.nomina]) map[l.nomina] = [];
-        map[l.nomina].push(parseFechaHora(l.fecha, l.hora));
-      });
-
-      const rows = Object.entries(map).map(([nomina, dates]) => {
-        dates.sort((a, b) => a - b);
-        return {
-          nomina,
-          count: dates.length,
-          first: dates[0],
-          last: dates[dates.length - 1]
-        };
-      }).sort((a, b) => b.count - a.count);
-
-      const body = $("topNominasBody");
-      const empty = $("topNominasEmpty");
-
-      if (!rows.length) {
-        body.innerHTML = "";
-        empty.style.display = "block";
-        return;
-      }
-      empty.style.display = "none";
-
-      body.innerHTML = rows.slice(0, 50).map(r => {
-        let badgeClass = "low";
-        if (r.count >= 10) badgeClass = "high";
-        else if (r.count >= 4) badgeClass = "mid";
-
-        const fmt = (d) => d ? d.toLocaleString("es-MX") : "—";
-
-        return `
-                    <tr>
-                        <td><b>${escapeHtml(r.nomina)}</b></td>
-                        <td><span class="badge-dup ${badgeClass}">${r.count}</span></td>
-                        <td>${escapeHtml(fmt(r.first))}</td>
-                        <td>${escapeHtml(fmt(r.last))}</td>
-                    </tr>
-                `;
-      }).join("");
-    }
-
-    function renderAreasChart(areas) {
-      const counts = {};
-      areas.forEach(a => { counts[a.area] = (counts[a.area] || 0) + 1; });
-
-      const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-      const container = $("areasChart");
-
-      if (!entries.length) {
-        container.innerHTML = `<div class="empty-msg">Aún no hay visitas por área registradas.</div>`;
-        return;
-      }
-
-      const max = entries[0][1];
-      container.innerHTML = entries.slice(0, 14).map(([area, count]) => {
-        const pct = Math.max(6, Math.round((count / max) * 100));
-        return `
-                    <div class="bar-row">
-                        <div class="bar-label" title="${escapeHtml(area)}">${escapeHtml(area)}</div>
-                        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-                        <div class="bar-value">${count}</div>
-                    </div>
-                `;
-      }).join("");
-    }
-
-    function renderDiasChart(logins) {
-      const counts = {};
-      logins.forEach(l => { counts[l.fecha] = (counts[l.fecha] || 0) + 1; });
-
-      const entries = Object.entries(counts)
-        .map(([fecha, count]) => ({ fecha, count, dateObj: parseFechaHora(fecha, "00:00:00") }))
-        .sort((a, b) => a.dateObj - b.dateObj)
-        .slice(-30);
-
-      const container = $("diasChart");
-
-      if (!entries.length) {
-        container.innerHTML = `<div class="empty-msg">Aún no hay accesos registrados.</div>`;
-        return;
-      }
-
-      const max = Math.max(...entries.map(e => e.count));
-      container.innerHTML = entries.map(e => {
-        const pct = Math.max(6, Math.round((e.count / max) * 100));
-        return `
-                    <div class="bar-row">
-                        <div class="bar-label">${escapeHtml(e.fecha)}</div>
-                        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-                        <div class="bar-value">${e.count}</div>
-                    </div>
-                `;
-      }).join("");
-    }
-
-    function searchHistory() {
-      const term = $("searchNomina").value.trim();
-      const summary = $("historySummary");
-      const table = $("historyTable");
-      const body = $("historyBody");
-      const emptyMsg = $("historyEmpty");
-
-      if (!term) {
-        summary.classList.remove("show");
-        table.style.display = "none";
-        emptyMsg.style.display = "none";
-        return;
-      }
-
-      const matches = filteredData.logins
-        .filter(l => l.nomina === term)
-        .map(l => ({ ...l, dateObj: parseFechaHora(l.fecha, l.hora) }))
-        .sort((a, b) => b.dateObj - a.dateObj);
-
-      if (!matches.length) {
-        summary.classList.remove("show");
-        table.style.display = "none";
-        emptyMsg.style.display = "block";
-        return;
-      }
-
-      emptyMsg.style.display = "none";
-      summary.classList.add("show");
-      summary.innerHTML = `Nómina <b>${escapeHtml(term)}</b>: <b>${matches.length}</b> acceso(s) registrado(s).`;
-
-      table.style.display = "table";
-      body.innerHTML = matches.map(m => `
-                <tr><td>${escapeHtml(m.fecha)}</td><td>${escapeHtml(m.hora)}</td></tr>
-            `).join("");
-    }
-
-    $("btnSearch").addEventListener("click", searchHistory);
-    $("searchNomina").addEventListener("keydown", (e) => { if (e.key === "Enter") searchHistory(); });
-
-    async function loadAll() {
-      $("btnRefresh").disabled = true;
-      $("btnRefresh").textContent = "CARGANDO...";
-      setStatus("info", "Cargando datos del Sheet...");
-
-      try {
-        const data = await fetchDashboard();
-        dashboardData = { logins: data.logins || [], areas: data.areas || [] };
-
-        renderAll();
-
-        if (dashboardData.logins.length === 0 && dashboardData.areas.length === 0) {
-          setStatus("err", "No se encontraron datos. Verifica que las pestañas 'Log' y 'LogAreas' existan y tengan registros.");
-        } else {
-          setStatus("", "");
+    <script>
+        // ===== Session guard =====
+        const session = JSON.parse(localStorage.getItem("session") || "null");
+        if (!session || session.role !== "admin") {
+            window.location.href = "/comunicados/login/";
         }
-      } catch (err) {
-        console.error(err);
-        setStatus("err", "No se pudieron cargar los datos. Revisa la publicación del Apps Script.");
-      } finally {
-        $("btnRefresh").disabled = false;
-        $("btnRefresh").textContent = "ACTUALIZAR DATOS";
-      }
-    }
 
-    $("btnRefresh").addEventListener("click", loadAll);
+        const adminNomina = session?.nomina ? String(session.nomina) : "";
+        document.getElementById("chipUser").textContent = adminNomina ? `Admin · ${adminNomina}` : "Admin";
 
-    loadAll();
-  </script>
+        document.getElementById("btnLogout").addEventListener("click", () => {
+            localStorage.removeItem("session");
+            window.location.href = "/comunicados/login/";
+        });
 
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/comunicados/sw.js")
-        .then(() => console.log("✅ Service Worker registrado"))
-        .catch(err => console.error("❌ Error al registrar SW", err));
-    }
-  </script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzAcZGJVBBLDSi0AfI5MMCDgpC1YmFRgjJItQWAmw2izTFLpk9o9eWQX5WrerowNOrG2A/exec";
+
+        const $ = (id) => document.getElementById(id);
+
+        const PALETTE = ["#0d1c84", "#2e7dd1", "#00b3a4", "#f2a900", "#e94f37", "#7b2ff7", "#1f9e6d", "#c2185b", "#6b4ce6", "#0891b2", "#d97706", "#4b5563", "#db2777", "#059669", "#3b82f6", "#ea580c"];
+        const colorFor = (i) => PALETTE[i % PALETTE.length];
+
+        function setStatus(type, msg) {
+            const el = $("statusMsg");
+            if (!msg) { el.className = "status-msg"; el.textContent = ""; return; }
+            el.className = "status-msg show " + type;
+            el.textContent = msg;
+        }
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, (m) => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+            }[m]));
+        }
+
+        function parseFechaHora(fecha, hora) {
+            const partes = String(fecha || "").split("/");
+            if (partes.length !== 3) return new Date(0);
+            const [d, m, y] = partes.map(Number);
+            const [hh, mm, ss] = String(hora || "00:00:00").split(":").map(Number);
+            return new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, ss || 0);
+        }
+
+        let dashboardData = { logins: [], areas: [] };
+        let filteredData = { logins: [], areas: [] };
+        let currentFilter = { desde: null, hasta: null };
+        let charts = { area: null, day: null, top: null };
+        let areaFullData = [];
+        let dayFullData = [];
+        let topFullData = [];
+
+        // ===== Filtro de rango de fechas =====
+        function isWithinRange(dateObj, desde, hasta) {
+            if (desde && dateObj < desde) return false;
+            if (hasta && dateObj > hasta) return false;
+            return true;
+        }
+
+        function computeFilteredData() {
+            const { desde, hasta } = currentFilter;
+            if (!desde && !hasta) { filteredData = dashboardData; return; }
+
+            const desdeDate = desde ? new Date(desde + "T00:00:00") : null;
+            const hastaDate = hasta ? new Date(hasta + "T23:59:59") : null;
+
+            filteredData = {
+                logins: dashboardData.logins.filter(l => isWithinRange(parseFechaHora(l.fecha, l.hora), desdeDate, hastaDate)),
+                areas: dashboardData.areas.filter(a => isWithinRange(parseFechaHora(a.fecha, a.hora), desdeDate, hastaDate))
+            };
+        }
+
+        function updateFilterLabel() {
+            const label = $("filterPeriodLabel");
+            const { desde, hasta } = currentFilter;
+            if (!desde && !hasta) { label.innerHTML = "Mostrando: <b>Todo el historial</b>"; return; }
+            const fmt = (v) => v ? new Date(v + "T00:00:00").toLocaleDateString("es-MX") : "";
+            if (desde && hasta) label.innerHTML = `Mostrando: <b>${fmt(desde)} — ${fmt(hasta)}</b>`;
+            else if (desde) label.innerHTML = `Mostrando: desde <b>${fmt(desde)}</b>`;
+            else label.innerHTML = `Mostrando: hasta <b>${fmt(hasta)}</b>`;
+        }
+
+        $("btnApplyFilter").addEventListener("click", () => {
+            currentFilter = { desde: $("filterDesde").value || null, hasta: $("filterHasta").value || null };
+            renderAll();
+        });
+
+        $("btnClearFilter").addEventListener("click", () => {
+            $("filterDesde").value = "";
+            $("filterHasta").value = "";
+            currentFilter = { desde: null, hasta: null };
+            renderAll();
+        });
+
+        async function fetchDashboard() {
+            const url = `${API_URL}?data=dashboard&t=${Date.now()}`;
+            const res = await fetch(url, { cache: "no-store" });
+            const data = await res.json();
+            if (!data.ok) throw new Error(data.error || "Error desconocido al cargar datos");
+            return data;
+        }
+
+        // ===== KPIs =====
+        function renderKPIs(logins, areas) {
+            const total = logins.length;
+            const nominasUnicas = new Set(logins.map(l => l.nomina)).size;
+            const promedio = nominasUnicas ? (total / nominasUnicas).toFixed(1) : "0";
+
+            const areaCounts = {};
+            areas.forEach(a => { areaCounts[a.area] = (areaCounts[a.area] || 0) + 1; });
+            let areaTop = "—", maxCount = 0;
+            Object.entries(areaCounts).forEach(([area, count]) => { if (count > maxCount) { maxCount = count; areaTop = area; } });
+
+            $("kpiTotal").textContent = total;
+            $("kpiUnicos").textContent = nominasUnicas;
+            $("kpiPromedio").textContent = promedio;
+            $("kpiAreaTop").textContent = areaTop;
+        }
+
+        // ===== Gráfica de dona: Áreas =====
+        function renderAreaChart(areas) {
+            const counts = {};
+            areas.forEach(a => { counts[a.area] = (counts[a.area] || 0) + 1; });
+            const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+            areaFullData = entries;
+
+            if (charts.area) { charts.area.destroy(); charts.area = null; }
+
+            if (!entries.length) {
+                $("areaChartEmpty").style.display = "flex";
+                $("areaChart").style.display = "none";
+                return;
+            }
+            $("areaChartEmpty").style.display = "none";
+            $("areaChart").style.display = "block";
+
+            const labels = entries.map(e => e[0]);
+            const data = entries.map(e => e[1]);
+            const colors = labels.map((_, i) => colorFor(i));
+
+            charts.area = new Chart($("areaChart").getContext("2d"), {
+                type: "doughnut",
+                data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: "#fff" }] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: "60%",
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed} visita(s)` } }
+                    },
+                    onClick: (evt, elements) => {
+                        if (!elements.length) return;
+                        openAreaDetail(labels[elements[0].index]);
+                    }
+                }
+            });
+        }
+
+        // ===== Gráfica de barras: Accesos por día =====
+        function renderDayChart(logins) {
+            const counts = {};
+            logins.forEach(l => { counts[l.fecha] = (counts[l.fecha] || 0) + 1; });
+            const entries = Object.entries(counts)
+                .map(([fecha, count]) => ({ fecha, count, dateObj: parseFechaHora(fecha, "00:00:00") }))
+                .sort((a, b) => a.dateObj - b.dateObj);
+            dayFullData = entries;
+
+            const last = entries.slice(-14);
+
+            if (charts.day) { charts.day.destroy(); charts.day = null; }
+
+            if (!last.length) {
+                $("dayChartEmpty").style.display = "flex";
+                $("dayChart").style.display = "none";
+                return;
+            }
+            $("dayChartEmpty").style.display = "none";
+            $("dayChart").style.display = "block";
+
+            charts.day = new Chart($("dayChart").getContext("2d"), {
+                type: "bar",
+                data: {
+                    labels: last.map(e => e.fecha),
+                    datasets: [{ data: last.map(e => e.count), backgroundColor: "#0d1c84", borderRadius: 6, maxBarThickness: 30 }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.y} acceso(s)` } }
+                    },
+                    scales: {
+                        x: { ticks: { font: { size: 10 }, maxRotation: 55, minRotation: 45 }, grid: { display: false } },
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    },
+                    onClick: (evt, elements) => {
+                        if (!elements.length) return;
+                        openDayDetail(last[elements[0].index].fecha);
+                    }
+                }
+            });
+        }
+
+        // ===== Gráfica de barras horizontales: Top nóminas =====
+        function renderTopChart(logins) {
+            const map = {};
+            logins.forEach(l => { (map[l.nomina] = map[l.nomina] || []).push(parseFechaHora(l.fecha, l.hora)); });
+
+            const rows = Object.entries(map).map(([nomina, dates]) => {
+                dates.sort((a, b) => a - b);
+                return { nomina, count: dates.length, first: dates[0], last: dates[dates.length - 1] };
+            }).sort((a, b) => b.count - a.count);
+
+            topFullData = rows;
+            const top = rows.slice(0, 8);
+
+            if (charts.top) { charts.top.destroy(); charts.top = null; }
+
+            if (!top.length) {
+                $("topChartEmpty").style.display = "flex";
+                $("topChart").style.display = "none";
+                return;
+            }
+            $("topChartEmpty").style.display = "none";
+            $("topChart").style.display = "block";
+
+            charts.top = new Chart($("topChart").getContext("2d"), {
+                type: "bar",
+                data: {
+                    labels: top.map(r => r.nomina),
+                    datasets: [{ data: top.map(r => r.count), backgroundColor: top.map((_, i) => colorFor(i)), borderRadius: 6, maxBarThickness: 22 }]
+                },
+                options: {
+                    indexAxis: "y",
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.x} acceso(s)` } }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: "rgba(0,0,0,.06)" } },
+                        y: { grid: { display: false }, ticks: { font: { size: 11, weight: "700" } } }
+                    },
+                    onClick: (evt, elements) => {
+                        if (!elements.length) return;
+                        openNominaDetail(top[elements[0].index].nomina);
+                    }
+                }
+            });
+        }
+
+        // ===== Modal genérico de detalle =====
+        const detailModal = $("detailModal");
+
+        function openModalGeneric(title, bodyHtml) {
+            $("detailModalTitle").textContent = title;
+            $("detailModalBody").innerHTML = bodyHtml;
+            detailModal.classList.add("open");
+        }
+
+        function closeDetailModal() { detailModal.classList.remove("open"); }
+
+        $("detailModalClose").addEventListener("click", closeDetailModal);
+        detailModal.addEventListener("click", (e) => { if (e.target === detailModal) closeDetailModal(); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDetailModal(); });
+
+        function openAreaDetail(area) {
+            const rows = filteredData.areas.filter(a => a.area === area)
+                .map(a => ({ ...a, dateObj: parseFechaHora(a.fecha, a.hora) }))
+                .sort((a, b) => b.dateObj - a.dateObj);
+            const html = `
+                <p style="margin:0 0 10px;font-size:13px;color:rgba(11,18,32,.7)">Total: <b>${rows.length}</b> visita(s) en <b>${escapeHtml(area)}</b></p>
+                <div class="modal-table-wrap"><table><thead><tr><th>Nómina</th><th>Fecha</th><th>Hora</th></tr></thead><tbody>
+                    ${rows.map(r => `<tr><td>${escapeHtml(r.nomina)}</td><td>${escapeHtml(r.fecha)}</td><td>${escapeHtml(r.hora)}</td></tr>`).join("")}
+                </tbody></table></div>`;
+            openModalGeneric(`Detalle · ${area}`, html);
+        }
+
+        function openDayDetail(fecha) {
+            const rows = filteredData.logins.filter(l => l.fecha === fecha)
+                .map(l => ({ ...l, dateObj: parseFechaHora(l.fecha, l.hora) }))
+                .sort((a, b) => b.dateObj - a.dateObj);
+            const html = `
+                <p style="margin:0 0 10px;font-size:13px;color:rgba(11,18,32,.7)">Total: <b>${rows.length}</b> acceso(s) el <b>${escapeHtml(fecha)}</b></p>
+                <div class="modal-table-wrap"><table><thead><tr><th>Nómina</th><th>Hora</th></tr></thead><tbody>
+                    ${rows.map(r => `<tr><td>${escapeHtml(r.nomina)}</td><td>${escapeHtml(r.hora)}</td></tr>`).join("")}
+                </tbody></table></div>`;
+            openModalGeneric(`Accesos · ${fecha}`, html);
+        }
+
+        function openNominaDetail(nomina) {
+            const rows = filteredData.logins.filter(l => l.nomina === nomina)
+                .map(l => ({ ...l, dateObj: parseFechaHora(l.fecha, l.hora) }))
+                .sort((a, b) => b.dateObj - a.dateObj);
+            const html = `
+                <p style="margin:0 0 10px;font-size:13px;color:rgba(11,18,32,.7)">Total: <b>${rows.length}</b> acceso(s) de la nómina <b>${escapeHtml(nomina)}</b></p>
+                <div class="modal-table-wrap"><table><thead><tr><th>Fecha</th><th>Hora</th></tr></thead><tbody>
+                    ${rows.map(r => `<tr><td>${escapeHtml(r.fecha)}</td><td>${escapeHtml(r.hora)}</td></tr>`).join("")}
+                </tbody></table></div>`;
+            openModalGeneric(`Historial · Nómina ${nomina}`, html);
+        }
+
+        $("linkAreaAll").addEventListener("click", () => {
+            const html = `<div class="modal-table-wrap"><table><thead><tr><th>Área</th><th>Visitas</th></tr></thead><tbody>
+                ${areaFullData.map(([area, count]) => `<tr><td>${escapeHtml(area)}</td><td>${count}</td></tr>`).join("")}
+            </tbody></table></div>`;
+            openModalGeneric("Todas las áreas", html || `<div class="empty-msg">Sin datos.</div>`);
+        });
+
+        $("linkDayAll").addEventListener("click", () => {
+            const html = `<div class="modal-table-wrap"><table><thead><tr><th>Fecha</th><th>Accesos</th></tr></thead><tbody>
+                ${dayFullData.slice().reverse().map(r => `<tr><td>${escapeHtml(r.fecha)}</td><td>${r.count}</td></tr>`).join("")}
+            </tbody></table></div>`;
+            openModalGeneric("Historial completo por día", html);
+        });
+
+        $("linkTopAll").addEventListener("click", () => {
+            const fmt = (d) => d ? d.toLocaleString("es-MX") : "—";
+            const html = `<div class="modal-table-wrap"><table><thead><tr><th>Nómina</th><th>Accesos</th><th>Primero</th><th>Último</th></tr></thead><tbody>
+                ${topFullData.map(r => `<tr><td><b>${escapeHtml(r.nomina)}</b></td><td>${r.count}</td><td>${fmt(r.first)}</td><td>${fmt(r.last)}</td></tr>`).join("")}
+            </tbody></table></div>`;
+            openModalGeneric("Tabla completa de accesos por nómina", html);
+        });
+
+        // ===== Búsqueda rápida =====
+        function searchHistory() {
+            const term = $("searchNomina").value.trim();
+            const resultEl = $("searchResult");
+            if (!term) { resultEl.innerHTML = ""; return; }
+
+            const rows = filteredData.logins.filter(l => l.nomina === term);
+            if (!rows.length) {
+                resultEl.innerHTML = `<div class="empty-msg">Sin registros para esa nómina en el periodo mostrado.</div>`;
+                return;
+            }
+
+            resultEl.innerHTML = `
+                <div class="search-summary">Nómina <b>${escapeHtml(term)}</b>: <b>${rows.length}</b> acceso(s) en el periodo mostrado.</div>
+                <button class="btn-view-detail" id="btnViewNominaDetail" type="button">VER HISTORIAL COMPLETO</button>
+            `;
+            $("btnViewNominaDetail").addEventListener("click", () => openNominaDetail(term));
+        }
+
+        $("btnSearch").addEventListener("click", searchHistory);
+        $("searchNomina").addEventListener("keydown", (e) => { if (e.key === "Enter") searchHistory(); });
+
+        // ===== Render principal =====
+        function renderAll() {
+            computeFilteredData();
+            updateFilterLabel();
+
+            renderKPIs(filteredData.logins, filteredData.areas);
+            renderAreaChart(filteredData.areas);
+            renderDayChart(filteredData.logins);
+            renderTopChart(filteredData.logins);
+            searchHistory();
+        }
+
+        async function loadAll() {
+            $("btnRefresh").disabled = true;
+            $("btnRefresh").textContent = "CARGANDO...";
+            setStatus("info", "Cargando datos del Sheet...");
+
+            try {
+                const data = await fetchDashboard();
+                dashboardData = { logins: data.logins || [], areas: data.areas || [] };
+
+                renderAll();
+
+                if (dashboardData.logins.length === 0 && dashboardData.areas.length === 0) {
+                    setStatus("err", "No se encontraron datos. Verifica que las pestañas 'Log' y 'LogAreas' existan y tengan registros.");
+                } else {
+                    setStatus("", "");
+                }
+            } catch (err) {
+                console.error(err);
+                setStatus("err", "No se pudieron cargar los datos. Revisa la publicación del Apps Script.");
+            } finally {
+                $("btnRefresh").disabled = false;
+                $("btnRefresh").textContent = "ACTUALIZAR";
+            }
+        }
+
+        $("btnRefresh").addEventListener("click", loadAll);
+
+        loadAll();
+    </script>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/comunicados/sw.js")
+                .then(() => console.log("✅ Service Worker registrado"))
+                .catch(err => console.error("❌ Error al registrar SW", err));
+        }
+    </script>
 
 </body>
-
 </html>
