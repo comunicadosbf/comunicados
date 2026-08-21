@@ -115,6 +115,24 @@
             background: rgba(231, 76, 60, .28);
         }
 
+        .btn-dashboard {
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .35);
+            background: rgba(255, 255, 255, .10);
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-dashboard:hover {
+            background: rgba(255, 255, 255, .18);
+        }
+
         .footer {
             background: var(--bdf-blue);
             color: rgba(255, 255, 255, .92);
@@ -555,6 +573,7 @@
 
             <div class="header-actions">
                 <div class="chip" id="chipUser">Admin</div>
+                <a class="btn-dashboard" href="/comunicados/dashboard/">DASHBOARD</a>
                 <button class="btn-logout" id="btnLogout" type="button">SALIR</button>
             </div>
         </div>
