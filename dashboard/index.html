@@ -10,8 +10,6 @@
     <link rel="icon" href="/comunicados/img/icon-192.png" type="image/png">
     <link rel="apple-touch-icon" href="/comunicados/img/icon-512.png" sizes="512x512">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
-
     <style>
         :root {
             --bdf-blue: #0d1c84;
@@ -208,7 +206,7 @@
             word-break: break-word;
         }
 
-        /* Grid principal de gráficas 2x2 */
+        /* Grid principal 2x2 */
         .main-grid {
             flex: 1;
             min-height: 0;
@@ -268,7 +266,7 @@
             position: relative;
             flex: 1;
             min-height: 0;
-            padding: 8px 12px 12px;
+            padding: 10px 14px 12px;
         }
 
         .chart-empty {
@@ -282,6 +280,153 @@
             text-align: center;
             padding: 10px;
         }
+
+        /* ===== Dona (SVG) + leyenda ===== */
+        .donut-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            height: 100%;
+        }
+
+        .donut-visual {
+            flex: 0 0 auto;
+            width: 42%;
+            max-width: 170px;
+            aspect-ratio: 1 / 1;
+        }
+
+        .donut-visual svg { width: 100%; height: 100%; display: block; }
+
+        .donut-seg { transition: opacity .15s; cursor: pointer; }
+        .donut-seg:hover { opacity: .78; }
+
+        .donut-legend {
+            flex: 1;
+            min-width: 0;
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            padding: 3px 4px;
+            border-radius: 6px;
+        }
+
+        .legend-item:hover { background: rgba(13, 28, 132, .06); }
+
+        .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+
+        .legend-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: rgba(11, 18, 32, .78);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .legend-value { font-size: 11.5px; font-weight: 900; color: var(--bdf-blue); }
+
+        /* ===== Barras verticales (días) ===== */
+        .vbars {
+            display: flex;
+            align-items: flex-end;
+            height: 100%;
+            gap: 6px;
+            padding-bottom: 2px;
+        }
+
+        .vbar-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .vbar-value {
+            font-size: 10.5px;
+            font-weight: 900;
+            color: var(--bdf-blue);
+            margin-bottom: 3px;
+        }
+
+        .vbar-track {
+            width: 70%;
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .vbar-fill {
+            width: 100%;
+            background: linear-gradient(180deg, var(--bdf-blue-2), var(--bdf-blue));
+            border-radius: 5px 5px 0 0;
+            transition: opacity .15s;
+        }
+
+        .vbar-col:hover .vbar-fill { opacity: .78; }
+
+        .vbar-label {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: rgba(11, 18, 32, .55);
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+
+        /* ===== Barras horizontales (top nóminas) ===== */
+        .hbars {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            gap: 6px;
+        }
+
+        .hbar-row {
+            display: grid;
+            grid-template-columns: 62px 1fr 32px;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border-radius: 6px;
+            padding: 2px 4px;
+        }
+
+        .hbar-row:hover { background: rgba(13, 28, 132, .06); }
+
+        .hbar-label {
+            font-size: 11.5px;
+            font-weight: 900;
+            color: rgba(11, 18, 32, .78);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .hbar-track {
+            height: 12px;
+            border-radius: 999px;
+            background: rgba(13, 28, 132, .08);
+            overflow: hidden;
+        }
+
+        .hbar-fill { height: 100%; border-radius: 999px; }
+
+        .hbar-value { font-size: 11.5px; font-weight: 900; color: var(--bdf-blue); text-align: right; }
 
         /* Panel de búsqueda */
         .search-panel-body {
@@ -461,7 +606,10 @@
                         <button class="link-btn" id="linkAreaAll" type="button">Ver todas</button>
                     </div>
                     <div class="chart-body">
-                        <canvas id="areaChart"></canvas>
+                        <div class="donut-wrap" id="donutWrap" style="display:none;">
+                            <div class="donut-visual" id="areaDonut"></div>
+                            <div class="donut-legend" id="areaLegend"></div>
+                        </div>
                         <div class="chart-empty" id="areaChartEmpty">Aún no hay visitas por área registradas.</div>
                     </div>
                 </section>
@@ -472,7 +620,7 @@
                         <button class="link-btn" id="linkDayAll" type="button">Ver historial</button>
                     </div>
                     <div class="chart-body">
-                        <canvas id="dayChart"></canvas>
+                        <div class="vbars" id="dayChartBars" style="display:none;"></div>
                         <div class="chart-empty" id="dayChartEmpty">Aún no hay accesos registrados.</div>
                     </div>
                 </section>
@@ -483,7 +631,7 @@
                         <button class="link-btn" id="linkTopAll" type="button">Ver tabla completa</button>
                     </div>
                     <div class="chart-body">
-                        <canvas id="topChart"></canvas>
+                        <div class="hbars" id="topChartBars" style="display:none;"></div>
                         <div class="chart-empty" id="topChartEmpty">Aún no hay accesos registrados.</div>
                     </div>
                 </section>
@@ -500,7 +648,7 @@
                         <div id="searchResult" class="search-result"></div>
                         <div class="search-hint">
                             Escribe una nómina y presiona buscar (o Enter). También puedes hacer clic directo en
-                            cualquier barra o rebanada de las gráficas para ver su detalle.
+                            cualquier segmento o barra de las gráficas para ver su detalle.
                         </div>
                     </div>
                 </section>
@@ -566,7 +714,6 @@
         let dashboardData = { logins: [], areas: [] };
         let filteredData = { logins: [], areas: [] };
         let currentFilter = { desde: null, hasta: null };
-        let charts = { area: null, day: null, top: null };
         let areaFullData = [];
         let dayFullData = [];
         let topFullData = [];
@@ -638,47 +785,60 @@
             $("kpiAreaTop").textContent = areaTop;
         }
 
-        // ===== Gráfica de dona: Áreas =====
+        // ===== Dona SVG: Áreas (sin dependencias externas) =====
+        function buildDonutSVG(entries, total) {
+            const size = 160, cx = 80, cy = 80, radius = 60, strokeWidth = 20;
+            const circumference = 2 * Math.PI * radius;
+            let offsetAcc = 0;
+
+            const segments = entries.map(([label, count], i) => {
+                const fraction = total ? count / total : 0;
+                const dash = fraction * circumference;
+                const gap = circumference - dash;
+                const strokeDashoffset = -offsetAcc;
+                offsetAcc += dash;
+                return `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${colorFor(i)}" stroke-width="${strokeWidth}"
+                    stroke-dasharray="${dash} ${gap}" stroke-dashoffset="${strokeDashoffset}"
+                    class="donut-seg" data-index="${i}" />`;
+            }).join("");
+
+            return `<svg viewBox="0 0 ${size} ${size}"><g transform="rotate(-90 ${cx} ${cy})">${segments}</g></svg>`;
+        }
+
         function renderAreaChart(areas) {
             const counts = {};
             areas.forEach(a => { counts[a.area] = (counts[a.area] || 0) + 1; });
             const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
             areaFullData = entries;
 
-            if (charts.area) { charts.area.destroy(); charts.area = null; }
-
             if (!entries.length) {
                 $("areaChartEmpty").style.display = "flex";
-                $("areaChart").style.display = "none";
+                $("donutWrap").style.display = "none";
                 return;
             }
             $("areaChartEmpty").style.display = "none";
-            $("areaChart").style.display = "block";
+            $("donutWrap").style.display = "flex";
 
-            const labels = entries.map(e => e[0]);
-            const data = entries.map(e => e[1]);
-            const colors = labels.map((_, i) => colorFor(i));
+            const total = entries.reduce((s, e) => s + e[1], 0);
 
-            charts.area = new Chart($("areaChart").getContext("2d"), {
-                type: "doughnut",
-                data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: "#fff" }] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: "60%",
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed} visita(s)` } }
-                    },
-                    onClick: (evt, elements) => {
-                        if (!elements.length) return;
-                        openAreaDetail(labels[elements[0].index]);
-                    }
-                }
+            $("areaDonut").innerHTML = buildDonutSVG(entries, total);
+            $("areaDonut").querySelectorAll(".donut-seg").forEach(seg => {
+                seg.addEventListener("click", () => openAreaDetail(entries[+seg.dataset.index][0]));
+            });
+
+            $("areaLegend").innerHTML = entries.map(([label, count], i) => `
+                <div class="legend-item" data-index="${i}">
+                    <span class="legend-dot" style="background:${colorFor(i)}"></span>
+                    <span class="legend-label" title="${escapeHtml(label)}">${escapeHtml(label)}</span>
+                    <span class="legend-value">${count}</span>
+                </div>
+            `).join("");
+            $("areaLegend").querySelectorAll(".legend-item").forEach(item => {
+                item.addEventListener("click", () => openAreaDetail(entries[+item.dataset.index][0]));
             });
         }
 
-        // ===== Gráfica de barras: Accesos por día =====
+        // ===== Barras verticales: Accesos por día =====
         function renderDayChart(logins) {
             const counts = {};
             logins.forEach(l => { counts[l.fecha] = (counts[l.fecha] || 0) + 1; });
@@ -689,42 +849,32 @@
 
             const last = entries.slice(-14);
 
-            if (charts.day) { charts.day.destroy(); charts.day = null; }
-
             if (!last.length) {
                 $("dayChartEmpty").style.display = "flex";
-                $("dayChart").style.display = "none";
+                $("dayChartBars").style.display = "none";
                 return;
             }
             $("dayChartEmpty").style.display = "none";
-            $("dayChart").style.display = "block";
+            $("dayChartBars").style.display = "flex";
 
-            charts.day = new Chart($("dayChart").getContext("2d"), {
-                type: "bar",
-                data: {
-                    labels: last.map(e => e.fecha),
-                    datasets: [{ data: last.map(e => e.count), backgroundColor: "#0d1c84", borderRadius: 6, maxBarThickness: 30 }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.y} acceso(s)` } }
-                    },
-                    scales: {
-                        x: { ticks: { font: { size: 10 }, maxRotation: 55, minRotation: 45 }, grid: { display: false } },
-                        y: { beginAtZero: true, ticks: { precision: 0 } }
-                    },
-                    onClick: (evt, elements) => {
-                        if (!elements.length) return;
-                        openDayDetail(last[elements[0].index].fecha);
-                    }
-                }
+            const max = Math.max(...last.map(e => e.count), 1);
+
+            $("dayChartBars").innerHTML = last.map(e => {
+                const pct = Math.max(8, Math.round((e.count / max) * 100));
+                return `
+                    <div class="vbar-col" data-fecha="${escapeHtml(e.fecha)}" title="${escapeHtml(e.fecha)}: ${e.count} acceso(s)">
+                        <div class="vbar-value">${e.count}</div>
+                        <div class="vbar-track"><div class="vbar-fill" style="height:${pct}%"></div></div>
+                        <div class="vbar-label">${escapeHtml(e.fecha.slice(0, 5))}</div>
+                    </div>`;
+            }).join("");
+
+            $("dayChartBars").querySelectorAll(".vbar-col").forEach(col => {
+                col.addEventListener("click", () => openDayDetail(col.dataset.fecha));
             });
         }
 
-        // ===== Gráfica de barras horizontales: Top nóminas =====
+        // ===== Barras horizontales: Top nóminas =====
         function renderTopChart(logins) {
             const map = {};
             logins.forEach(l => { (map[l.nomina] = map[l.nomina] || []).push(parseFechaHora(l.fecha, l.hora)); });
@@ -737,39 +887,28 @@
             topFullData = rows;
             const top = rows.slice(0, 8);
 
-            if (charts.top) { charts.top.destroy(); charts.top = null; }
-
             if (!top.length) {
                 $("topChartEmpty").style.display = "flex";
-                $("topChart").style.display = "none";
+                $("topChartBars").style.display = "none";
                 return;
             }
             $("topChartEmpty").style.display = "none";
-            $("topChart").style.display = "block";
+            $("topChartBars").style.display = "flex";
 
-            charts.top = new Chart($("topChart").getContext("2d"), {
-                type: "bar",
-                data: {
-                    labels: top.map(r => r.nomina),
-                    datasets: [{ data: top.map(r => r.count), backgroundColor: top.map((_, i) => colorFor(i)), borderRadius: 6, maxBarThickness: 22 }]
-                },
-                options: {
-                    indexAxis: "y",
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.x} acceso(s)` } }
-                    },
-                    scales: {
-                        x: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: "rgba(0,0,0,.06)" } },
-                        y: { grid: { display: false }, ticks: { font: { size: 11, weight: "700" } } }
-                    },
-                    onClick: (evt, elements) => {
-                        if (!elements.length) return;
-                        openNominaDetail(top[elements[0].index].nomina);
-                    }
-                }
+            const max = top[0].count || 1;
+
+            $("topChartBars").innerHTML = top.map((r, i) => {
+                const pct = Math.max(8, Math.round((r.count / max) * 100));
+                return `
+                    <div class="hbar-row" data-nomina="${escapeHtml(r.nomina)}">
+                        <div class="hbar-label">${escapeHtml(r.nomina)}</div>
+                        <div class="hbar-track"><div class="hbar-fill" style="width:${pct}%; background:${colorFor(i)}"></div></div>
+                        <div class="hbar-value">${r.count}</div>
+                    </div>`;
+            }).join("");
+
+            $("topChartBars").querySelectorAll(".hbar-row").forEach(row => {
+                row.addEventListener("click", () => openNominaDetail(row.dataset.nomina));
             });
         }
 
@@ -828,14 +967,14 @@
             const html = `<div class="modal-table-wrap"><table><thead><tr><th>Área</th><th>Visitas</th></tr></thead><tbody>
                 ${areaFullData.map(([area, count]) => `<tr><td>${escapeHtml(area)}</td><td>${count}</td></tr>`).join("")}
             </tbody></table></div>`;
-            openModalGeneric("Todas las áreas", html || `<div class="empty-msg">Sin datos.</div>`);
+            openModalGeneric("Todas las áreas", areaFullData.length ? html : `<div class="empty-msg">Sin datos.</div>`);
         });
 
         $("linkDayAll").addEventListener("click", () => {
             const html = `<div class="modal-table-wrap"><table><thead><tr><th>Fecha</th><th>Accesos</th></tr></thead><tbody>
                 ${dayFullData.slice().reverse().map(r => `<tr><td>${escapeHtml(r.fecha)}</td><td>${r.count}</td></tr>`).join("")}
             </tbody></table></div>`;
-            openModalGeneric("Historial completo por día", html);
+            openModalGeneric("Historial completo por día", dayFullData.length ? html : `<div class="empty-msg">Sin datos.</div>`);
         });
 
         $("linkTopAll").addEventListener("click", () => {
@@ -843,7 +982,7 @@
             const html = `<div class="modal-table-wrap"><table><thead><tr><th>Nómina</th><th>Accesos</th><th>Primero</th><th>Último</th></tr></thead><tbody>
                 ${topFullData.map(r => `<tr><td><b>${escapeHtml(r.nomina)}</b></td><td>${r.count}</td><td>${fmt(r.first)}</td><td>${fmt(r.last)}</td></tr>`).join("")}
             </tbody></table></div>`;
-            openModalGeneric("Tabla completa de accesos por nómina", html);
+            openModalGeneric("Tabla completa de accesos por nómina", topFullData.length ? html : `<div class="empty-msg">Sin datos.</div>`);
         });
 
         // ===== Búsqueda rápida =====
