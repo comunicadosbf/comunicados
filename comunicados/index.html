@@ -867,6 +867,7 @@
       LOGIN: `${BASE}/login/`,
       ADMIN: `${BASE}/admin/`
     };
+    const API_URL = "https://script.google.com/macros/s/AKfycbzAcZGJVBBLDSi0AfI5MMCDgpC1YmFRgjJItQWAmw2izTFLpk9o9eWQX5WrerowNOrG2A/exec";
 
     // ===== Session guard =====
     const session = JSON.parse(localStorage.getItem("session") || "null");
@@ -943,6 +944,18 @@
         '"': "&quot;",
         "'": "&#039;"
       }[m]));
+    }
+
+    // ==========================
+    // ✅ Registro de visita por área en Google Sheets (AGREGADO)
+    // ==========================
+    function logAreaView(nominaVal, areaLabel) {
+      try {
+        const url = `${API_URL}?logArea=1&nomina=${encodeURIComponent(nominaVal)}&area=${encodeURIComponent(areaLabel)}&t=${Date.now()}`;
+        fetch(url, { method: "GET", mode: "no-cors" }).catch(() => { });
+      } catch (e) {
+        console.warn("[Log área] error:", e);
+      }
     }
 
     // ===== Viewer state =====
@@ -1110,6 +1123,7 @@
       if (currentUnsub) currentUnsub();
 
       const areaSlug = slugArea(areaLabel);
+      logAreaView(nomina, areaLabel);
 
       viewerTitle.textContent = `Comunicados · ${areaLabel}`;
       viewerSub.textContent = "Cargando...";
