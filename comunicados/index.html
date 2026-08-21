@@ -720,6 +720,7 @@
         <div class="card-body">
           <label for="area">Área</label>
           <select id="area">
+            <option value="" selected disabled hidden>Selecciona un área</option>
             <option value="Agave">Agave</option>
             <option value="Almacén">Almacén</option>
             <option value="Calidad">Calidad</option>
@@ -1563,9 +1564,13 @@
     );
 
     // ===== Init =====
-    const defaultArea = session?.areaLabel || areaSel.value;
-    areaSel.value = defaultArea;
-    mountArea(defaultArea);
+    const defaultArea = session?.areaLabel || "";
+    if (defaultArea) {
+      areaSel.value = defaultArea;
+      mountArea(defaultArea);
+    } else {
+      areaSel.value = "";
+    }
   </script>
 
   <!-- JS Modal Aviso (AGREGADO) -->
