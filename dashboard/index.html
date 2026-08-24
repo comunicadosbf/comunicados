@@ -262,6 +262,23 @@
 
         .link-btn:hover { background: rgba(13, 28, 132, .14); }
 
+        .donut-tab {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: rgba(11, 18, 32, .55);
+            cursor: pointer;
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, .10);
+            padding: 4px 9px;
+            border-radius: 999px;
+        }
+
+        .donut-tab.active {
+            background: var(--bdf-blue);
+            color: #fff;
+            border-color: var(--bdf-blue);
+        }
+
         .chart-body {
             position: relative;
             flex: 1;
@@ -600,10 +617,14 @@
 
             <div class="main-grid">
 
-                <section class="chart-card" aria-label="Acceso por área">
+                <section class="chart-card" aria-label="Distribución por área">
                     <div class="chart-card-head">
-                        <h2>Accesos a Comunicados por área</h2>
-                        <button class="link-btn" id="linkAreaAll" type="button">Ver todas</button>
+                        <h2 id="donutTitle">Distribución · Comunicados</h2>
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <button class="donut-tab active" id="tabComunicados" type="button">Comunicados</button>
+                            <button class="donut-tab" id="tabDepartamento" type="button">Departamento (RH)</button>
+                            <button class="link-btn" id="linkAreaAll" type="button">Ver todas</button>
+                        </div>
                     </div>
                     <div class="chart-body">
                         <div class="donut-wrap" id="donutWrap" style="display:none;">
@@ -805,10 +826,21 @@
             return `<svg viewBox="0 0 ${size} ${size}"><g transform="rotate(-90 ${cx} ${cy})">${segments}</g></svg>`;
         }
 
-        function renderAreaChart(areas) {
-            const counts = {};
-            areas.forEach(a => { counts[a.area] = (counts[a.area] || 0) + 1; });
-            const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        let donutMode = "comunicados"; // "comunicados" | "departamento"
+
+        function renderAreaChart(areas, logins) {
+            let entries;
+
+            if (donutMode === "departamento") {
+                const counts = {};
+                (logins || []).forEach(l => { counts[l.departamento || "Sin departamento"] = (counts[l.departamento || "Sin departamento"] || 0) + 1; });
+                entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+            } else {
+                const counts = {};
+                (areas || []).forEach(a => { counts[a.area] = (counts[a.area] || 0) + 1; });
+                entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+            }
+
             areaFullData = entries;
 
             if (!entries.length) {
@@ -820,10 +852,11 @@
             $("donutWrap").style.display = "flex";
 
             const total = entries.reduce((s, e) => s + e[1], 0);
+            const openDetailFn = donutMode === "departamento" ? openDepartamentoDetail : openAreaDetail;
 
             $("areaDonut").innerHTML = buildDonutSVG(entries, total);
             $("areaDonut").querySelectorAll(".donut-seg").forEach(seg => {
-                seg.addEventListener("click", () => openAreaDetail(entries[+seg.dataset.index][0]));
+                seg.addEventListener("click", () => openDetailFn(entries[+seg.dataset.index][0]));
             });
 
             $("areaLegend").innerHTML = entries.map(([label, count], i) => `
@@ -834,9 +867,20 @@
                 </div>
             `).join("");
             $("areaLegend").querySelectorAll(".legend-item").forEach(item => {
-                item.addEventListener("click", () => openAreaDetail(entries[+item.dataset.index][0]));
+                item.addEventListener("click", () => openDetailFn(entries[+item.dataset.index][0]));
             });
         }
+
+        function switchDonutMode(mode) {
+            donutMode = mode;
+            $("tabComunicados").classList.toggle("active", mode === "comunicados");
+            $("tabDepartamento").classList.toggle("active", mode === "departamento");
+            $("donutTitle").textContent = mode === "departamento" ? "Distribución · Departamento (RH)" : "Distribución · Comunicados";
+            renderAreaChart(filteredData.areas, filteredData.logins);
+        }
+
+        $("tabComunicados").addEventListener("click", () => switchDonutMode("comunicados"));
+        $("tabDepartamento").addEventListener("click", () => switchDonutMode("departamento"));
 
         // ===== Barras verticales: Accesos por día =====
         function renderDayChart(logins) {
@@ -939,6 +983,18 @@
             openModalGeneric(`Detalle · ${area}`, html);
         }
 
+        function openDepartamentoDetail(departamento) {
+            const rows = filteredData.logins.filter(l => (l.departamento || "Sin departamento") === departamento)
+                .map(l => ({ ...l, dateObj: parseFechaHora(l.fecha, l.hora) }))
+                .sort((a, b) => b.dateObj - a.dateObj);
+            const html = `
+                <p style="margin:0 0 10px;font-size:13px;color:rgba(11,18,32,.7)">Total: <b>${rows.length}</b> acceso(s) del departamento <b>${escapeHtml(departamento)}</b></p>
+                <div class="modal-table-wrap"><table><thead><tr><th>Nómina</th><th>Fecha</th><th>Hora</th></tr></thead><tbody>
+                    ${rows.map(r => `<tr><td>${escapeHtml(r.nomina)}</td><td>${escapeHtml(r.fecha)}</td><td>${escapeHtml(r.hora)}</td></tr>`).join("")}
+                </tbody></table></div>`;
+            openModalGeneric(`Departamento · ${departamento}`, html);
+        }
+
         function openDayDetail(fecha) {
             const rows = filteredData.logins.filter(l => l.fecha === fecha)
                 .map(l => ({ ...l, dateObj: parseFechaHora(l.fecha, l.hora) }))
@@ -964,10 +1020,12 @@
         }
 
         $("linkAreaAll").addEventListener("click", () => {
-            const html = `<div class="modal-table-wrap"><table><thead><tr><th>Área</th><th>Visitas</th></tr></thead><tbody>
-                ${areaFullData.map(([area, count]) => `<tr><td>${escapeHtml(area)}</td><td>${count}</td></tr>`).join("")}
+            const colLabel = donutMode === "departamento" ? "Departamento" : "Área";
+            const modalTitle = donutMode === "departamento" ? "Todos los departamentos" : "Todas las áreas";
+            const html = `<div class="modal-table-wrap"><table><thead><tr><th>${colLabel}</th><th>Visitas</th></tr></thead><tbody>
+                ${areaFullData.map(([label, count]) => `<tr><td>${escapeHtml(label)}</td><td>${count}</td></tr>`).join("")}
             </tbody></table></div>`;
-            openModalGeneric("Todas las áreas", areaFullData.length ? html : `<div class="empty-msg">Sin datos.</div>`);
+            openModalGeneric(modalTitle, areaFullData.length ? html : `<div class="empty-msg">Sin datos.</div>`);
         });
 
         $("linkDayAll").addEventListener("click", () => {
@@ -1013,7 +1071,7 @@
             updateFilterLabel();
 
             renderKPIs(filteredData.logins, filteredData.areas);
-            renderAreaChart(filteredData.areas);
+            renderAreaChart(filteredData.areas, filteredData.logins);
             renderDayChart(filteredData.logins);
             renderTopChart(filteredData.logins);
             searchHistory();
